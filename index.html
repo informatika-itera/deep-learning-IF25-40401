@@ -36,18 +36,6 @@
           <strong>RPS Deep Learning.</strong> Dokumen pembelajaran untuk mata kuliah IF25-40401. Kode [RIK], [MCT], [MCU], dan [IEW] menandai dosen pengampu pada tiap blok materi.
         </section>
 
-        <!-- Identitas & Tim Pengajar -->
-        <section class="rps-public-section">
-          <h2>Identitas dan Tim Pengajar</h2>
-          <dl class="rps-lecturer-list">
-            <div><dt>Mata Kuliah</dt><dd>Deep Learning — IF25-40401</dd></div>
-            <div><dt>Dosen Pengampu [RIK]</dt><dd>Minggu 1–3 · Pengenalan &amp; Training Deep Learning</dd></div>
-            <div><dt>Dosen Pengampu [MCT]</dt><dd>Minggu 4–6 · Deep Computer Vision</dd></div>
-            <div><dt>Dosen Pengampu [MCU]</dt><dd>Minggu 7 &amp; 9 · Deep Sequence Modelling</dd></div>
-            <div><dt>Dosen Pengampu [IEW]</dt><dd>Minggu 10–15 · Transformer, Generative Model, Frontier &amp; Poster</dd></div>
-          </dl>
-        </section>
-
         <!-- Deskripsi -->
         <section class="rps-public-section">
           <h2>Deskripsi Singkat Mata Kuliah</h2>
@@ -146,6 +134,7 @@
               <div class="rps-week-body">
                 <h3>Pengenalan Deep Learning &amp; Rilis Tugas Besar (1)</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[RIK]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menyiapkan environment PyTorch (CPU/GPU) untuk eksperimen.</li>
                     <li>Menjelaskan peran dan karakteristik fungsi aktivasi.</li>
@@ -176,6 +165,7 @@
               <div class="rps-week-body">
                 <h3>Training Deep Learning Model (1)</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[RIK]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Memilih fungsi loss untuk regresi vs klasifikasi.</li>
                     <li>Membandingkan optimizer dan mekanisme adaptifnya.</li>
@@ -206,6 +196,7 @@
               <div class="rps-week-body">
                 <h3>Training Deep Learning Model (2): Transfer Learning</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[RIK]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menjelaskan prinsip transfer learning dan model pretrained.</li>
                     <li>Membedakan zero-shot inference dari finetuning beserta trade-off datanya.</li>
@@ -236,6 +227,7 @@
               <div class="rps-week-body">
                 <h3>Deep Computer Vision (1): CNN From Scratch</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[MCT]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menjelaskan operasi konvolusi, stride, padding, dan pooling.</li>
                     <li>Menghitung ukuran feature map dan jumlah parameter konvolusi.</li>
@@ -260,21 +252,46 @@
               </div>
             </article>
 
-            <!-- Minggu 5-6 -->
+            <!-- Minggu 5 -->
             <article class="rps-week-card">
-              <div class="rps-week-number">5–6</div>
+              <div class="rps-week-number">5</div>
               <div class="rps-week-body">
                 <h3>Deep Computer Vision (2): CNN dan Variasinya</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[MCT]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
-                    <li>Menjelaskan evolusi CNN dari AlexNet → VGG → ResNet/MobileNet → ConvNeXT.</li>
+                    <li>Menjelaskan evolusi CNN dari AlexNet menuju VGG.</li>
+                    <li>Menjelaskan desain blok konvolusi berlapis pada VGG.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>AlexNet: encoder-decoder (deep conv layer), ReLU + dropout, pemenang ImageNet 2012.</li>
+                    <li>VGG (improved from AlexNet): filter 3×3 berlapis, kedalaman seragam (VGG16/19).</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa membandingkan arsitektur AlexNet dan VGG, menganalisis pengaruh kedalaman dan jumlah parameter terhadap akurasi.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 6 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">6</div>
+              <div class="rps-week-body">
+                <h3>Deep Computer Vision (2): CNN dan Variasinya</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[MCT]</span></div>
+                  <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menjelaskan residual connection dan alasan ResNet bisa lebih dalam.</li>
                     <li>Membandingkan efisiensi MobileNet (depthwise separable) dengan CNN standar.</li>
                     <li>Mengidentifikasi elemen modern ConvNeXT yang diambil dari transformer.</li>
                   </ol></div>
                   <div><h4>Pokok Bahasan</h4><ul>
-                    <li>AlexNet: encoder-decoder (deep conv layer), ReLU + dropout, pemenang ImageNet 2012.</li>
-                    <li>VGG (improved from AlexNet): filter 3×3 berlapis, kedalaman seragam (VGG16/19).</li>
                     <li>ResNet vs MobileNet (residual): skip connection vs depthwise separable convolution.</li>
                     <li>ConvNeXT (CNN with context): patchify stem, inverted bottleneck, GELU/LayerNorm.</li>
                   </ul></div>
@@ -285,7 +302,7 @@
                     <li>Tugas terstruktur</li>
                   </ul></div>
                   <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
-                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa membandingkan beberapa arsitektur CNN pada dataset yang sama (akurasi, jumlah parameter, waktu latih) dan menganalisis trade-off kedalaman, efisiensi, dan performa.</p></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa membandingkan ResNet, MobileNet, dan ConvNeXT pada dataset yang sama (akurasi, parameter, waktu latih) dan menganalisis trade-off efisiensi.</p></div>
                 </div>
               </div>
             </article>
@@ -296,6 +313,7 @@
               <div class="rps-week-body">
                 <h3>Deep Sequence Modelling (1): RNN</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[MCU]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menjelaskan hidden state dan unrolling RNN dalam pemrosesan sekuens.</li>
                     <li>Menjelaskan Backpropagation Through Time dan keterbatasannya.</li>
@@ -335,6 +353,7 @@
               <div class="rps-week-body">
                 <h3>Deep Sequence Modelling (2): LSTM &amp; GRU</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[MCU]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menjelaskan mekanisme gate pada LSTM dan GRU.</li>
                     <li>Membandingkan LSTM dan GRU dari segi kapasitas dan efisiensi.</li>
@@ -365,6 +384,7 @@
               <div class="rps-week-body">
                 <h3>Attention is All You Need! (NLP)</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[IEW]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menjelaskan mekanisme attention (query-key-value) dan self-attention.</li>
                     <li>Menjelaskan arsitektur Transformer dan fungsi positional encoding.</li>
@@ -389,23 +409,20 @@
               </div>
             </article>
 
-            <!-- Minggu 11-12 -->
+            <!-- Minggu 11 -->
             <article class="rps-week-card">
-              <div class="rps-week-number">11–12</div>
+              <div class="rps-week-number">11</div>
               <div class="rps-week-body">
                 <h3>Transformer for Computer Vision</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[IEW]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menjelaskan cara ViT merepresentasikan gambar sebagai urutan patch.</li>
-                    <li>Menjelaskan keterbatasan ViT dan solusi struktur piramida PVT.</li>
-                    <li>Membandingkan inductive bias CNN dengan transformer vision.</li>
                     <li>Menggunakan pretrained ViT untuk tugas klasifikasi gambar.</li>
                   </ol></div>
                   <div><h4>Pokok Bahasan</h4><ul>
                     <li>Dari NLP ke vision: pemecahan gambar menjadi patch, patch embedding.</li>
                     <li>Vision Transformer (ViT): arsitektur columnar, class token, kebutuhan data besar.</li>
-                    <li>Pyramid Vision Transformer (PVT): struktur piramida, multi-scale feature map, spatial reduction.</li>
-                    <li>Perbandingan CNN vs ViT vs PVT: inductive bias, kebutuhan data, efisiensi.</li>
                   </ul></div>
                   <div><h4>Bentuk &amp; Metode</h4><ul>
                     <li>Kuliah tatap muka</li>
@@ -414,7 +431,34 @@
                     <li>Tugas terstruktur</li>
                   </ul></div>
                   <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
-                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa menjalankan ViT pretrained untuk klasifikasi gambar dan membandingkan skema piramida PVT sebagai backbone, menganalisis trade-off akurasi dan komputasi.</p></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa menjalankan ViT pretrained untuk klasifikasi gambar dan mengamati pengaruh ukuran patch terhadap representasi dan akurasi.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 12 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">12</div>
+              <div class="rps-week-body">
+                <h3>Transformer for Computer Vision</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[IEW]</span></div>
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan keterbatasan ViT dan solusi struktur piramida PVT.</li>
+                    <li>Membandingkan inductive bias CNN dengan transformer vision.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Pyramid Vision Transformer (PVT): struktur piramida, multi-scale feature map, spatial reduction.</li>
+                    <li>Perbandingan CNN vs ViT vs PVT: inductive bias, kebutuhan data, efisiensi.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Diskusi kelompok</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa membandingkan skema piramida PVT sebagai backbone dengan ViT columnar, menganalisis trade-off akurasi dan komputasi.</p></div>
                 </div>
               </div>
             </article>
@@ -425,6 +469,7 @@
               <div class="rps-week-body">
                 <h3>Deep Generative Model: Intro to Autoencoder &amp; GAN</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[IEW]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menjelaskan prinsip autoencoder dan representasi latent.</li>
                     <li>Membedakan AE deterministik dengan VAE probabilistik.</li>
@@ -455,6 +500,7 @@
               <div class="rps-week-body">
                 <h3>New Frontiers</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[IEW]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Menjelaskan loop agent-environment serta konsep reward/policy pada RL.</li>
                     <li>Menjelaskan message passing dan node embedding pada GNN.</li>
@@ -485,6 +531,7 @@
               <div class="rps-week-body">
                 <h3>Poster Session</h3>
                 <div class="rps-week-columns">
+                  <div><h4>Dosen Pengampu</h4><span class="dosen">[IEW]</span></div>
                   <div><h4>Capaian Pembelajaran</h4><ol>
                     <li>Mengkomunikasikan hasil proyek deep learning secara ilmiah melalui poster.</li>
                     <li>Menyajikan metodologi, hasil, dan analisis dengan jelas.</li>

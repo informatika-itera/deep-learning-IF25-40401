@@ -138,17 +138,18 @@ a:hover { color: var(--mute); }
 .rps-public-section li:last-child { margin-bottom: 0; }
 .rps-public-section strong { color: var(--ink); }
 
-/* Identity rows */
-.rps-lecturer-list { display: grid; max-width: 1120px; margin: 0; border-top: 1px solid var(--hairline); }
-.rps-lecturer-list div {
-  display: grid;
-  grid-template-columns: minmax(220px, .32fr) minmax(0, 1fr);
-  gap: 20px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--hairline);
+/* Identity rows (now inline in weekly table as Dosen Pengampu column) */
+.rps-week-columns .dosen {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 9999px;
+  color: var(--canvas);
+  background: var(--ink);
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .04em;
 }
-.rps-lecturer-list dt { color: var(--mute); font-weight: 700; }
-.rps-lecturer-list dd { margin: 0; }
 
 /* Real tables */
 .rps-assessment-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
@@ -205,9 +206,11 @@ a:hover { color: var(--mute); }
 }
 .rps-week-columns {
   display: grid;
-  grid-template-columns: minmax(180px, 1.1fr) minmax(220px, 1.35fr) minmax(170px, 1fr) minmax(120px, .7fr) minmax(190px, 1fr);
+  grid-template-columns: minmax(90px, .35fr) minmax(170px, 1fr) minmax(210px, 1.3fr) minmax(160px, .9fr) minmax(110px, .6fr) minmax(180px, .95fr);
   gap: 22px;
 }
+
+.rps-week-columns > div:first-child h4 { margin-bottom: 10px; }
 .rps-week-columns > div { min-width: 0; }
 .rps-week-columns h4 {
   margin: 0 0 8px;
