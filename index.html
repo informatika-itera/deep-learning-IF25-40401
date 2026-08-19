@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Silabus Deep Learning — IF25-40401</title>
+  <meta name="description" content="Rencana Pembelajaran Semester (RPS) mata kuliah Deep Learning IF25-40401: capaian, pokok bahasan, metode, estimasi waktu, dan pengalaman belajar per minggu." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body id="top">
+
+  <main class="rps-public-page">
+    <div class="rps-public-shell">
+
+      <!-- Hero -->
+      <header class="rps-public-hero">
+        <a class="rps-public-back" href="#top">← Kembali ke Atas</a>
+        <p class="eyebrow">RPS · IF25-40401</p>
+        <h1>Silabus Deep Learning</h1>
+        <p class="rps-public-lead">Rangkaian 15 minggu yang membangun fondasi jaringan saraf dengan PyTorch — dari MLP dan pelatihan model, menuju arsitektur modern CNN, RNN/LSTM, Transformer, model generatif, hingga topik frontier — ditutup dengan kompetisi Kaggle dan sesi poster.</p>
+        <div class="rps-public-meta">
+          <span>15 minggu</span>
+          <span>UTS: Minggu 8</span>
+          <span>Kompetisi → sebelum UTS</span>
+          <span>Poster → 5 Des 2026</span>
+          <span>Kelompok: 1–3 peserta</span>
+        </div>
+      </header>
+
+      <div class="rps-public-content">
+
+        <section class="rps-public-notice">
+          <strong>RPS Deep Learning.</strong> Dokumen pembelajaran untuk mata kuliah IF25-40401. Kode [RIK], [MCT], [MCU], dan [IEW] menandai dosen pengampu pada tiap blok materi.
+        </section>
+
+        <!-- Identitas & Tim Pengajar -->
+        <section class="rps-public-section">
+          <h2>Identitas dan Tim Pengajar</h2>
+          <dl class="rps-lecturer-list">
+            <div><dt>Mata Kuliah</dt><dd>Deep Learning — IF25-40401</dd></div>
+            <div><dt>Dosen Pengampu [RIK]</dt><dd>Minggu 1–3 · Pengenalan &amp; Training Deep Learning</dd></div>
+            <div><dt>Dosen Pengampu [MCT]</dt><dd>Minggu 4–6 · Deep Computer Vision</dd></div>
+            <div><dt>Dosen Pengampu [MCU]</dt><dd>Minggu 7 &amp; 9 · Deep Sequence Modelling</dd></div>
+            <div><dt>Dosen Pengampu [IEW]</dt><dd>Minggu 10–15 · Transformer, Generative Model, Frontier &amp; Poster</dd></div>
+          </dl>
+        </section>
+
+        <!-- Deskripsi -->
+        <section class="rps-public-section">
+          <h2>Deskripsi Singkat Mata Kuliah</h2>
+          <p>Mata kuliah Deep Learning membekali mahasiswa dengan fondasi teoretis dan keterampilan praktis untuk merancang, melatih, dan mengevaluasi model pembelajaran mendalam menggunakan PyTorch. Perkuliahan berjalan dari dasar jaringan saraf (perceptron, MLP, fungsi aktivasi, loss, dan optimasi) menuju arsitektur modern: convolutional neural network (CNN) dan variasinya, pemodelan sekuensial (RNN, LSTM, GRU), transformer untuk NLP dan computer vision, model generatif (autoencoder, GAN), hingga topik frontier (reinforcement learning, graph neural network, Mamba). Perkuliahan diakhiri dengan proyek kompetisi Kaggle dan sesi poster sebagai luaran tugas besar.</p>
+        </section>
+
+        <!-- CPMK -->
+        <section class="rps-public-section">
+          <h2>Capaian Pembelajaran Mata Kuliah (CPMK)</h2>
+          <ul>
+            <li><strong>CPMK 1</strong> — Mahasiswa mampu menjelaskan konsep dasar deep learning (perceptron, MLP, aktivasi, loss, optimasi) serta cara kerja arsitektur modern (CNN, RNN/LSTM/GRU, Transformer, dan model generatif).</li>
+            <li><strong>CPMK 2</strong> — Mahasiswa mampu merancang, melatih, dan mengevaluasi model deep learning menggunakan PyTorch untuk masalah klasifikasi, regresi, dan pemodelan sekuensial.</li>
+            <li><strong>CPMK 3</strong> — Mahasiswa mampu menerapkan deep learning pada kasus nyata (computer vision, NLP) melalui kompetisi Kaggle dan mengkomunikasikan hasilnya dalam bentuk paper serta poster ilmiah.</li>
+          </ul>
+        </section>
+
+        <!-- Praktikum -->
+        <section class="rps-public-section">
+          <h2>Praktikum</h2>
+          <ul>
+            <li><strong>Hands-on di kelas</strong> — praktikum langsung saat perkuliahan.</li>
+            <li><strong>Asisten dosen</strong> — membantu hal administratif; rekrutmen melalui penunjukan langsung (mahasiswa TA ajah).</li>
+            <li><strong>Platform</strong> — perkuliahan dan pengumpulan melalui <a href="https://kuliah.itera.ac.id" target="_blank" rel="noopener">kuliah.itera.ac.id</a>.</li>
+          </ul>
+        </section>
+
+        <!-- Nilai & Komponen Penilaian -->
+        <div class="rps-assessment-grid">
+          <section class="rps-public-section">
+            <h2>Distribusi Nilai Huruf</h2>
+            <div class="rps-grade-table">
+              <table>
+                <thead><tr><th>Nilai Angka</th><th>Nilai Huruf</th></tr></thead>
+                <tbody>
+                  <tr><td>80 – 100</td><td>A</td></tr>
+                  <tr><td>73 – 79</td><td>AB</td></tr>
+                  <tr><td>65 – 72</td><td>B</td></tr>
+                  <tr><td>57 – 64</td><td>BC</td></tr>
+                  <tr><td>50 – 56</td><td>C</td></tr>
+                  <tr><td>40 – 49</td><td>D</td></tr>
+                  <tr><td>0 – 39</td><td>E</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="rps-public-section">
+            <h2>Komponen Penilaian</h2>
+            <div class="rps-grade-table">
+              <table>
+                <thead><tr><th>Komponen</th><th>Bobot</th></tr></thead>
+                <tbody>
+                  <tr><td>Ujian Tengah Semester (UTS)</td><td>15%</td></tr>
+                  <tr><td>Ujian Akhir Semester (UAS)</td><td>20%</td></tr>
+                  <tr><td>Tugas Besar — Kompetisi (bagian dari total 35%)</td><td>15%</td></tr>
+                  <tr><td>Tugas Besar — Poster (bagian dari total 35%)</td><td>20%</td></tr>
+                  <tr><td>Tugas Individu (Hands-on)</td><td>20%</td></tr>
+                  <tr><td>Partisipasi Individu</td><td>10%</td></tr>
+                  <tr class="rps-total-row"><td>Total</td><td>100%</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- Rubrik Tugas Besar -->
+        <section class="rps-public-section">
+          <h2>Rubrik Tugas Besar</h2>
+          <div class="rps-grade-table rps-grade-table--wide">
+            <table>
+              <thead><tr><th>Luaran</th><th>Ketentuan</th><th>Deadline</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Kompetisi</strong></td>
+                  <td>Dataset di Kaggle → submit via Kaggle (berbasis CNN). Bobot 15%.</td>
+                  <td>Sebelum UTS · 10 Oktober 2026</td>
+                </tr>
+                <tr>
+                  <td><strong>Poster</strong></td>
+                  <td>Paper di-submit ke Arxiv, poster dipajang. Bobot 20%.</td>
+                  <td>5 Desember 2026</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Rencana Pembelajaran Semester -->
+        <section class="rps-public-section">
+          <h2>Rencana Pembelajaran Semester</h2>
+          <div class="rps-week-list">
+
+            <!-- Minggu 1 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">1</div>
+              <div class="rps-week-body">
+                <h3>Pengenalan Deep Learning &amp; Rilis Tugas Besar (1)</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menyiapkan environment PyTorch (CPU/GPU) untuk eksperimen.</li>
+                    <li>Menjelaskan peran dan karakteristik fungsi aktivasi.</li>
+                    <li>Membedakan metrik evaluasi sesuai jenis masalah.</li>
+                    <li>Menjelaskan arsitektur dan alur maju–mundur MLP.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Setup environment: Python, PyTorch (CPU/GPU/CUDA), verifikasi tensor &amp; autograd.</li>
+                    <li>Activation Function: sigmoid, tanh, ReLU, Leaky ReLU, GELU; vanishing gradient.</li>
+                    <li>Performance Metrics: akurasi, presisi, recall, F1, confusion matrix, ROC-AUC.</li>
+                    <li>Review Multi Layer Perceptron: forward pass, backpropagation, representasi nonlinier.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa menyiapkan environment PyTorch, menjalankan tensor pertama, dan melatih MLP sederhana sambil membandingkan pengaruh beberapa fungsi aktivasi terhadap konvergensi.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 2 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">2</div>
+              <div class="rps-week-body">
+                <h3>Training Deep Learning Model (1)</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Memilih fungsi loss untuk regresi vs klasifikasi.</li>
+                    <li>Membandingkan optimizer dan mekanisme adaptifnya.</li>
+                    <li>Mengatur learning rate scheduler untuk menstabilkan konvergensi.</li>
+                    <li>Menerapkan early stopping untuk mengendalikan overfitting.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Loss Function: MSE, MAE (regresi); Cross-Entropy, BCE (klasifikasi).</li>
+                    <li>Optimizer: SGD, momentum, AdaGrad, RMSProp, Adam, AdamW.</li>
+                    <li>Scheduler: step decay, cosine annealing, warm-up, ReduceLROnPlateau.</li>
+                    <li>Early Stopping: validation loss, patience, checkpoint model terbaik.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa melatih model pada dataset benchmark, membandingkan beberapa optimizer dan scheduler, serta menerapkan early stopping untuk memilih epoch terbaik.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 3 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">3</div>
+              <div class="rps-week-body">
+                <h3>Training Deep Learning Model (2): Transfer Learning</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan prinsip transfer learning dan model pretrained.</li>
+                    <li>Membedakan zero-shot inference dari finetuning beserta trade-off datanya.</li>
+                    <li>Melakukan finetuning model pretrained pada dataset baru.</li>
+                    <li>Mengevaluasi finetuning terhadap baseline training-from-scratch.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Konsep transfer learning: pretrained model, backbone, feature extraction.</li>
+                    <li>0-shot: inferensi tanpa contoh target, model CLIP/LLM, embedding similarity.</li>
+                    <li>Finetuning: full vs partial (freezing layer awal), linear probing, head replacement.</li>
+                    <li>Strategi praktis: learning rate kecil, augmentasi, monitoring overfitting.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa menggunakan model pretrained untuk inferensi zero-shot lalu melakukan finetuning pada dataset kecil, membandingkan akurasinya dengan pelatihan dari nol.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 4 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">4</div>
+              <div class="rps-week-body">
+                <h3>Deep Computer Vision (1): CNN From Scratch</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan operasi konvolusi, stride, padding, dan pooling.</li>
+                    <li>Menghitung ukuran feature map dan jumlah parameter konvolusi.</li>
+                    <li>Membangun dan melatih CNN dari nol menggunakan PyTorch.</li>
+                    <li>Menganalisis peran weight sharing dan konektivitas lokal.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Motivasi CNN: local connectivity &amp; weight sharing vs MLP.</li>
+                    <li>Operasi konvolusi: kernel/filter, stride, padding, feature map, receptive field.</li>
+                    <li>Pooling: max/average pooling, invariansi translasi, reduksi dimensi.</li>
+                    <li>Arsitektur CNN: conv → activation → pooling → fully connected.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa membangun CNN dari nol (konvolusi + pooling) dan melatihnya pada dataset gambar, lalu memvisualisasikan feature map untuk memahami representasi hierarkis.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 5-6 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">5–6</div>
+              <div class="rps-week-body">
+                <h3>Deep Computer Vision (2): CNN dan Variasinya</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan evolusi CNN dari AlexNet → VGG → ResNet/MobileNet → ConvNeXT.</li>
+                    <li>Menjelaskan residual connection dan alasan ResNet bisa lebih dalam.</li>
+                    <li>Membandingkan efisiensi MobileNet (depthwise separable) dengan CNN standar.</li>
+                    <li>Mengidentifikasi elemen modern ConvNeXT yang diambil dari transformer.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>AlexNet: encoder-decoder (deep conv layer), ReLU + dropout, pemenang ImageNet 2012.</li>
+                    <li>VGG (improved from AlexNet): filter 3×3 berlapis, kedalaman seragam (VGG16/19).</li>
+                    <li>ResNet vs MobileNet (residual): skip connection vs depthwise separable convolution.</li>
+                    <li>ConvNeXT (CNN with context): patchify stem, inverted bottleneck, GELU/LayerNorm.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa membandingkan beberapa arsitektur CNN pada dataset yang sama (akurasi, jumlah parameter, waktu latih) dan menganalisis trade-off kedalaman, efisiensi, dan performa.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 7 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">7</div>
+              <div class="rps-week-body">
+                <h3>Deep Sequence Modelling (1): RNN</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan hidden state dan unrolling RNN dalam pemrosesan sekuens.</li>
+                    <li>Menjelaskan Backpropagation Through Time dan keterbatasannya.</li>
+                    <li>Mengimplementasikan RNN dengan PyTorch.</li>
+                    <li>Menerapkan RNN pada masalah sekuens sederhana.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Data sekuensial &amp; motivasi RNN: ketergantungan temporal, parameter sharing.</li>
+                    <li>Mekanisme RNN: recurrent connection, hidden state, unrolling in time.</li>
+                    <li>Backpropagation Through Time (BPTT).</li>
+                    <li>Vanishing/exploding gradient pada sekuens panjang.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa mengimplementasikan RNN untuk prediksi sekuens/karakter, lalu mengamati kesulitan model menangkap dependensi jarak jauh akibat vanishing gradient.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 8 : UTS -->
+            <article class="rps-week-card rps-week-card--exam">
+              <div class="rps-week-number">8</div>
+              <div class="rps-week-body">
+                <h3>Ujian Tengah Semester</h3>
+                <p class="rps-exam-label">Minggu UTS</p>
+              </div>
+            </article>
+
+            <!-- Minggu 9 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">9</div>
+              <div class="rps-week-body">
+                <h3>Deep Sequence Modelling (2): LSTM &amp; GRU</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan mekanisme gate pada LSTM dan GRU.</li>
+                    <li>Membandingkan LSTM dan GRU dari segi kapasitas dan efisiensi.</li>
+                    <li>Mengimplementasikan LSTM/GRU dengan PyTorch.</li>
+                    <li>Memilih arsitektur sekuens yang sesuai untuk tugas tertentu.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>LSTM: cell state, forget/input/output gate; mengatasi vanishing gradient.</li>
+                    <li>GRU: update &amp; reset gate; penyederhanaan LSTM dengan parameter lebih sedikit.</li>
+                    <li>Perbandingan RNN vs LSTM vs GRU: kapasitas, parameter, kecepatan.</li>
+                    <li>Stacking &amp; bidirectional RNN; aplikasi klasifikasi teks &amp; terjemahan.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa melatih LSTM dan GRU pada tugas sekuens, membandingkan konvergensi dan akurasi terhadap RNN vanilla serta jumlah parameter masing-masing.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 10 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">10</div>
+              <div class="rps-week-body">
+                <h3>Attention is All You Need! (NLP)</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan mekanisme attention (query-key-value) dan self-attention.</li>
+                    <li>Menjelaskan arsitektur Transformer dan fungsi positional encoding.</li>
+                    <li>Menjelaskan scaled dot-product dan multi-head attention.</li>
+                    <li>Mengaitkan Transformer dengan kemajuan model bahasa (LLM).</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Keterbatasan RNN &amp; motivasi attention; konsep query-key-value.</li>
+                    <li>Self-attention &amp; scaled dot-product attention.</li>
+                    <li>Multi-head attention.</li>
+                    <li>Arsitektur Transformer: encoder-decoder, positional encoding, feed-forward, layer norm.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa mengimplementasikan blok self-attention dan membandingkan pemrosesan paralel Transformer terhadap RNN pada tugas bahasa sederhana.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 11-12 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">11–12</div>
+              <div class="rps-week-body">
+                <h3>Transformer for Computer Vision</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan cara ViT merepresentasikan gambar sebagai urutan patch.</li>
+                    <li>Menjelaskan keterbatasan ViT dan solusi struktur piramida PVT.</li>
+                    <li>Membandingkan inductive bias CNN dengan transformer vision.</li>
+                    <li>Menggunakan pretrained ViT untuk tugas klasifikasi gambar.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Dari NLP ke vision: pemecahan gambar menjadi patch, patch embedding.</li>
+                    <li>Vision Transformer (ViT): arsitektur columnar, class token, kebutuhan data besar.</li>
+                    <li>Pyramid Vision Transformer (PVT): struktur piramida, multi-scale feature map, spatial reduction.</li>
+                    <li>Perbandingan CNN vs ViT vs PVT: inductive bias, kebutuhan data, efisiensi.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa menjalankan ViT pretrained untuk klasifikasi gambar dan membandingkan skema piramida PVT sebagai backbone, menganalisis trade-off akurasi dan komputasi.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 13 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">13</div>
+              <div class="rps-week-body">
+                <h3>Deep Generative Model: Intro to Autoencoder &amp; GAN</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan prinsip autoencoder dan representasi latent.</li>
+                    <li>Membedakan AE deterministik dengan VAE probabilistik.</li>
+                    <li>Menjelaskan pelatihan adversarial GAN (generator vs discriminator).</li>
+                    <li>Mengidentifikasi mode collapse dan tantangan pelatihan GAN.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Autoencoder: encoder-decoder, bottleneck/latent, rekonstruksi, denoising.</li>
+                    <li>Variational Autoencoder (VAE): latent kontinu, reparameterization trick.</li>
+                    <li>GAN: generator vs discriminator, adversarial training, fungsi loss minimax.</li>
+                    <li>Perbandingan AE/VAE vs GAN: kualitas vs diversitas; mode collapse.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Hands-on di kelas</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa melatih autoencoder untuk rekonstruksi/denoising dan melatih GAN sederhana untuk menghasilkan gambar, mengamati kualitas sampel dan mode collapse.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 14 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">14</div>
+              <div class="rps-week-body">
+                <h3>New Frontiers</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Menjelaskan loop agent-environment serta konsep reward/policy pada RL.</li>
+                    <li>Menjelaskan message passing dan node embedding pada GNN.</li>
+                    <li>Menjelaskan ide Mamba (selective state space) sebagai alternatif Transformer.</li>
+                    <li>Menempatkan topik frontier dalam peta riset deep learning terkini.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Reinforcement Learning: agent-environment, reward, policy, value function, deep RL (DQN).</li>
+                    <li>Graph Neural Network: representasi graf, message passing, node embedding, aplikasi.</li>
+                    <li>Mamba: state space model (SSM), selective scan, pemrosesan sekuens linear-time.</li>
+                    <li>Arah riset: multimodal, efisiensi model, generative AI.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Kuliah tatap muka</li>
+                    <li>Diskusi kelompok</li>
+                    <li>Belajar mandiri</li>
+                    <li>Tugas terstruktur</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa meninjau paper/pustaka untuk tiga arah frontier (RL, GNN, Mamba) dan mempresentasikan ringkasan konsep serta potensi penerapannya.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Minggu 15 -->
+            <article class="rps-week-card">
+              <div class="rps-week-number">15</div>
+              <div class="rps-week-body">
+                <h3>Poster Session</h3>
+                <div class="rps-week-columns">
+                  <div><h4>Capaian Pembelajaran</h4><ol>
+                    <li>Mengkomunikasikan hasil proyek deep learning secara ilmiah melalui poster.</li>
+                    <li>Menyajikan metodologi, hasil, dan analisis dengan jelas.</li>
+                    <li>Merespons pertanyaan dan umpan balik penguji/rekan.</li>
+                  </ol></div>
+                  <div><h4>Pokok Bahasan</h4><ul>
+                    <li>Presentasi poster hasil tugas besar (paper Arxiv + poster).</li>
+                    <li>Teknik komunikasi ilmiah: narasi, visualisasi hasil, menjawab pertanyaan.</li>
+                    <li>Peer review &amp; umpan balik antar kelompok.</li>
+                  </ul></div>
+                  <div><h4>Bentuk &amp; Metode</h4><ul>
+                    <li>Presentasi poster</li>
+                    <li>Diskusi kelompok</li>
+                    <li>Peer review</li>
+                  </ul></div>
+                  <div><h4>Estimasi Waktu</h4><ul><li>TM: 2×50′</li><li>TT: 2×60′</li></ul></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa memamerkan poster proyek, mempresentasikan hasil kompetisi/paper, dan saling memberi umpan balik terhadap pekerjaan kelompok lain.</p></div>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
