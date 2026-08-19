@@ -17,17 +17,9 @@
 
       <!-- Hero -->
       <header class="rps-public-hero">
-        <a class="rps-public-back" href="#top">← Kembali ke Atas</a>
         <p class="eyebrow">RPS · IF25-40401</p>
         <h1>Silabus Deep Learning</h1>
         <p class="rps-public-lead">Rangkaian 15 minggu yang membangun fondasi jaringan saraf dengan PyTorch — dari MLP dan pelatihan model, menuju arsitektur modern CNN, RNN/LSTM, Transformer, model generatif, hingga topik frontier — ditutup dengan kompetisi Kaggle dan sesi poster.</p>
-        <div class="rps-public-meta">
-          <span>15 minggu</span>
-          <span>UTS: Minggu 8</span>
-          <span>Kompetisi → sebelum UTS</span>
-          <span>Poster → 5 Des 2026</span>
-          <span>Kelompok: 1–3 peserta</span>
-        </div>
       </header>
 
       <div class="rps-public-content">
@@ -35,6 +27,16 @@
         <section class="rps-public-notice">
           <strong>RPS Deep Learning.</strong> Dokumen pembelajaran untuk mata kuliah IF25-40401.
         </section>
+
+        <a class="rps-benchmark-button" href="/rps-benchmark">Benchmark RPS <span aria-hidden="true">→</span></a>
+
+        <div class="rps-public-meta rps-public-meta--content">
+          <span>15 minggu</span>
+          <span>UTS: Minggu 8</span>
+          <span>Kompetisi → sebelum UTS</span>
+          <span>Poster → 5 Des 2026</span>
+          <span>Kelompok: 1–3 peserta</span>
+        </div>
 
         <!-- Deskripsi -->
         <section class="rps-public-section">
@@ -139,12 +141,14 @@
                     <li>Menjelaskan peran dan karakteristik fungsi aktivasi.</li>
                     <li>Membedakan metrik evaluasi sesuai jenis masalah.</li>
                     <li>Menjelaskan arsitektur dan alur maju–mundur MLP.</li>
+                    <li>Menjelaskan pengaruh inisialisasi bobot (Xavier/He) terhadap stabilitas dan kecepatan konvergensi.</li>
                   </ol></div>
                   <div><h4>Pokok Bahasan</h4><ul>
                     <li>Setup environment: Python, PyTorch (CPU/GPU/CUDA), verifikasi tensor &amp; autograd.</li>
                     <li>Activation Function: sigmoid, tanh, ReLU, Leaky ReLU, GELU; vanishing gradient.</li>
                     <li>Performance Metrics: akurasi, presisi, recall, F1, confusion matrix, ROC-AUC.</li>
                     <li>Review Multi Layer Perceptron: forward pass, backpropagation, representasi nonlinier.</li>
+                    <li>Weight Initialization: zero/random, Xavier (Glorot), He — dampak terhadap vanishing/exploding gradient.</li>
                   </ul></div>
                   <div><h4>Bentuk &amp; Metode</h4><ul>
                     <li>Kuliah tatap muka</li>
@@ -169,12 +173,15 @@
                     <li>Membandingkan optimizer dan mekanisme adaptifnya.</li>
                     <li>Mengatur learning rate scheduler untuk menstabilkan konvergensi.</li>
                     <li>Menerapkan early stopping untuk mengendalikan overfitting.</li>
+                    <li>Menerapkan normalisasi (Batch/Layer Normalization) dan regularisasi (dropout, weight decay, augmentasi) untuk menstabilkan pelatihan.</li>
                   </ol></div>
                   <div><h4>Pokok Bahasan</h4><ul>
                     <li>Loss Function: MSE, MAE (regresi); Cross-Entropy, BCE (klasifikasi).</li>
                     <li>Optimizer: SGD, momentum, AdaGrad, RMSProp, Adam, AdamW.</li>
                     <li>Scheduler: step decay, cosine annealing, warm-up, ReduceLROnPlateau.</li>
                     <li>Early Stopping: validation loss, patience, checkpoint model terbaik.</li>
+                    <li>Normalization: Batch Normalization &amp; Layer Normalization — mekanisme, penempatan lapisan, efek terhadap konvergensi.</li>
+                    <li>Regularization: dropout, weight decay (L2), data augmentation, label smoothing.</li>
                   </ul></div>
                   <div><h4>Bentuk &amp; Metode</h4><ul>
                     <li>Kuliah tatap muka</li>
@@ -183,7 +190,7 @@
                     <li>Tugas terstruktur</li>
                   </ul></div>
                   <div><h4>Estimasi Waktu</h4><ul><li>TM: 3×50′</li><li>TT: 3×60′</li></ul></div>
-                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa melatih model pada dataset benchmark, membandingkan beberapa optimizer dan scheduler, serta menerapkan early stopping untuk memilih epoch terbaik.</p></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa melatih model pada dataset benchmark, membandingkan beberapa optimizer dan scheduler, lalu menerapkan early stopping, dropout, dan BatchNorm untuk memilih epoch terbaik sekaligus menekan overfitting.</p></div>
                 </div>
               </div>
             </article>
@@ -351,12 +358,14 @@
                     <li>Membandingkan LSTM dan GRU dari segi kapasitas dan efisiensi.</li>
                     <li>Mengimplementasikan LSTM/GRU dengan PyTorch.</li>
                     <li>Memilih arsitektur sekuens yang sesuai untuk tugas tertentu.</li>
+                    <li>Menjelaskan arsitektur sequence-to-sequence (encoder–decoder) berbasis LSTM/GRU untuk terjemahan mesin.</li>
                   </ol></div>
                   <div><h4>Pokok Bahasan</h4><ul>
                     <li>LSTM: cell state, forget/input/output gate; mengatasi vanishing gradient.</li>
                     <li>GRU: update &amp; reset gate; penyederhanaan LSTM dengan parameter lebih sedikit.</li>
                     <li>Perbandingan RNN vs LSTM vs GRU: kapasitas, parameter, kecepatan.</li>
                     <li>Stacking &amp; bidirectional RNN; aplikasi klasifikasi teks &amp; terjemahan.</li>
+                    <li>Sequence-to-sequence (seq2seq): encoder–decoder LSTM/GRU, hidden state konteks, aplikasi machine translation &amp; summarization.</li>
                   </ul></div>
                   <div><h4>Bentuk &amp; Metode</h4><ul>
                     <li>Kuliah tatap muka</li>
@@ -381,12 +390,14 @@
                     <li>Menjelaskan arsitektur Transformer dan fungsi positional encoding.</li>
                     <li>Menjelaskan scaled dot-product dan multi-head attention.</li>
                     <li>Mengaitkan Transformer dengan kemajuan model bahasa (LLM).</li>
+                    <li>Menjelaskan representasi word embedding (word2vec, GloVe) dan tokenisasi subword sebagai input model bahasa.</li>
                   </ol></div>
                   <div><h4>Pokok Bahasan</h4><ul>
                     <li>Keterbatasan RNN &amp; motivasi attention; konsep query-key-value.</li>
                     <li>Self-attention &amp; scaled dot-product attention.</li>
                     <li>Multi-head attention.</li>
                     <li>Arsitektur Transformer: encoder-decoder, positional encoding, feed-forward, layer norm.</li>
+                    <li>Word Embeddings: word2vec (CBOW/skip-gram), GloVe, subword tokenization (BPE/WordPiece), embedding layer sebagai input Transformer.</li>
                   </ul></div>
                   <div><h4>Bentuk &amp; Metode</h4><ul>
                     <li>Kuliah tatap muka</li>

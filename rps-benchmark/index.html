@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmark Kurikulum — Silabus Deep Learning IF25-40401</title>
+  <meta name="description" content="Perbandingan RPS Deep Learning IF25-40401 terhadap kurikulum deep learning di Stanford, MIT, CMU, UC Berkeley, Oxford, ETH Zurich, Princeton, dan Harvard: yang sudah terakomodir, gap, dan rekomendasi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body id="top">
+
+  <main class="rps-public-page">
+    <div class="rps-public-shell">
+
+      <!-- Hero -->
+      <header class="rps-public-hero">
+        <nav class="rps-public-nav" aria-label="Navigasi utama">
+          <a class="rps-public-back" href="../index.html">← Silabus</a>
+          <span class="rps-public-nav-crumb">Benchmark Kurikulum</span>
+        </nav>
+        <p class="eyebrow">RPS · IF25-40401 · Benchmark</p>
+        <h1>Benchmark Kurikulum</h1>
+        <p class="rps-public-lead">Perbandingan RPS Deep Learning ini terhadap silabus deep learning di Stanford, MIT, CMU, UC Berkeley, Oxford, ETH Zurich, Princeton, dan Harvard — untuk melihat apa yang sudah terakomodir, apa gap-nya, dan apa yang direkomendasikan untuk ditambahkan.</p>
+        <div class="rps-public-meta">
+          <span>8 kampus referensi</span>
+          <span>12 gap tersisa</span>
+          <span>3 tingkat prioritas</span>
+        </div>
+      </header>
+
+      <div class="rps-public-content">
+
+        <section class="rps-public-notice">
+          <strong>Benchmark Kurikulum.</strong> Disusun dari silabus publik kursus deep learning kampus-kampus top dunia.
+        </section>
+
+        <!-- Ringkasan -->
+        <section class="rps-public-section">
+          <h2>Ringkasan Penilaian</h2>
+          <div class="rps-bench-summary">
+            <div class="rps-bench-kpi">
+              <p class="rps-bench-kpi-value">8</p>
+              <p class="rps-bench-kpi-label">Kampus referensi</p>
+            </div>
+            <div class="rps-bench-kpi">
+              <p class="rps-bench-kpi-value">11</p>
+              <p class="rps-bench-kpi-label">Kekuatan &amp; hal terakomodir</p>
+            </div>
+            <div class="rps-bench-kpi">
+              <p class="rps-bench-kpi-value">2</p>
+              <p class="rps-bench-kpi-label">Gap prioritas tinggi</p>
+            </div>
+            <div class="rps-bench-kpi">
+              <p class="rps-bench-kpi-value">10</p>
+              <p class="rps-bench-kpi-label">Gap lain</p>
+            </div>
+          </div>
+          <p>Secara keseluruhan, RPS ini memiliki alur yang rapi (fondasi → CNN → sekuens → Transformer → generatif → frontier) yang sejajar dengan pola CS230/CS231n/CMU, dan bahkan lebih mutakhir dari sebagian kampus (ConvNeXT, Mamba, ViT/PVT). Revisi terbaru telah mengakomodir <strong>normalisasi &amp; regularisasi</strong>, <strong>inisialisasi bobot</strong>, serta <strong>word embeddings &amp; seq2seq</strong>. Gap utama yang tersisa ada pada <strong>deteksi/segmentasi objek</strong> dan <strong>LLM</strong> — dua hal yang paling dicari industri.</p>
+        </section>
+
+        <!-- Tabel Referensi -->
+        <section class="rps-public-section">
+          <h2>Kampus Referensi</h2>
+          <div class="rps-grade-table rps-grade-table--wide">
+            <table>
+              <thead><tr><th>Kampus</th><th>Kursus</th><th>Karakteristik</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Stanford</strong></td><td>CS230 Deep Learning</td><td>Fondasi DL + full-cycle ML project (ML strategy), adversarial robustness, deep RL, cara membaca paper riset, project proposal → milestone → poster.</td></tr>
+                <tr><td><strong>Stanford</strong></td><td>CS231n CNN for Visual Recognition</td><td>CNN arsitektur, object detection &amp; segmentation, self-supervised learning (DINO/MAE), diffusion models, large-scale distributed training, video understanding, vision+language, human-centered AI, 3× milestone check-in.</td></tr>
+                <tr><td><strong>MIT</strong></td><td>6.S191 Introduction to Deep Learning</td><td>Bootcamp intensif; fokus terbaru LLM &amp; generative AI; ditutup proyek + kompetisi.</td></tr>
+                <tr><td><strong>CMU</strong></td><td>11-785 Introduction to Deep Learning</td><td>MLP → attention → seq2seq; hands-on PyTorch penuh.</td></tr>
+                <tr><td><strong>UC Berkeley</strong></td><td>Data C182 Designing, Visualizing &amp; Understanding DNN</td><td>Review ML (bias-variance, logistic regression), building blocks (BatchNorm/LayerNorm), Transformers 4 pekan, pretraining BERT/GPT, masked autoencoder, GPU training, recommendation systems.</td></tr>
+                <tr><td><strong>Oxford</strong></td><td>Uncertainty in DL, Geometric DL</td><td>Bayesian DL, symmetry-based architecture (CNN/GNN/Transformer dari first principles).</td></tr>
+                <tr><td><strong>ETH Zurich</strong></td><td>263-3210 Deep Learning</td><td>Mathematical foundations of deep learning.</td></tr>
+                <tr><td><strong>Princeton</strong></td><td>COS 597R Deep Dive into LLM</td><td>Deep dive LLM: pretraining, RLHF, alignment.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Yang Sudah Terakomodir -->
+        <section class="rps-public-section">
+          <h2>Yang Sudah Terakomodir</h2>
+          <p>Termasuk 4 poin yang baru disisipkan pada revisi RPS ini (tanpa menambah baris/pertemuan — diperkaya lewat pokok bahasan &amp; capaian pembelajaran).</p>
+          <div class="rps-bench-check-grid">
+            <article class="rps-bench-check">
+              <h3>1. Alur fondasi → modern yang rapi</h3>
+              <p>MLP → CNN → RNN/LSTM → Transformer → Generative → Frontier, persis pola CS230/CS231n/CMU. Struktur sangat baik.</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>2. Arsitektur CNN mutakhir</h3>
+              <p>AlexNet → VGG → ResNet → MobileNet → ConvNeXT sejajar CS231n Lecture 6, bahkan lebih lengkap (ConvNeXT jarang ada di S1).</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>3. Transfer learning + zero-shot + finetuning</h3>
+              <p>Setara CS231n &amp; CS230.</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>4. Metrik evaluasi rinci</h3>
+              <p>Presisi, recall, F1, ROC-AUC — lebih rinci dari kebanyakan kampus top.</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>5. Kompetisi Kaggle + paper Arxiv + poster</h3>
+              <p>Meniru model CS230 (poster session) dan MIT (project competition). Membedakan dari kampus lain.</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>6. Topik frontier yang up-to-date</h3>
+              <p>ViT &amp; PVT, Mamba — bahkan belum ada di sebagian besar silabus kampus top.</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>7. Hands-on PyTorch setiap minggu</h3>
+              <p>Sejalan dengan CMU 11-785.</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>8. Normalisasi: BatchNorm &amp; LayerNorm</h3>
+              <p>Disisipkan di minggu 2 — mekanisme Batch/Layer Normalization untuk stabilisasi pelatihan deep net (prasyarat ResNet/Transformer/ViT).</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>9. Regularisasi eksplisit</h3>
+              <p>Dropout, weight decay (L2), dan data augmentation kini ada di minggu 2 — alat utama anti-overfitting di kompetisi.</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>10. Weight initialization: Xavier/He</h3>
+              <p>Disisipkan di minggu 1 — pengaruh inisialisasi bobot terhadap vanishing/exploding gradient dan konvergensi.</p>
+            </article>
+            <article class="rps-bench-check">
+              <h3>11. Word embeddings &amp; seq2seq</h3>
+              <p>Word2vec/GloVe &amp; tokenisasi subword di minggu 10; sequence-to-sequence encoder–decoder di minggu 9 — jembatan menuju Transformer kini lengkap.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Gap -->
+        <section class="rps-public-section">
+          <h2>Gap &amp; Rekomendasi</h2>
+
+          <h3 class="rps-bench-priority-title">Prioritas Tinggi — pilar industri yang belum tersentuh</h3>
+          <div class="rps-grade-table rps-grade-table--wide">
+            <table>
+              <thead><tr><th>#</th><th>Gap</th><th>Ada di</th><th>Kenapa penting</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td><strong>Object detection &amp; segmentation (YOLO, R-CNN, U-Net)</strong></td><td>CS231n Lec 9, CS230</td><td>RPS 100% klasifikasi. Deteksi objek &amp; segmentasi adalah pilar CV industri; kompetisi Kaggle sering bertipe deteksi.</td></tr>
+                <tr><td>2</td><td><strong>LLM: pretraining, BERT/GPT, fine-tuning</strong></td><td>Berkeley Lec 18, Princeton COS597R, MIT</td><td>Gap terbesar untuk relevansi industri. Minggu 10–12 hanya menyentuh mekanisme Transformer; tidak ada sesi praktik fine-tune LLM (mis. HuggingFace).</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="rps-bench-priority-title">Prioritas Sedang — modern &amp; membedakan</h3>
+          <div class="rps-grade-table rps-grade-table--wide">
+            <table>
+              <thead><tr><th>#</th><th>Gap</th><th>Ada di</th><th>Kenapa penting</th></tr></thead>
+              <tbody>
+                <tr><td>3</td><td><strong>Diffusion models</strong></td><td>CS231n Lec 14, MIT</td><td>SOTA generatif saat ini; RPS berhenti di GAN (minggu 13).</td></tr>
+                <tr><td>4</td><td><strong>Self-supervised learning (contrastive, MAE, DINO)</strong></td><td>CS231n Lec 12, Berkeley</td><td>Fondasi model modern (CLIP, SSL vision) — melengkapi minggu 3 (zero-shot CLIP).</td></tr>
+                <tr><td>5</td><td><strong>ML strategy / siklus proyek penuh: error analysis, bias-variance, data-centric</strong></td><td>CS230 (Course 3)</td><td>Yang membuat mahasiswa jago kompetisi: cara memperbaiki model secara sistematis, bukan sekadar melatih.</td></tr>
+                <tr><td>6</td><td><strong>Interpretability: saliency, Grad-CAM, feature viz</strong></td><td>CS231n Lec 9, judul kursus Berkeley</td><td>Mendukung poster session: mahasiswa bisa menampilkan mengapa model bekerja.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="rps-bench-priority-title">Prioritas Rendah — pengayaan / struktur</h3>
+          <div class="rps-grade-table rps-grade-table--wide">
+            <table>
+              <thead><tr><th>#</th><th>Gap</th><th>Ada di</th><th>Kenapa penting</th></tr></thead>
+              <tbody>
+                <tr><td>7</td><td><strong>Milestone / check-in proyek bertahap</strong></td><td>CS230 (proposal → 2 meeting → milestone), CS231n (3 milestone)</td><td>RPS hanya rilis tugas besar + 2 deadline. Check-in bertahap menekan risiko proyek gagal di akhir.</td></tr>
+                <tr><td>8</td><td><strong>Membaca paper riset (metodologi)</strong></td><td>CS230 Lec 6</td><td>Minggu 14 sudah meninjau paper, tapi tidak ada pengajaran eksplisit cara membaca paper.</td></tr>
+                <tr><td>9</td><td><strong>AI ethics / human-centered AI</strong></td><td>CS231n Lec 18</td><td>Tidak tersentuh sama sekali; semakin wajib di kurikulum modern.</td></tr>
+                <tr><td>10</td><td><strong>Adversarial robustness</strong></td><td>CS231n, CS230</td><td>Komplemen bagus untuk sesi interpretability.</td></tr>
+                <tr><td>11</td><td><strong>Distributed / mixed-precision training</strong></td><td>CS231n Lec 11, Berkeley Lec 19</td><td>Relevan untuk kompetisi dengan data besar; bisa jadi sesi singkat atau praktikum opsional.</td></tr>
+                <tr><td>12</td><td><strong>Uncertainty / Bayesian DL, Geometric DL</strong></td><td>Oxford</td><td>Terlalu advanced untuk S1 — cukup jadi bahan bacaan opsional di minggu 14.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Rekomendasi -->
+        <section class="rps-public-section">
+          <h2>Rekomendasi Prioritas</h2>
+          <p><strong>Catatan revisi:</strong> normalisasi &amp; regularisasi, inisialisasi bobot (minggu 1–2), serta word embeddings &amp; seq2seq (minggu 9–10) telah diakomodir dalam revisi RPS. Rekomendasi yang masih terbuka:</p>
+          <ol class="rps-bench-reco-list">
+            <li><strong>Ganti sebagian minggu 12 (PVT)</strong> menjadi <strong>&ldquo;LLM &amp; Fine-tuning&rdquo;</strong> (HuggingFace, pretraining BERT/GPT, RLHF singkat) — atau tambahkan sebagai minggu 14 menggantikan sebagian frontier. Ini gap paling mahal untuk alumni.</li>
+            <li><strong>Tambahkan 1 sesi &ldquo;Object Detection &amp; Segmentation&rdquo;</strong> setelah CNN (minggu 6–7), atau jadikan topik kompetisi opsional.</li>
+            <li><strong>Tambahkan &ldquo;Diffusion Models&rdquo;</strong> sebagai pengganti/perluasan minggu 13, dan <strong>&ldquo;ML strategy untuk kompetisi&rdquo;</strong> singkat sebelum UTS (minggu 7).</li>
+            <li><strong>Tambahkan milestone proyek</strong>: proposal (minggu 4) → progress check (minggu 8) → draft poster (minggu 13).</li>
+          </ol>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../script.js"></script>
+</body>
+</html>
