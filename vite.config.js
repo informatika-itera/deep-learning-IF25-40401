@@ -4,10 +4,15 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [
     {
-      name: 'clean-rps-benchmark-url',
+      name: 'clean-urls',
       configureServer(server) {
         server.middlewares.use((req, _res, next) => {
-          if (req.url === '/rps-benchmark') req.url = '/rps-benchmark/index.html'
+          const url = new URL(req.url, 'http://localhost')
+          const pathname = url.pathname
+          if (pathname !== '/' && !pathname.split('/').pop().includes('.')) {
+            const cleanPath = pathname.endsWith('/') ? pathname + 'index.html' : pathname + '/index.html'
+            req.url = cleanPath + url.search
+          }
           next()
         })
       },

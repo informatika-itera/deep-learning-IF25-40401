@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && mkdir -p dist/slides && cp slides/pertemuan4.pdf dist/slides/",
     "preview": "vite preview"
   },
   "devDependencies": {
