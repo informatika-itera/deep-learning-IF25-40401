@@ -1,64 +1,107 @@
-%================================================
-%	PACKAGES AND THEMES
-%================================================
 \documentclass[t,aspectratio=169,xcolor=dvipsnames]{beamer}
 
-\usetheme{SimplePlusAIC}
-
 \usepackage{hyperref}
-\usepackage{graphicx} % Allows including images
-\usepackage{booktabs} % Allows the use of \toprule, \midrule and  \bottomrule in tables
-\usepackage{svg} % Allows using svg figures
+\usepackage{graphicx}
+\usepackage{booktabs}
 \usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc,matrix}
 \usepackage{makecell}
 \newcommand*{\defeq}{\stackrel{\text{def}}{=}}
 \usepackage{setspace}
+\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{helvet}
-% \usepackage{textgreek}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb,amsfonts}
 \usepackage{bm}
 \usepackage{ragged2e}
 \usepackage{xfrac}
-% \usepackage[nice]{nicefrac}
 \usepackage[loose]{units}
 \usepackage{braket}
-% \usepackage{physics}
 \usepackage{gensymb}
-% \usepackage[cm]{sfmath}
 \usepackage{verbatim}
 \usepackage{fancyvrb}
+\usepackage{listings}
+\usepackage{xcolor}
 
-%\setbeamertemplate{blocks}[rounded][shadow] % block options
+% --- Minimalist Color Palette (DESIGN.md) ---
+\definecolor{dlInk}{HTML}{111111}
+\definecolor{dlCanvas}{HTML}{FFFFFF}
+\definecolor{dlSoftCloud}{HTML}{F5F5F5}
+\definecolor{dlCharcoal}{HTML}{39393B}
+\definecolor{dlMute}{HTML}{707072}
+\definecolor{dlHairline}{HTML}{CACACB}
+\definecolor{dlTeal}{HTML}{0A7281}
+\definecolor{nyublue}{HTML}{0A7281}
+\definecolor{codeBg}{HTML}{F7F7F8}
 
-\usepackage[svgnames,table]{xcolor}
-\arrayrulecolor{black}
-\setlength{\arrayrulewidth}{0.20mm}
-\renewcommand{\arraystretch}{1.40}  % stretch tables row size
+% --- Beamer Theme Customization ---
+\usetheme{default}
+\useinnertheme{rectangles}
+\setbeamertemplate{navigation symbols}{}
 
-%================================================
-%	TITLE PAGE
-%================================================
-\title[short title]{Deep Learning (IF25-40401)} 
+\setbeamercolor{palette primary}{bg=dlInk,fg=dlCanvas}
+\setbeamercolor{palette secondary}{bg=dlCharcoal,fg=dlCanvas}
+\setbeamercolor{palette tertiary}{bg=dlSoftCloud,fg=dlInk}
+\setbeamercolor{structure}{fg=dlInk}
+\setbeamercolor{title}{fg=dlCanvas,bg=dlInk}
+\setbeamercolor{frametitle}{fg=dlInk,bg=dlSoftCloud}
+\setbeamercolor{normal text}{fg=dlInk,bg=dlCanvas}
+\setbeamercolor{block title}{bg=dlInk,fg=dlCanvas}
+\setbeamercolor{block body}{bg=dlSoftCloud,fg=dlInk}
+\setbeamercolor{block title example}{bg=dlTeal,fg=dlCanvas}
+\setbeamercolor{block body example}{bg=dlSoftCloud,fg=dlInk}
+\setbeamercolor{block title alert}{bg=dlCharcoal,fg=dlCanvas}
+\setbeamercolor{block body alert}{bg=dlSoftCloud,fg=dlInk}
+\setbeamercolor{item}{fg=dlInk}
+
+\makeatletter
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3.8ex,dp=1.5ex,leftskip=1.0cm,rightskip=1.0cm]{frametitle}%
+    \textbf{\large\strut\insertframetitle}%
+    \ifx\insertframesubtitle\@empty\else\hfill{\footnotesize\color{dlMute}\insertframesubtitle}\fi%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.2ex,leftskip=1.0cm,rightskip=1.0cm]{palette primary}%
+    \tiny\textbf{IF25-40401 · Deep Learning} \hfill \insertshorttitle \hfill \textbf{\insertframenumber{} / \inserttotalframenumber}%
+  \end{beamercolorbox}%
+}
+
+\lstset{
+  backgroundcolor=\color{codeBg},
+  basicstyle=\ttfamily\scriptsize\color{dlInk},
+  keywordstyle=\bfseries\color{dlTeal},
+  commentstyle=\color{dlMute}\itshape,
+  stringstyle=\color{dlCharcoal},
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{dlHairline},
+  numbers=none,
+  tabsize=2,
+  showstringspaces=false
+}
+
+\title[Pertemuan 4: CNN From Scratch]{Deep Learning (IF25-40401)} 
 \subtitle{Pertemuan 4: CNN From Scratch}
+\author{Tim Dosen Deep Learning}
+\institute{Teknik Informatika — Institut Teknologi Sumatera (ITERA)}
+\date{2026}
 
-\author[Surname]{Tim Dosen IF25-40401}
-\institute[CBI]{Teknik Informatika \\ Institut Teknologi Sumatera}
-
-\date{\textcolor{nyublue}{2026}}
-
-%================================================
-%	BEGIN DOCUMENT 
-%================================================
 \begin{document}
 
-%------------------------------------------------
-%	TITLE SLIDE
-%------------------------------------------------
+% --- TITLE SLIDE (Minimalist Campaign Style) ---
 \begin{frame}[plain]
-
-    \titlepage
-    
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight,sep=1.5cm]{palette primary}
+    \vspace{0.8cm}
+    {\scriptsize\bfseries\color{dlMute}IF25-40401 · DEEP LEARNING · PERTEMUAN 04}\\[0.4cm]
+    {\Huge\bfseries DEEP COMPUTER VISION (1):\\CNN FROM SCRATCH}\\[0.4cm]
+    {\small Konvolusi, Stride, Padding, Pooling, Receptive Field, dan Implementasi PyTorch LeNet}\\[1.0cm]
+    \vfill
+    {\scriptsize\textbf{Tim Dosen Deep Learning} · Institut Teknologi Sumatera (ITERA)}
+  \end{beamercolorbox}
 \end{frame}
 
 %------------------------------------------------
@@ -97,13 +140,13 @@
 \section{Review: Neural Network}
 
 \begin{frame}[plain]
-    \begin{center}
-        \vspace{3cm}
-        {\Huge \textbf{Review: Neural Network}}
-        \vspace{0.5cm}
-        
-        {\large Fondasi Deep Learning}
-    \end{center}
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight,sep=1.5cm]{palette primary}
+    \vspace{1.5cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 01 · REVIEW}\\[0.4cm]
+    {\Huge\bfseries Review: Neural Network}\\[0.4cm]
+    {\small\color{dlHairline}Fondasi Deep Learning}
+    \vfill
+  \end{beamercolorbox}
 \end{frame}
 
 %------------------------------------------------
@@ -372,13 +415,13 @@
 %	SECTION TITLE SLIDE
 %------------------------------------------------
 \begin{frame}[plain]
-    \begin{center}
-        \vspace{3cm}
-        {\Huge \textbf{History of CNN}}
-        \vspace{0.5cm}
-        
-        {\large Evolusi Convolutional Neural Network dari 1960s hingga Era Modern}
-    \end{center}
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight,sep=1.5cm]{palette primary}
+    \vspace{1.5cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 02 · HISTORI}\\[0.4cm]
+    {\Huge\bfseries History of CNN}\\[0.4cm]
+    {\small\color{dlHairline}Evolusi Convolutional Neural Network dari 1960s hingga Era Modern}
+    \vfill
+  \end{beamercolorbox}
 \end{frame}
 
 %------------------------------------------------
@@ -597,13 +640,13 @@
 \section{The CNN Architecture}
 
 \begin{frame}[plain]
-    \begin{center}
-        \vspace{3cm}
-        {\Huge \textbf{The CNN Architecture}}
-        \vspace{0.5cm}
-        
-        {\large Convolutional, Pooling, Fully Connected Layers}
-    \end{center}
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight,sep=1.5cm]{palette primary}
+    \vspace{1.5cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 03 · ARSITEKTUR}\\[0.4cm]
+    {\Huge\bfseries The CNN Architecture}\\[0.4cm]
+    {\small\color{dlHairline}Convolutional, Pooling, Fully Connected Layers}
+    \vfill
+  \end{beamercolorbox}
 \end{frame}
 
 %------------------------------------------------
@@ -867,13 +910,13 @@
 \section{Perhitungan Matematis di CNN}
 
 \begin{frame}[plain]
-    \begin{center}
-        \vspace{3cm}
-        {\Huge \textbf{Perhitungan Matematis di CNN}}
-        \vspace{0.5cm}
-        
-        {\large Memahami Operasi Konvolusi dan Pooling secara Matematis}
-    \end{center}
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight,sep=1.5cm]{palette primary}
+    \vspace{1.5cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 04 · MATEMATIKA}\\[0.4cm]
+    {\Huge\bfseries Perhitungan Matematis di CNN}\\[0.4cm]
+    {\small\color{dlHairline}Memahami Operasi Konvolusi dan Pooling secara Matematis}
+    \vfill
+  \end{beamercolorbox}
 \end{frame}
 
 \begin{frame}
@@ -1435,13 +1478,13 @@
 \section{Membangun LeNet Architecture di PyTorch}
 
 \begin{frame}[plain]
-    \begin{center}
-        \vspace{3cm}
-        {\Huge \textbf{Membangun LeNet Architecture di PyTorch}}
-        \vspace{0.5cm}
-        
-        {\large Implementasi CNN dari Awal menggunakan PyTorch}
-    \end{center}
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight,sep=1.5cm]{palette primary}
+    \vspace{1.5cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 05 · IMPLEMENTASI}\\[0.4cm]
+    {\Huge\bfseries Membangun LeNet Architecture di PyTorch}\\[0.4cm]
+    {\small\color{dlHairline}Implementasi CNN dari Awal menggunakan PyTorch}
+    \vfill
+  \end{beamercolorbox}
 \end{frame}
 
 \begin{frame}[plain]
@@ -1965,6 +2008,20 @@ print(f"Akurasi Test Set: {100 * correct / total:.2f}%")
     \begin{block}{Persiapan Minggu Depan (Pertemuan 5)}
         \textbf{Deep Computer Vision (2): CNN dan Variasinya} --- Evolusi modern: AlexNet, VGG, ResNet (residual skip connections), MobileNet, dan ConvNeXt.
     \end{block}
+\end{frame}
+
+%------------------------------------------------
+%	CLOSING SLIDE
+%------------------------------------------------
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight,sep=1.5cm]{palette primary}
+    \vspace{1.5cm}
+    {\scriptsize\bfseries\color{dlMute}IF25-40401 · DEEP LEARNING}\\[0.4cm]
+    {\Huge\bfseries Terima Kasih}\\[0.4cm]
+    {\small Pertemuan Berikutnya: Deep Computer Vision (2) --- CNN dan Variasinya}\\[1.0cm]
+    \vfill
+    {\scriptsize\textbf{Tim Dosen Deep Learning} · Institut Teknologi Sumatera (ITERA)}
+  \end{beamercolorbox}
 \end{frame}
 
 %================================================

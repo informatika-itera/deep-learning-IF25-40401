@@ -1,0 +1,75 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+
+\definecolor{dlInk}{HTML}{111111}
+\definecolor{dlCanvas}{HTML}{FFFFFF}
+\definecolor{dlSoftCloud}{HTML}{F5F5F5}
+\definecolor{dlMute}{HTML}{707072}
+\definecolor{dlTeal}{HTML}{0A7281}
+
+\usetheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{palette primary}{bg=dlInk,fg=dlCanvas}
+\setbeamercolor{structure}{fg=dlInk}
+\setbeamercolor{title}{fg=dlCanvas,bg=dlInk}
+\setbeamercolor{frametitle}{fg=dlInk,bg=dlSoftCloud}
+\setbeamercolor{normal text}{fg=dlInk,bg=dlCanvas}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3.2ex,dp=1.5ex,leftskip=1.0cm,rightskip=1.0cm]{frametitle}%
+    \textbf{\large\strut\insertframetitle}%
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.2ex,leftskip=1.0cm,rightskip=1.0cm]{palette primary}%
+    \tiny\textbf{IF25-40401 · Deep Learning} \hfill \insertshorttitle \hfill \textbf{\insertframenumber{} / \inserttotalframenumber}%
+  \end{beamercolorbox}%
+}
+
+\title[Pertemuan 06: Studio Proyek 2 (ImageNet)]{Studio Proyek 2: Fine-tuning CNN Pretrained pada ImageNet}
+\subtitle{Mata Kuliah Deep Learning IF25-40401}
+\author{Tim Dosen Deep Learning}
+\institute{Teknik Informatika — Institut Teknologi Sumatera (ITERA)}
+\date{Semester Ganjil}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight,sep=1.5cm]{palette primary}
+    \vspace{0.8cm}
+    {\scriptsize\bfseries\color{dlMute}IF25-40401 · DEEP LEARNING · PERTEMUAN 06}\\[0.4cm]
+    {\Huge\bfseries STUDIO PROYEK 2:\\FINE-TUNING CNN IMAGENET}\\[0.4cm]
+    {\small Eksperimen Komparatif Backbone, Freezing Layer, dan Transfer Learning}\\[1.0cm]
+    \vfill
+    {\scriptsize\textbf{Tim Dosen Deep Learning} · Institut Teknologi Sumatera (ITERA)}
+  \end{beamercolorbox}
+\end{frame}
+
+\begin{frame}{Panduan Singkat Studio Proyek 2}
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \textbf{Rincian Penugasan Studio (10\%):}
+      \begin{itemize}
+        \item Kerja kelompok: 2 mahasiswa per kelompok
+        \item Dataset: ImageNet subset / 1.000 kelas
+        \item Backbone: AlexNet, VGG, ResNet, MobileNet, ConvNeXT
+        \item Strategi: Freezing vs Linear Probing vs Full Fine-tuning
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Status Dokumen:}
+      \begin{itemize}
+        \item Dokumen petunjuk teknis studio sedang dalam proses sinkronisasi oleh dosen pengampu.
+        \item Silakan merujuk ke silabus mingguan pada portal RPS untuk panduan rubrik penilaian.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\end{document}

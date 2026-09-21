@@ -2,11 +2,12 @@
   "name": "dl-web",
   "private": true,
   "version": "1.0.0",
-  "description": "Halaman statis Silabus Deep Learning IF25-40401 (layout RPS, gaya Nike).",
+  "description": "Portal Web & Materi Pembelajaran Deep Learning IF25-40401 (Materi P4 & Silabus RPS, gaya minimalis).",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && mkdir -p dist/slides && cp slides/pertemuan4.pdf dist/slides/",
+    "build": "vite build",
+    "build:pdf": "cd materials && pdflatex -interaction=nonstopmode pertemuan-04-cnn-from-scratch.tex && pdflatex -interaction=nonstopmode pertemuan-04-cnn-from-scratch.tex && rm -f pertemuan-04-cnn-from-scratch.{aux,log,nav,out,snm,toc,vrb}",
     "preview": "vite preview"
   },
   "devDependencies": {

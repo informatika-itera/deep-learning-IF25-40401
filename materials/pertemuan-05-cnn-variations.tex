@@ -1,0 +1,76 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+
+\definecolor{dlInk}{HTML}{111111}
+\definecolor{dlCanvas}{HTML}{FFFFFF}
+\definecolor{dlSoftCloud}{HTML}{F5F5F5}
+\definecolor{dlMute}{HTML}{707072}
+\definecolor{dlTeal}{HTML}{0A7281}
+
+\usetheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{palette primary}{bg=dlInk,fg=dlCanvas}
+\setbeamercolor{structure}{fg=dlInk}
+\setbeamercolor{title}{fg=dlCanvas,bg=dlInk}
+\setbeamercolor{frametitle}{fg=dlInk,bg=dlSoftCloud}
+\setbeamercolor{normal text}{fg=dlInk,bg=dlCanvas}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3.2ex,dp=1.5ex,leftskip=1.0cm,rightskip=1.0cm]{frametitle}%
+    \textbf{\large\strut\insertframetitle}%
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.2ex,leftskip=1.0cm,rightskip=1.0cm]{palette primary}%
+    \tiny\textbf{IF25-40401 · Deep Learning} \hfill \insertshorttitle \hfill \textbf{\insertframenumber{} / \inserttotalframenumber}%
+  \end{beamercolorbox}%
+}
+
+\title[Pertemuan 05: CNN dan Variasinya]{Deep Computer Vision (2): CNN dan Variasinya}
+\subtitle{Mata Kuliah Deep Learning IF25-40401}
+\author{Tim Dosen Deep Learning}
+\institute{Teknik Informatika — Institut Teknologi Sumatera (ITERA)}
+\date{Semester Ganjil}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight,sep=1.5cm]{palette primary}
+    \vspace{0.8cm}
+    {\scriptsize\bfseries\color{dlMute}IF25-40401 · DEEP LEARNING · PERTEMUAN 05}\\[0.4cm]
+    {\Huge\bfseries DEEP COMPUTER VISION (2):\\CNN DAN VARIASINYA}\\[0.4cm]
+    {\small AlexNet, VGG, ResNet, MobileNet, ConvNeXT, dan Deteksi / Segmentasi Objek}\\[1.0cm]
+    \vfill
+    {\scriptsize\textbf{Tim Dosen Deep Learning} · Institut Teknologi Sumatera (ITERA)}
+  \end{beamercolorbox}
+\end{frame}
+
+\begin{frame}{Rangkuman Materi Pertemuan 5}
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \textbf{Pokok Bahasan:}
+      \begin{itemize}
+        \item Evolusi CNN: AlexNet (2012) $\to$ VGG (2014)
+        \item ResNet: Skip connection \& degradasi gradien
+        \item MobileNet: Depthwise separable convolution
+        \item ConvNeXT: Modernisasi CNN berkonsep Transformer
+        \item Pengenalan Deteksi (IoU, mAP, YOLO) \& Segmentasi (U-Net)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Status Dokumen:}
+      \begin{itemize}
+        \item Dokumen naskah materi lengkap sedang dalam proses pembaruan oleh dosen pengampu.
+        \item Silakan merujuk ke silabus mingguan pada portal RPS untuk rincian capaian pembelajaran dan bahan bacaan.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\end{document}

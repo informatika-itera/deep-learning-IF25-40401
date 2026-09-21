@@ -394,3 +394,629 @@ a:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
   .rps-public-hero { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .rps-week-card { break-inside: avoid; }
 }
+
+/* ==========================================================================
+   Minimalist Homepage & Pertemuan 4 System (DESIGN.md specification)
+   ========================================================================== */
+
+/* Navigation Active State */
+.rps-public-nav-link.active {
+  color: var(--canvas);
+  border-bottom: 2px solid var(--canvas);
+  padding-bottom: 2px;
+}
+
+/* Pill Action Buttons (DESIGN.md: button-primary & button-secondary) */
+.dl-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+.dl-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: var(--canvas);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  border: 1px solid var(--canvas);
+  transition: opacity .15s ease, transform .1s ease;
+}
+.dl-btn-primary:hover {
+  background: #ebebeb;
+  color: var(--ink);
+  opacity: .95;
+}
+.dl-btn-primary:active {
+  transform: scale(0.98);
+}
+.dl-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 26px;
+  background: transparent;
+  color: var(--canvas);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-decoration: none;
+  border-radius: 9999px;
+  border: 1px solid var(--ash);
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.dl-btn-secondary:hover {
+  border-color: var(--canvas);
+  color: var(--canvas);
+  background: rgba(255, 255, 255, 0.08);
+}
+.dl-btn-secondary:active {
+  transform: scale(0.98);
+}
+.dl-btn-light {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--soft-cloud);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 9999px;
+  border: 1px solid var(--hairline);
+  transition: background-color .15s ease;
+}
+.dl-btn-light:hover {
+  background: var(--hairline-soft);
+  color: var(--ink);
+}
+
+/* PDF Viewer Container */
+.dl-pdf-wrapper {
+  margin-top: 24px;
+  border: 1px solid var(--hairline);
+  background: var(--soft-cloud);
+}
+.dl-pdf-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--canvas);
+  border-bottom: 1px solid var(--hairline);
+}
+.dl-pdf-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.dl-pdf-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: var(--ink);
+  color: var(--canvas);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.dl-pdf-filename {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.dl-pdf-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dl-pdf-frame {
+  width: 100%;
+  height: 680px;
+  border: none;
+  background: #39393b;
+  display: block;
+}
+.dl-pdf-fallback {
+  padding: 32px 24px;
+  text-align: center;
+  background: var(--soft-cloud);
+  border-top: 1px solid var(--hairline);
+}
+.dl-pdf-fallback p {
+  margin: 0 0 16px;
+  color: var(--mute);
+  font-size: 14px;
+}
+
+/* 4-Pillar Topic Grid */
+.dl-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.dl-card {
+  padding: 24px 26px;
+  border: 1px solid var(--hairline);
+  background: var(--canvas);
+}
+.dl-card-tag {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--mute);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.dl-card-title {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+.dl-card-desc {
+  margin: 0;
+  color: var(--charcoal);
+  font-size: .92rem;
+  line-height: 1.55;
+}
+.dl-card-desc ul {
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+.dl-card-desc li {
+  margin-bottom: 5px;
+}
+
+/* Formula Highlight Box */
+.dl-formula-box {
+  margin: 14px 0;
+  padding: 14px 18px;
+  background: var(--soft-cloud);
+  border-left: 4px solid var(--ink);
+  font-family: 'SFMono-Regular', Consolas, Monaco, monospace;
+  font-size: 0.92rem;
+  color: var(--ink);
+  overflow-x: auto;
+}
+
+/* Code Snippet Box */
+.dl-code-box {
+  margin-top: 20px;
+  border: 1px solid var(--hairline);
+  background: #121214;
+  color: #ededed;
+}
+.dl-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: #1c1c1f;
+  border-bottom: 1px solid #2e2e33;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--stone);
+}
+.dl-code-pre {
+  margin: 0;
+  padding: 20px 22px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.dl-code-pre code {
+  color: #f1f1f1;
+}
+
+/* Minimalist 4-Column Footer (DESIGN.md) */
+.dl-footer {
+  margin-top: 64px;
+  border-top: 1px solid var(--hairline);
+  background: var(--canvas);
+}
+.dl-footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px;
+  padding: 48px 64px 40px;
+}
+.dl-footer-col h3 {
+  margin: 0 0 16px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.dl-footer-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dl-footer-col li {
+  margin-bottom: 10px;
+}
+.dl-footer-col a {
+  color: var(--mute);
+  font-size: 13px;
+  text-decoration: none;
+  transition: color .15s ease;
+}
+.dl-footer-col a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.dl-footer-col p {
+  margin: 0;
+  color: var(--mute);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.dl-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 64px;
+  border-top: 1px solid var(--hairline-soft);
+  font-size: 11px;
+  color: var(--mute);
+}
+
+@media (max-width: 900px) {
+  .dl-cards-grid { grid-template-columns: 1fr; }
+  .dl-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 36px 32px; }
+  .dl-footer-bottom { padding: 18px 32px; }
+}
+@media (max-width: 600px) {
+  .dl-footer-grid { grid-template-columns: 1fr; padding: 28px 20px; }
+  .dl-footer-bottom { padding: 16px 20px; flex-direction: column; align-items: flex-start; }
+  .dl-pdf-frame { height: 480px; }
+  .dl-pdf-header { flex-direction: column; align-items: flex-start; }
+}
+
+/* ==========================================================================
+   Course Material Cards System (Pertemuan 4, 5, 6)
+   ========================================================================== */
+
+/* Tab Navigation per DESIGN.md (Pill-shaped filter chips) */
+.dl-tabs-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 28px 0 20px;
+  padding-bottom: 2px;
+}
+
+.dl-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 9999px;
+  border: 1px solid var(--hairline);
+  background: var(--soft-cloud);
+  color: var(--charcoal);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.dl-tab-btn:hover {
+  background: var(--hairline-soft);
+  color: var(--ink);
+  border-color: var(--charcoal);
+}
+
+.dl-tab-btn.active,
+.dl-tab-btn[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--canvas);
+  border-color: var(--ink);
+}
+
+.dl-tab-btn .tab-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--charcoal);
+}
+
+.dl-tab-btn.active .tab-badge,
+.dl-tab-btn[aria-selected="true"] .tab-badge {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--canvas);
+}
+
+/* Tab Panels */
+.dl-tab-panel {
+  display: none;
+}
+
+.dl-tab-panel.active,
+.dl-tab-panel:not([hidden]) {
+  display: block;
+  animation: fadeInPanel 0.2s ease;
+}
+
+@keyframes fadeInPanel {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.course-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.course-card {
+  position: relative;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  padding: 32px 36px 28px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color .2s ease;
+}
+
+.course-card:hover {
+  border-color: var(--ink);
+}
+
+.course-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.course-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-number {
+  background: var(--ink);
+  color: var(--canvas);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.badge-type {
+  background: var(--soft-cloud);
+  color: var(--charcoal);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--hairline-soft);
+  text-transform: uppercase;
+}
+
+.badge-status {
+  background: #e6f4ea;
+  color: #137333;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 9999px;
+}
+
+.badge-status--placeholder {
+  background: #fef7e0;
+  color: #b06000;
+}
+
+.course-card-time {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mute);
+}
+
+.course-card-title {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.25;
+}
+
+.course-card-lead {
+  margin: 0 0 18px;
+  color: var(--charcoal);
+  font-size: .95rem;
+  line-height: 1.55;
+}
+
+.course-card-details {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  padding: 18px 22px;
+  background: var(--soft-cloud);
+  border: 1px solid var(--hairline-soft);
+  margin-bottom: 22px;
+}
+
+.course-card-subheading {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.course-card-topics-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.course-card-topics-list li {
+  margin-bottom: 6px;
+  color: var(--charcoal);
+  font-size: .88rem;
+  line-height: 1.45;
+}
+
+.course-card-cpmk-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.course-card-cpmk-list li {
+  margin-bottom: 6px;
+  color: var(--charcoal);
+  font-size: .88rem;
+  line-height: 1.45;
+}
+
+.course-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--hairline-soft);
+}
+
+.card-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: var(--ink);
+  color: var(--canvas);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-decoration: none;
+  border: 1px solid var(--ink);
+  transition: background-color .15s ease, opacity .15s ease;
+}
+
+.card-btn-primary:hover {
+  background: var(--charcoal);
+  color: var(--canvas);
+}
+
+.card-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--canvas);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-decoration: none;
+  border: 1px solid var(--hairline);
+  transition: border-color .15s ease, background-color .15s ease;
+}
+
+.card-btn-secondary:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--soft-cloud);
+}
+
+.card-btn-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--soft-cloud);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-decoration: none;
+  border: 1px solid var(--hairline-soft);
+  transition: background-color .15s ease;
+}
+
+.card-btn-code:hover {
+  background: var(--hairline);
+  color: var(--ink);
+}
+
+.card-btn-rps {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: transparent;
+  color: var(--mute);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  margin-left: auto;
+  transition: color .15s ease;
+}
+
+.card-btn-rps:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+@media (max-width: 850px) {
+  .course-card-details {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .card-btn-rps {
+    margin-left: 0;
+  }
+}
+@media (max-width: 600px) {
+  .course-card {
+    padding: 22px 18px 20px;
+  }
+  .course-card-title {
+    font-size: 1.25rem;
+  }
+}
+
