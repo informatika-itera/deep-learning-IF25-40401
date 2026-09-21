@@ -16,6 +16,7 @@ export default defineConfig({
               if (filePath.endsWith('.pdf')) res.setHeader('Content-Type', 'application/pdf')
               if (filePath.endsWith('.tex')) res.setHeader('Content-Type', 'text/plain')
               if (filePath.endsWith('.png')) res.setHeader('Content-Type', 'image/png')
+              if (filePath.endsWith('.ipynb')) res.setHeader('Content-Type', 'application/x-ipynb+json')
               return fs.createReadStream(filePath).pipe(res)
             }
           }

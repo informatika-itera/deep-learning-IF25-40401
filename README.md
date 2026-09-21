@@ -16,6 +16,7 @@ Website ini di-hosting menggunakan GitHub Pages pada domain organisasi:
 | [`/rps/`](https://informatika-itera.github.io/deep-learning-IF25-40401/rps/) | **Silabus Lengkap (RPS)** | Rencana Pembelajaran Semester 16 minggu, CPMK, distribusi nilai, komponen evaluasi, studio proyek, dan tugas besar. |
 | [`/rps-benchmark/`](https://informatika-itera.github.io/deep-learning-IF25-40401/rps-benchmark/) | **Benchmark Kurikulum** | Analisis komparasi RPS terhadap 8 universitas top dunia (Stanford CS230/CS231n, MIT 6.S191, CMU 11-785, UC Berkeley, Oxford, ETH Zurich, Princeton). |
 | [`/materials/`](https://informatika-itera.github.io/deep-learning-IF25-40401/materials/) | **Berkas Slide & Panduan PDF** | Berkas PDF LaTeX Beamer untuk Pertemuan 4 (`pertemuan-04-cnn-from-scratch.pdf`), Pertemuan 5 (`pertemuan-05-cnn-variations.pdf`), dan Pertemuan 6 (`pertemuan-06-finetuning-imagenet.pdf`). |
+| [`/materials/notebooks/`](https://informatika-itera.github.io/deep-learning-IF25-40401/materials/notebooks/) | **Notebook Hands-on (3 Sesi)** | Tiga modul Jupyter Notebook interaktif Pertemuan 4: konvolusi from scratch, LeNet-5 PyTorch, dan analisis feature map & ablasi (dengan tombol 1-klik Open in Colab). |
 
 ---
 
@@ -30,9 +31,14 @@ dl_web/
 │   └── index.html               # Halaman publik Silabus / RPS (16 pekan pembelajaran)
 ├── rps-benchmark/
 │   └── index.html               # Halaman evaluasi benchmark kurikulum internasional
-├── materials/                   # Naskah Beamer LaTeX & berkas PDF materi perkuliahan
+├── materials/                   # Naskah Beamer LaTeX, berkas PDF slide, & modul hands-on
+│   ├── notebooks/               # Modul Jupyter Notebook Hands-on Pertemuan 4
+│   │   ├── README.md            # Panduan navigasi notebook, peta CPMK, & petunjuk Colab
+│   │   ├── 01-konvolusi-pooling-from-scratch.ipynb # Mekanika konvolusi & pooling NumPy
+│   │   ├── 02-lenet5-pytorch.ipynb                 # Arsitektur LeNet-5 PyTorch (MNIST)
+│   │   └── 03-analisis-eksperimen-cnn.ipynb        # Feature map hierarki, ablasi & CIFAR-10
 │   ├── pertemuan-04-cnn-from-scratch.tex  # Naskah Beamer LaTeX Pertemuan 4
-│   ├── pertemuan-04-cnn-from-scratch.pdf  # PDF Slide Resmi Pertemuan 4 (15 slide)
+│   ├── pertemuan-04-cnn-from-scratch.pdf  # PDF Slide Resmi Pertemuan 4 (72 slide)
 │   ├── pertemuan-05-cnn-variations.tex    # Naskah Beamer LaTeX Pertemuan 5 (Placeholder)
 │   ├── pertemuan-05-cnn-variations.pdf    # PDF Slide Pertemuan 5 (Placeholder)
 │   ├── pertemuan-06-finetuning-imagenet.tex # Naskah Beamer LaTeX Pertemuan 6 (Placeholder)

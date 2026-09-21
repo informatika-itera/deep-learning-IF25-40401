@@ -9,3 +9,5 @@ dist/
 *.toc
 *.vrb
 *.synctex.gz
+data/
+*.pth
