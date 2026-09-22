@@ -1,0 +1,1082 @@
+\documentclass[t,aspectratio=169,xcolor=dvipsnames]{beamer}
+
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc,matrix}
+\usepackage{makecell}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bm}
+\usepackage{ragged2e}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% --- Minimalist Color Palette (DESIGN.md) ---
+\definecolor{dlInk}{HTML}{111111}
+\definecolor{dlCanvas}{HTML}{FFFFFF}
+\definecolor{dlSoftCloud}{HTML}{F5F5F5}
+\definecolor{dlCharcoal}{HTML}{39393B}
+\definecolor{dlMute}{HTML}{707072}
+\definecolor{dlHairline}{HTML}{CACACB}
+\definecolor{dlTeal}{HTML}{0A7281}
+\definecolor{codeBg}{HTML}{F7F7F8}
+\definecolor{dlGreen}{HTML}{007D48}
+\definecolor{dlRed}{HTML}{D30005}
+
+% --- Beamer Theme Customization ---
+\usetheme{default}
+\useinnertheme{rectangles}
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamercolor{palette primary}{bg=dlInk,fg=dlCanvas}
+\setbeamercolor{palette secondary}{bg=dlCharcoal,fg=dlCanvas}
+\setbeamercolor{palette tertiary}{bg=dlSoftCloud,fg=dlInk}
+\setbeamercolor{structure}{fg=dlInk}
+\setbeamercolor{title}{fg=dlCanvas,bg=dlInk}
+\setbeamercolor{frametitle}{fg=dlInk,bg=dlSoftCloud}
+\setbeamercolor{normal text}{fg=dlInk,bg=dlCanvas}
+\setbeamercolor{block title}{bg=dlInk,fg=dlCanvas}
+\setbeamercolor{block body}{bg=dlSoftCloud,fg=dlInk}
+\setbeamercolor{block title example}{bg=dlTeal,fg=dlCanvas}
+\setbeamercolor{block body example}{bg=dlSoftCloud,fg=dlInk}
+\setbeamercolor{block title alert}{bg=dlCharcoal,fg=dlCanvas}
+\setbeamercolor{block body alert}{bg=dlSoftCloud,fg=dlInk}
+\setbeamercolor{item}{fg=dlInk}
+
+\makeatletter
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=4.0ex,dp=1.4ex,leftskip=0.8cm,rightskip=0.8cm]{frametitle}%
+    \textbf{\large\strut\insertframetitle}%
+    \ifx\insertframesubtitle\@empty\else\hfill{\footnotesize\color{dlMute}\insertframesubtitle}\fi%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.3ex,dp=1.0ex,leftskip=0.8cm,rightskip=0.8cm]{palette primary}%
+    \tiny\textbf{IF25-40401 · Deep Learning} \hfill \insertshorttitle \hfill \textbf{\insertframenumber{} / \inserttotalframenumber}%
+  \end{beamercolorbox}%
+}
+
+% --- Listings Settings ---
+\lstset{
+  backgroundcolor=\color{codeBg},
+  basicstyle=\ttfamily\fontsize{6.2pt}{7.5pt}\selectfont\color{dlInk},
+  keywordstyle=\bfseries\color{dlTeal},
+  commentstyle=\color{dlMute}\itshape,
+  stringstyle=\color{dlCharcoal},
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{dlHairline},
+  numbers=none,
+  tabsize=2,
+  showstringspaces=false
+}
+
+\lstdefinestyle{py}{
+  language=Python,
+  basicstyle=\ttfamily\fontsize{6.2pt}{7.5pt}\selectfont\color{dlInk},
+  keywordstyle=\bfseries\color{dlTeal},
+  commentstyle=\color{dlMute}\itshape,
+  stringstyle=\color{dlCharcoal}
+}
+
+\lstdefinestyle{dirtree}{
+  basicstyle=\ttfamily\fontsize{6.0pt}{7.2pt}\selectfont\color{dlInk},
+  backgroundcolor=\color{codeBg},
+  frame=single,
+  rulecolor=\color{dlHairline}
+}
+
+\title[Struktur Projek CV]{Struktur Profesional Projek Deep Learning: Computer Vision}
+\subtitle{Materi Pendamping Pertemuan 04 — Best Practices Rekayasa Perangkat Lunak untuk DL}
+\author{Tim Dosen Deep Learning}
+\institute{Teknik Informatika — Institut Teknologi Sumatera (ITERA)}
+\date{2026}
+
+\begin{document}
+
+% ==============================================================================
+% TITLE SLIDE (Minimalist Campaign Style)
+% ==============================================================================
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.96\paperheight,sep=0.8cm]{palette primary}
+    \vspace{0.4cm}
+    {\scriptsize\bfseries\color{dlMute}IF25-40401 · DEEP LEARNING · MATERI PENDAMPING PERTEMUAN 04}\\[0.35cm]
+    {\Huge\bfseries STRUKTUR PROYEK PROFESIONAL\\DEEP LEARNING: COMPUTER VISION}\\[0.35cm]
+    {\small Best Practices: Arsitektur Modular, Data Pipeline, Engine, Checkpointing, \& Konfigurasi}\\[0.8cm]
+    \vfill
+    {\scriptsize\textbf{Tim Dosen Deep Learning} · Teknik Informatika · Institut Teknologi Sumatera (ITERA)}
+  \end{beamercolorbox}
+\end{frame}
+
+% ==============================================================================
+% LEARNING OBJECTIVES
+% ==============================================================================
+\begin{frame}
+  \frametitle{TUJUAN PEMBELAJARAN}
+  \framesubtitle{Capaian Pembelajaran Materi Pendamping}
+
+  \begin{exampleblock}{Setelah mempelajari materi pendamping ini, mahasiswa diharapkan mampu:}
+    \small
+    \begin{enumerate}\setlength{\itemsep}{2pt}
+      \item \textbf{Menjelaskan limitasi notebook monolitik} dan urgensi modularisasi berbasis berkas \texttt{.py} pada proyek Deep Learning.
+      \item \textbf{Merancang tata letak repositori standar industri} yang memisahkan tanggung jawab data, model, training engine, konfigurasi, dan utilitas.
+      \item \textbf{Mengimplementasikan pipeline data yang modular}, memisahkan logika pembacaan (\textit{Dataset}), augmentasi (\textit{Transforms}), dan pemuatan batch (\textit{DataLoader}).
+      \item \textbf{Menerapkan best practices rekayasa}: \textit{stateful checkpointing}, reproduksibilitas eksperimen (\textit{seeding}), \textit{Automatic Mixed Precision} (AMP), dan logging terstruktur.
+      \item \textbf{Mentranslasikan eksperimen eksploratif (Colab/Jupyter)} menjadi repositori terstruktur yang siap dijalankan secara mandiri (\textit{headless execution} via CLI).
+    \end{enumerate}
+  \end{exampleblock}
+\end{frame}
+
+% ==============================================================================
+% OUTLINE
+% ==============================================================================
+\begin{frame}
+  \frametitle{AGENDA PEMBAHASAN}
+  \framesubtitle{Peta Konsep Struktur Proyek Deep Learning}
+
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{1. Fondasi \& Tata Letak Direktori}
+        \footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+          \item \textbf{Bagian 01 · Urgensi Modularitas:} Limitasi notebook monolitik, bahaya \textit{hidden state}, \& prinsip \textit{Separation of Concerns} (SoC).
+          \item \textbf{Bagian 02 · Anatomi Standar:} Struktur direktori PyTorch (\texttt{configs}, \texttt{src}, \texttt{tests}) \& aturan ketat \texttt{.gitignore}.
+        \end{itemize}
+      \end{block}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{block}{2. Komponen Inti \& Rekayasa Sistem}
+        \footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+          \item \textbf{Bagian 03 · Dekomposisi Modul:} Pipeline data (\texttt{Dataset}, \texttt{Transforms}, \texttt{DataLoader}), model factory, trainer engine, \& config YAML.
+          \item \textbf{Bagian 04 · Best Practices:} Stateful checkpointing, determinisme seed, akselerasi AMP, \& tracking eksperimen.
+          \item \textbf{Bagian 05 · Alur Praktikum:} Inferensi \texttt{predict.py}, ekspor ONNX, \& checklist profesional.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ==============================================================================
+% BAGIAN 1: URGENSI MODULARITAS
+% ==============================================================================
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.96\paperheight,sep=0.8cm]{palette primary}
+    \vspace{1.2cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 01 · LATAR BELAKANG}\\[0.4cm]
+    {\Huge\bfseries Mengapa Butuh Struktur Modular?}\\[0.4cm]
+    {\small\color{dlHairline}Transisi dari Exploratory Notebook ke Robust Production Codebase}
+    \vfill
+  \end{beamercolorbox}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Limitasi Jupyter Notebook}
+  \framesubtitle{Tantangan Pada Proyek Nyata}
+
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Masalah Monolithic Notebook}
+        \small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item \textbf{Hidden State:} Sel dieksekusi acak; urutan memori berbeda dari urutan tampilan sel.
+          \item \textbf{Git Merge Hell:} Berkas \texttt{.ipynb} berformat JSON besar; gambar plot \& tensor base64 memicu konflik git yang fatal.
+          \item \textbf{Sulit Diuji:} Fungsi di dalam sel tidak dapat di-import oleh automated testing (\texttt{pytest}).
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Kendala Skalabilitas \& Remote GPU}
+        \small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item \textbf{Headless Server:} Server GPU kampus/cloud (SSH, \texttt{tmux}, SLURM) butuh eksekusi CLI tanpa browser.
+          \item \textbf{Automasi Hyperparameter:} Menjalankan puluhan variasi eksperimen (\textit{sweep}) butuh argumen CLI terotomasi.
+          \item \textbf{Deployment Terputus:} Backend API (FastAPI) tidak dapat memanggil sel notebook secara langsung.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Notebook vs Berkas .py}
+  \framesubtitle{Menempatkan Alat Sesuai Peruntukan}
+
+  \centering
+  \scriptsize
+  \begin{tabular}{lll}
+    \toprule
+    \textbf{Karakteristik} & \textbf{Jupyter Notebook (\texttt{.ipynb})} & \textbf{Modular Scripts (\texttt{.py})} \\
+    \midrule
+    \textbf{Fase Utama} & Eksplorasi awal, riset visual, EDA & Pengembangan model, training skala penuh \\
+    \textbf{Struktur Kode} & Monolitik, linear, berorientasi sel & Terdekomposisi (modul, paket, fungsi) \\
+    \textbf{Version Control} & Rawan konflik (format JSON metadata) & Sangat ramah Git (diff baris per baris) \\
+    \textbf{Eksekusi} & Interaktif via web browser & Headless via CLI (\texttt{python train.py}) \\
+    \textbf{Konfigurasi} & Variabel di-hardcode di dalam sel & Deklaratif (\texttt{yaml}, \texttt{argparse}) \\
+    \textbf{Testing \& CI/CD} & Sangat sulit diautomasi & Mudah dengan \texttt{pytest} / CI Actions \\
+    \textbf{Deployment} & Tidak cocok untuk produksi & Siap di-package, Docker, atau ONNX \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.3cm}
+  \begin{exampleblock}{Prinsip Kerja Modern}
+    Gunakan \textbf{Notebook} hanya untuk \textit{Exploratory Data Analysis} (EDA) dan visualisasi hasil evaluasi post-hoc. Seluruh pipeline data, definisi arsitektur, dan loop pelatihan harus berada dalam berkas \textbf{\texttt{.py} modular}.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Prinsip Rekayasa Perangkat Lunak untuk DL}
+  \framesubtitle{Tiga Pilar Utama Arsitektur Kode Machine Learning}
+
+  \begin{columns}[t]
+    \begin{column}{0.32\textwidth}
+      \begin{block}{1. Separation of Concerns}
+        \textbf{Pemisahan Tanggung Jawab}\\[0.1cm]
+        \scriptsize
+        Logika membaca citra tidak boleh tahu arsitektur CNN; arsitektur CNN tidak boleh tahu loop optimasi; loop optimasi tidak boleh tahu detail penyimpanan log.
+      \end{block}
+    \end{column}
+
+    \begin{column}{0.32\textwidth}
+      \begin{block}{2. Single Responsibility}
+        \textbf{Satu Berkas, Satu Tugas}\\[0.1cm]
+        \scriptsize
+        Setiap berkas \texttt{.py} memegang tepat satu tanggung jawab: modul model hanya mendefinisikan layer, modul dataset hanya menghasilkan tensor citra.
+      \end{block}
+    \end{column}
+
+    \begin{column}{0.32\textwidth}
+      \begin{block}{3. Explicit Config}
+        \textbf{Bebas Magic Numbers}\\[0.1cm]
+        \scriptsize
+        Tidak ada angka acak (\textit{magic numbers}) seperti \texttt{lr=0.001} di dalam logika model. Seluruh konfigurasi diatur deklaratif di luar kode.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ==============================================================================
+% BAGIAN 2: ANATOMI DIREKTORI STANDAR
+% ==============================================================================
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.96\paperheight,sep=0.8cm]{palette primary}
+    \vspace{1.2cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 02 · ARSITEKTUR DIREKTORI}\\[0.4cm]
+    {\Huge\bfseries Anatomi Repositori Standar}\\[0.4cm]
+    {\small\color{dlHairline}Struktur Folder Berstandar Industri untuk Computer Vision (PyTorch)}
+    \vfill
+  \end{beamercolorbox}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Tata Letak Direktori Standar Industri}
+  \framesubtitle{Pohon Direktori Proyek Computer Vision}
+
+  \begin{columns}[c]
+    \begin{column}{0.44\textwidth}
+\begin{lstlisting}[style=dirtree]
+cv_project/
+|-- configs/
+|   |-- base.yaml
+|   `-- exp_lenet.yaml
+|-- data/
+|   |-- raw/
+|   `-- processed/
+|-- src/
+|   |-- datasets/
+|   |-- models/
+|   |-- engine/
+|   `-- utils/
+|-- notebooks/
+|-- tests/
+|-- train.py
+|-- predict.py
+|-- evaluate.py
+`-- requirements.txt
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.54\textwidth}
+      \begin{exampleblock}{Keunggulan Tata Letak Ini}
+        \small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+          \item \textbf{Modul \texttt{src/} Portabel:} Dapat diinstal sebagai package lokal (\texttt{pip install -e .}) atau di-import langsung oleh script lain.
+          \item \textbf{Entry Point Terpisah:} Titik masuk jelas: \texttt{train.py} untuk melatih, \texttt{predict.py} untuk inferensi gambar baru, \texttt{evaluate.py} untuk uji metrik.
+          \item \textbf{Separasi Eksperimen:} Variasi model diuji cukup dengan mengganti berkas konfigurasi di \texttt{configs/}, tanpa mengubah satu baris pun kode logika.
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Peran Komponen Utama Repositori}
+  \framesubtitle{Deskripsi Tanggung Jawab Masing-Masing Modul}
+
+  \small
+  \begin{description}\setlength{\itemsep}{2pt}
+    \item[\texttt{configs/}] File konfigurasi (YAML). Menentukan arsitektur, parameter optimasi, scheduler, batch size, augmentasi, dan path data.
+    \item[\texttt{src/datasets/}] Membaca citra, mengonstruksi label numerik, menerapkan augmentasi khusus train vs test, dan membungkus \texttt{DataLoader}.
+    \item[\texttt{src/models/}] Berisi arsitektur CNN (LeNet, Custom CNN) dan \textit{factory} \texttt{build\_model(config)} untuk instansiasi dinamis.
+    \item[\texttt{src/engine/}] Mengelola loop forward-backward pass, kalkulasi loss, optimasi, \textit{mixed precision}, dan validasi.
+    \item[\texttt{src/utils/}] Helper independen: seed deterministik, penyimpanan checkpoint, metrik akurasi, dan setup logger.
+    \item[\texttt{train.py}] Script CLI utama untuk memuat config, menyiapkan data \& model, lalu memanggil trainer engine.
+  \end{description}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Aturan Emas Version Control (\texttt{.gitignore})}
+  \framesubtitle{Menjaga Repositori Tetap Ringan, Bersih, dan Aman}
+
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+\begin{lstlisting}[style=dirtree]
+# .gitignore untuk Proyek Deep Learning
+
+# Dataset & arsip citra mentah
+data/
+*.tar.gz
+*.zip
+
+# Checkpoint model & bobot biner
+checkpoints/
+*.pth
+*.pt
+*.onnx
+
+# Log training & outputs
+outputs/
+runs/
+wandb/
+*.log
+
+# Cache & virtual environment
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.50\textwidth}
+      \begin{alertblock}{Bahaya Mengabaikan .gitignore}
+        \small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item \textbf{Repo Membengkak:} Bobot biner (\texttt{.pth}) ratusan MB merusak riwayat Git dan ditolak GitHub (>100MB).
+          \item \textbf{Kebocoran Data:} Dataset berhak cipta atau data sensitif tidak boleh ter-commit publik.
+        \end{itemize}
+      \end{alertblock}
+
+      \begin{exampleblock}{Solusi Distribusi Bobot}
+        \small
+        Bagikan bobot model terlatih via \textit{GitHub Releases}, Hugging Face Hub, atau Google Drive menggunakan script download otomatis.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ==============================================================================
+% BAGIAN 3: DEKOMPOSISI MODUL INTI
+% ==============================================================================
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.96\paperheight,sep=0.8cm]{palette primary}
+    \vspace{1.2cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 03 · DEKOMPOSISI MODUL}\\[0.4cm]
+    {\Huge\bfseries Membedah Komponen Inti}\\[0.4cm]
+    {\small\color{dlHairline}Data Pipeline, Arsitektur Model, Trainer Engine, \& Konfigurasi}
+    \vfill
+  \end{beamercolorbox}
+\end{frame}
+
+\begin{frame}
+  \frametitle{1. Pipeline Data: Pembagian 3 Peran Terpisah}
+  \framesubtitle{Memisahkan Akses Sampel, Transformasi, dan Batching}
+
+  \begin{columns}[t]
+    \begin{column}{0.32\textwidth}
+      \begin{block}{A. Dataset Class}
+        \textbf{Akses Indeks Sampel}\\[0.1cm]
+        \scriptsize
+        Turunan \texttt{Dataset}. Bertugas:
+        \begin{itemize}
+          \item Total data (\texttt{\_\_len\_\_})
+          \item Ambil citra \& label ke-$i$ (\texttt{\_\_getitem\_\_})
+        \end{itemize}
+      \end{block}
+    \end{column}
+
+    \begin{column}{0.32\textwidth}
+      \begin{block}{B. Transforms}
+        \textbf{Pengolahan Spasial}\\[0.1cm]
+        \scriptsize
+        Mengubah citra menjadi tensor:
+        \begin{itemize}
+          \item Resize \& Center Crop
+          \item Augmentasi (flip, rotasi)
+          \item Normalisasi $(\mu, \sigma)$
+        \end{itemize}
+      \end{block}
+    \end{column}
+
+    \begin{column}{0.32\textwidth}
+      \begin{block}{C. DataLoader}
+        \textbf{Batch \& Multiprocess}\\[0.1cm]
+        \scriptsize
+        Membungkus batch $(B, C, H, W)$:
+        \begin{itemize}
+          \item Pengacakan (\texttt{shuffle=True})
+          \item Multi-worker CPU loading
+          \item Pinned memory DMA GPU
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.3cm}
+  \begin{exampleblock}{Prinsip Utama}
+    Jangan mencampur logika pembacaan berkas (I/O) dengan logika augmentasi citra. Memisahkan keduanya membuat modul \texttt{transforms.py} dapat diubah kapan saja tanpa merusak dataset loader.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{1. Pipeline Data: Train vs Val Transforms}
+  \framesubtitle{Pembedaan Ketat Data Latih \& Uji}
+
+  \begin{columns}[t]
+    \begin{column}{0.50\textwidth}
+\begin{lstlisting}[style=py]
+# src/datasets/transforms.py
+import torchvision.transforms as T
+
+def get_train_transforms(img_size=32):
+  return T.Compose([
+    T.RandomCrop(img_size, padding=4),
+    T.RandomHorizontalFlip(p=0.5),
+    T.ToTensor(),
+    T.Normalize((0.4914, 0.4822, 0.4465),
+                (0.2023, 0.1994, 0.2010))
+  ])
+
+def get_val_transforms(img_size=32):
+  return T.Compose([
+    T.Resize((img_size, img_size)),
+    T.ToTensor(),
+    T.Normalize((0.4914, 0.4822, 0.4465),
+                (0.2023, 0.1994, 0.2010))
+  ])
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Anti-Pattern Berbahaya}
+        \small
+        Menerapkan augmentasi acak (seperti crop atau flip) pada data validasi atau tes!
+      \end{alertblock}
+
+      \begin{exampleblock}{Aturan Transformasi}
+        \small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item \textbf{Data Latih:} Stokastik (acak) untuk mencegah overfitting dan memperkaya sudut pandang.
+          \item \textbf{Data Validasi/Uji:} Wajib bersifat \textbf{deterministik} agar evaluasi metrik konsisten dan adil.
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{1. Pipeline Data: Optimasi DataLoader GPU}
+  \framesubtitle{Mencegah Bottleneck I/O CPU}
+
+\begin{lstlisting}[style=py]
+# src/datasets/dataloader.py
+from torch.utils.data import DataLoader
+
+def build_dataloaders(train_set, val_set, batch_size=64, num_workers=4):
+  train_loader = DataLoader(
+    train_set, batch_size=batch_size,
+    shuffle=True,             # Wajib acak urutan per epoch
+    num_workers=num_workers,   # Background worker I/O paralel CPU
+    pin_memory=True,          # Kunci di RAM untuk transfer DMA cepat ke GPU
+    drop_last=True            # Buang sisa batch ganjil agar BatchNorm stabil
+  )
+  val_loader = DataLoader(
+    val_set, batch_size=batch_size,
+    shuffle=False,            # Evaluasi tidak perlu acak urutan
+    num_workers=num_workers,
+    pin_memory=True,
+    drop_last=False           # Evaluasi seluruh sampel tanpa sisa
+  )
+  return train_loader, val_loader
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{2. Arsitektur Model \& Factory Pattern}
+  \framesubtitle{Instansiasi Fleksibel via Registri}
+
+  \begin{columns}[t]
+    \begin{column}{0.52\textwidth}
+\begin{lstlisting}[style=py]
+# src/models/__init__.py
+from .lenet import LeNet5
+from .custom_cnn import CustomCNN
+
+MODEL_REGISTRY = {
+  "lenet5": LeNet5,
+  "custom_cnn": CustomCNN,
+}
+
+def build_model(config):
+  name = config["model"]["name"].lower()
+  if name not in MODEL_REGISTRY:
+    raise ValueError(f"Model {name} tidak ada!")
+  
+  model_cls = MODEL_REGISTRY[name]
+  return model_cls(
+    num_classes=config["model"]["num_classes"],
+    in_channels=config["model"]["in_channels"]
+  )
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.45\textwidth}
+      \begin{exampleblock}{Keunggulan Factory Pattern}
+        \small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+          \item \textbf{Decoupling:} Script pelatihan (\texttt{train.py}) tidak perlu mengimpor kelas model secara langsung.
+          \item \textbf{Eksperimen Bebas Repot:} Mengganti arsitektur dari LeNet ke Custom CNN cukup via file konfigurasi YAML.
+          \item \textbf{Validasi Dini:} Registri langsung menolak nama model yang tidak valid sebelum training dimulai.
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{2. Arsitektur Model: Sanity Check Dummy Forward Pass}
+  \framesubtitle{Verifikasi Dimensi Tensor Input/Output}
+
+  \begin{columns}[t]
+    \begin{column}{0.52\textwidth}
+\begin{lstlisting}[style=py]
+# tests/test_model.py
+import torch
+from src.models import build_model
+
+def test_model_forward():
+  cfg = {
+    "model": {
+      "name": "lenet5",
+      "num_classes": 10,
+      "in_channels": 3
+    }
+  }
+  model = build_model(cfg)
+  
+  # Dummy tensor: Batch=2, C=3, H=32, W=32
+  x = torch.randn(2, 3, 32, 32)
+  out = model(x)
+  
+  # Pastikan shape output tepat: (Batch, Classes)
+  assert out.shape == (2, 10), f"Error: {out.shape}"
+  print("Sanity check lolos: dimensi tensor valid!")
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.45\textwidth}
+      \begin{block}{Mengapa Wajib Dilakukan?}
+        \small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item Kesalahan tersering pada CNN adalah salah menghitung dimensi \textit{flattening} sebelum FC layer:
+          $$\text{In FC} = C_{\text{out}} \times H_{\text{out}} \times W_{\text{out}}$$
+          \item Dummy test hanya butuh 1 detik, mencegah crash setelah berjam-jam loading dataset.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{3. Training Engine: Dekomposisi Fungsi}
+  \framesubtitle{Memisahkan Loop Pelatihan ke \texttt{src/engine/}}
+
+\begin{lstlisting}[style=py]
+# src/engine/trainer.py
+import torch
+
+def train_one_epoch(model, loader, criterion, optimizer, device):
+  model.train()  # Aktifkan mode latih (BatchNorm update, Dropout aktif)
+  running_loss, correct, total = 0.0, 0, 0
+
+  for images, labels in loader:
+    images, labels = images.to(device), labels.to(device)
+    optimizer.zero_grad()
+    outputs = model(images)
+    loss = criterion(outputs, labels)
+    loss.backward()
+    optimizer.step()
+
+    running_loss += loss.item() * images.size(0)
+    _, preds = outputs.max(1)
+    correct += preds.eq(labels).sum().item()
+    total += labels.size(0)
+
+  return running_loss / total, 100.0 * correct / total
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{3. Training Engine: Evaluasi Independen}
+  \framesubtitle{Evaluasi Bebas dari Graf Autograd}
+
+\begin{lstlisting}[style=py]
+# src/engine/evaluator.py
+import torch
+
+@torch.no_grad()  # Nonaktifkan autograd untuk hemat memori VRAM GPU
+def evaluate(model, loader, criterion, device):
+  model.eval()   # Mode evaluasi (BatchNorm freeze statistik, Dropout mati)
+  running_loss, correct, total = 0.0, 0, 0
+
+  for images, labels in loader:
+    images, labels = images.to(device), labels.to(device)
+    outputs = model(images)
+    loss = criterion(outputs, labels)
+
+    running_loss += loss.item() * images.size(0)
+    _, preds = outputs.max(1)
+    correct += preds.eq(labels).sum().item()
+    total += labels.size(0)
+
+  return running_loss / total, 100.0 * correct / total
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{4. Manajemen Konfigurasi}
+  \framesubtitle{Pemisahan Parameter via YAML}
+
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+\begin{lstlisting}[style=dirtree]
+# configs/experiments/lenet_cifar10.yaml
+experiment_name: "lenet5_cifar10_baseline"
+seed: 42
+
+dataset:
+  name: "CIFAR10"
+  root: "./data"
+  img_size: 32
+  num_classes: 10
+
+model:
+  name: "lenet5"
+  in_channels: 3
+  num_classes: 10
+
+training:
+  epochs: 30
+  batch_size: 128
+  num_workers: 4
+  lr: 0.001
+  weight_decay: 0.0001
+  patience: 7
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Tingkatan Konfigurasi Proyek}
+        \small
+        \begin{enumerate}\setlength{\itemsep}{3pt}
+          \item \textbf{Level 1: \texttt{argparse} Saja}
+            Bawaan Python, bagus untuk script cepat namun repot jika parameter banyak.
+          \item \textbf{Level 2: YAML + CLI Override}
+            \textit{(Best Practice Disarankan)} File YAML menyimpan parameter default, CLI mengizinkan override cepat.
+          \item \textbf{Level 3: Hydra / OmegaConf}
+            Standar lab riset enterprise dengan fitur hierarki konfigurasi modular.
+        \end{enumerate}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{5. Utilitas Esensial: Logger \& Metrik}
+  \framesubtitle{Pencatatan Riwayat Latih Terstruktur}
+
+  \begin{columns}[t]
+    \begin{column}{0.50\textwidth}
+\begin{lstlisting}[style=py]
+# src/utils/logger.py
+import logging, sys
+
+def setup_logger(log_file="outputs/train.log"):
+  logger = logging.getLogger("CV_Project")
+  logger.setLevel(logging.INFO)
+  logger.handlers.clear()
+
+  fmt = logging.Formatter(
+    "[%(asctime)s][%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+  )
+
+  # Stream ke terminal konsol
+  ch = logging.StreamHandler(sys.stdout)
+  ch.setFormatter(fmt)
+  logger.addHandler(ch)
+
+  # Tulis permanen ke berkas log disk
+  fh = logging.FileHandler(log_file)
+  fh.setFormatter(fmt)
+  logger.addHandler(fh)
+  return logger
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{exampleblock}{Mengapa Logging Sangat Krusial?}
+        \small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+          \item \textbf{Terminal Terputus:} Saat koneksi SSH terputus, teks terminal hilang. File log menyimpan riwayat permanen.
+          \item \textbf{Audit Eksperimen:} Setiap epoch mencatat timestamp, loss, akurasi, dan update learning rate.
+          \item \textbf{Level Pesan:} Membedakan informasi biasa (\texttt{INFO}), peringatan (\texttt{WARNING}), dan error (\texttt{ERROR}).
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ==============================================================================
+% BAGIAN 4: BEST PRACTICES ENGINEERING
+% ==============================================================================
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.96\paperheight,sep=0.8cm]{palette primary}
+    \vspace{1.2cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 04 · REKAYASA SISTEM}\\[0.4cm]
+    {\Huge\bfseries Best Practices Engineering}\\[0.4cm]
+    {\small\color{dlHairline}Reproducibility, Stateful Checkpoint, AMP, \& Tracking}
+    \vfill
+  \end{beamercolorbox}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Reproducibility: Mengunci Determinisme Sistem}
+  \framesubtitle{Menjamin Eksperimen Menghasilkan Angka Identik}
+
+\begin{lstlisting}[style=py]
+# src/utils/seed.py
+import os, random, numpy as np, torch
+
+def seed_everything(seed=42):
+  random.seed(seed)
+  os.environ["PYTHONHASHSEED"] = str(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+  torch.cuda.manual_seed(seed)
+  torch.cuda.manual_seed_all(seed)  # Untuk lingkungan multi-GPU
+  
+  # Konfigurasi cuDNN deterministik
+  torch.backends.cudnn.deterministic = True
+  torch.backends.cudnn.benchmark = False
+\end{lstlisting}
+
+  \begin{exampleblock}{Kapan Dipanggil?}
+    \small
+    Fungsi \texttt{seed\_everything(config["seed"])} wajib dipanggil di baris paling awal eksekusi \texttt{train.py} sebelum pembuatan dataset dan inisialisasi bobot jaringan.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Stateful Checkpointing}
+  \framesubtitle{Simpan Weights, Optimizer, \& Scheduler}
+
+  \begin{columns}[t]
+    \begin{column}{0.50\textwidth}
+\begin{lstlisting}[style=py]
+# src/utils/checkpoint.py
+import torch
+
+def save_checkpoint(state, is_best, filepath="checkpoints/last.pth"):
+  torch.save(state, filepath)
+  if is_best:
+    torch.save(state, "checkpoints/best.pth")
+
+# Struktur state dict lengkap:
+checkpoint = {
+  "epoch": epoch,
+  "model_state_dict": model.state_dict(),
+  "optimizer_state_dict": optimizer.state_dict(),
+  "scheduler_state_dict": scheduler.state_dict(),
+  "best_val_acc": best_val_acc,
+  "config": config
+}
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Bahaya Stateless Checkpoint}
+        \small
+        Jika hanya menyimpan bobot model tanpa status optimizer dan scheduler, pelatihan \textbf{tidak dapat dilanjutkan (\textit{resume})} saat server mati! Momentum optimizer akan ter-reset ke awal.
+      \end{alertblock}
+
+      \begin{block}{Strategi Dual Checkpoint}
+        \small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item \textbf{\texttt{last.pth}:} Ditimpa per epoch untuk resume training.
+          \item \textbf{\texttt{best.pth}:} Disimpan saat val loss / akurasi memecahkan rekor terbaik.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Automatic Mixed Precision (AMP)}
+  \framesubtitle{Pelatihan Cepat \& Efisien dengan FP16}
+
+\begin{lstlisting}[style=py]
+# Pola Modern PyTorch AMP (torch.amp)
+scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
+
+for images, labels in loader:
+  images, labels = images.to("cuda"), labels.to("cuda")
+  optimizer.zero_grad()
+
+  # Forward pass dengan presisi campuran FP16/BF16 otomatis
+  with torch.amp.autocast("cuda", enabled=use_amp):
+    outputs = model(images)
+    loss = criterion(outputs, labels)
+
+  # Backward pass dengan dynamic loss scaling (mencegah underflow gradien)
+  scaler.scale(loss).backward()
+  scaler.step(optimizer)
+  scaler.update()
+\end{lstlisting}
+
+  \begin{exampleblock}{Manfaat Nyata AMP pada GPU Modern (T4, RTX, A100)}
+    \small
+    Menghemat memory GPU (VRAM) hingga $\sim 50\%$, mempercepat komputasi $2\times - 3\times$ lipat berkat Tensor Cores, tanpa menurunkan akurasi model akhir.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Pelacakan Eksperimen Modern}
+  \framesubtitle{Monitoring Kurva Konvergensi Real-Time}
+
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{TensorBoard (Lokal \& Mandiri)}
+        \small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item Bawaan pustaka \texttt{torch.utils.tensorboard}.
+          \item Menyimpan event file secara lokal di \texttt{outputs/runs/}.
+          \item Menampilkan kurva \textit{loss train vs val} di browser:
+          \vspace{0.05cm}
+          \texttt{tensorboard --logdir outputs/runs}
+          \item Visualisasi matriks konfusi \& prediksi model.
+        \end{itemize}
+      \end{block}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Weights \& Biases (WandB - Cloud)}
+        \small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item Standar kolaborasi tim industri dan riset.
+          \item Dashboard berbasis cloud untuk seluruh anggota tim.
+          \item Komparasi otomatis puluhan eksperimen.
+          \item Menyimpan grafik performa terpusat.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.2cm}
+  \centering
+  \footnotesize\textbf{Gunakan tracker untuk mendokumentasikan bukti eksperimen secara ilmiah dan terpercaya.}
+\end{frame}
+
+% ==============================================================================
+% BAGIAN 5: INFERENSI, EKSPOR, & PANDUAN PRAKTIKUM
+% ==============================================================================
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.96\paperheight,sep=0.8cm]{palette primary}
+    \vspace{1.2cm}
+    {\scriptsize\bfseries\color{dlMute}BAGIAN 05 · ALUR KERJA \& PRAKTIKUM}\\[0.4cm]
+    {\Huge\bfseries Inferensi, Ekspor, \& Praktikum}\\[0.4cm]
+    {\small\color{dlHairline}Standalone Predictor, Ekspor ONNX, dan Roadmap Migrasi Mahasiswa}
+    \vfill
+  \end{beamercolorbox}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Script Inferensi Mandiri (\texttt{predict.py})}
+  \framesubtitle{Pengujian Citra Tanpa Kode Training}
+
+\begin{lstlisting}[style=py]
+# predict.py
+import argparse, torch
+from PIL import Image
+from src.models import build_model
+from src.datasets.transforms import get_val_transforms
+
+def predict(image_path, checkpoint_path):
+  # 1. Muat checkpoint & arsitektur model
+  ckpt = torch.load(checkpoint_path, map_location="cpu")
+  model = build_model(ckpt["config"])
+  model.load_state_dict(ckpt["model_state_dict"])
+  model.eval()
+
+  # 2. Preprocessing deterministik
+  transform = get_val_transforms(img_size=32)
+  img = Image.open(image_path).convert("RGB")
+  x = transform(img).unsqueeze(0)  # Dimensi batch: (1, 3, 32, 32)
+
+  # 3. Inferensi
+  with torch.no_grad():
+    probs = torch.softmax(model(x), dim=1)
+    conf, pred_id = probs.max(1)
+
+  return pred_id.item(), conf.item()
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Ekspor Model ke Format Portabel (ONNX)}
+  \framesubtitle{Format Portabel Lintas Platform}
+
+  \begin{columns}[t]
+    \begin{column}{0.52\textwidth}
+\begin{lstlisting}[style=py]
+# export_onnx.py
+import torch
+from src.models import build_model
+
+def export_to_onnx(ckpt_path, output_onnx):
+  ckpt = torch.load(ckpt_path, map_location="cpu")
+  model = build_model(ckpt["config"])
+  model.load_state_dict(ckpt["model_state_dict"])
+  model.eval()
+
+  dummy_input = torch.randn(1, 3, 32, 32)
+  torch.onnx.export(
+    model, dummy_input, output_onnx,
+    input_names=["input_image"],
+    output_names=["class_logits"],
+    opset_version=14
+  )
+  print(f"Model berhasil diekspor ke: {output_onnx}")
+\end{lstlisting}
+    \end{column}
+
+    \begin{column}{0.45\textwidth}
+      \begin{block}{Mengapa ONNX?}
+        \small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item \textbf{Framework Agnostic:} Menghapus ketergantungan runtime Python/PyTorch.
+          \item \textbf{Deployment Luas:} Siap dijalankan di C++, mobile (iOS/Android), web browser (ONNX Runtime Web), dan edge (TensorRT).
+          \item \textbf{Latensi Rendah:} Eksekusi inferensi hingga $3\times - 5\times$ lebih cepat di server produksi.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Roadmap Migrasi Proyek}
+  \framesubtitle{Dari Notebook ke Berkas .py}
+
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Fase 1: Dekomposisi Modul}
+        \footnotesize
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+          \item \textbf{Ekstrak Dataset \& Transforms:}\\
+            Pindahkan dataset CIFAR-10 dan normalisasi dari sel notebook ke modul \texttt{src/datasets/}.
+          \item \textbf{Ekstrak Kelas Model:}\\
+            Pindahkan kelas \texttt{LeNet5} ke \texttt{src/models/lenet.py} dan registrasikan di \texttt{\_\_init\_\_.py}.
+          \item \textbf{Buat File Konfigurasi:}\\
+            Pindahkan seluruh hiperparameter (lr, batch size) ke \texttt{configs/exp\_lenet.yaml}.
+        \end{enumerate}
+      \end{block}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Fase 2: Eksekusi \& Testing}
+        \footnotesize
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+          \setcounter{enumi}{3}
+          \item \textbf{Bangun Trainer Engine:}\\
+            Pindahkan loop epoch ke \texttt{src/engine/trainer.py} dengan dukungan checkpointing.
+          \item \textbf{Susun Entry Point CLI:}\\
+            Tulis \texttt{train.py} yang menerima argumen konfigurasi via terminal.
+          \item \textbf{Jalankan Eksperimen:}\\
+            \texttt{python train.py --config configs/exp\_lenet.yaml}
+        \end{enumerate}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Checklist Emas Proyek CV}
+  \framesubtitle{Standar Pemeriksaan Mandiri}
+
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Version Control \& Konfigurasi}
+        \footnotesize
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item[\checkmark] Ada \texttt{.gitignore} memblokir dataset dan bobot \texttt{*.pth}?
+          \item[\checkmark] Bebas dari \textit{magic numbers} (hiperparameter di YAML/CLI)?
+          \item[\checkmark] Fungsi \texttt{seed\_everything} aktif untuk reproduksibilitas?
+          \item[\checkmark] Dependensi tercantum di \texttt{requirements.txt}?
+        \end{itemize}
+      \end{block}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Engineering \& Deployment}
+        \footnotesize
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item[\checkmark] Transform train stokastik terpisah dari transform val deterministik?
+          \item[\checkmark] Checkpoint menyimpan optimizer state \& scheduler state?
+          \item[\checkmark] \texttt{model.train()} dan \texttt{model.eval()} ditempatkan tepat?
+          \item[\checkmark] Tersedia script \texttt{predict.py} mandiri untuk uji citra baru?
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.2cm}
+  \centering
+  \footnotesize\textbf{Patuhi checklist ini untuk memastikan kode Anda berstandar industri dan mudah diaudit.}
+\end{frame}
+
+% ==============================================================================
+% CLOSING SLIDE (Minimalist Campaign Style)
+% ==============================================================================
+\begin{frame}[plain]
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.96\paperheight,sep=0.8cm]{palette primary}
+    \vspace{1.0cm}
+    {\scriptsize\bfseries\color{dlMute}IF25-40401 · DEEP LEARNING}\\[0.4cm]
+    {\Huge\bfseries TERIMA KASIH}\\[0.4cm]
+    {\small Selamat Membangun Proyek Deep Learning yang Modular, Teruji, dan Siap Produksi.}\\[0.8cm]
+    \vfill
+    {\scriptsize\textbf{Teknik Informatika — Institut Teknologi Sumatera (ITERA)} · 2026}
+  \end{beamercolorbox}
+\end{frame}
+
+\end{document}
