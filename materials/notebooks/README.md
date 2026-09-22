@@ -41,19 +41,28 @@ Klik lencana **Open In Colab** pada tabel di atas. Di Google Colab:
 ### 3. Lingkungan Lokal (JupyterLab / VS Code)
 Pastikan Anda telah memasang Python 3.9+ (disarankan melalui virtual environment):
 ```bash
-# 1. Kloning repositori
+# 1. Kloning repositori & masuk ke direktori
 git clone https://github.com/informatika-itera/deep-learning-IF25-40401.git
-cd deep-learning-IF25-40401/materials/notebooks
+cd deep-learning-IF25-40401
 
-# 2. Buat dan aktifkan virtual environment (opsional namun disarankan)
+# 2. Buat virtual environment
+# Menggunakan uv (direkomendasikan, sangat cepat):
+uv venv --python 3.11 .venv
+source .venv/bin/activate
+
+# Atau menggunakan python standar venv:
 python3 -m venv .venv
 source .venv/bin/activate  # macOS / Linux
 # atau: .venv\Scripts\activate  # Windows
 
-# 3. Pasang pustaka pendukung
-pip install torch torchvision torchinfo matplotlib jupyterlab
+# 3. Pasang pustaka pendukung dari requirements.txt
+uv pip install -r requirements.txt
+# Atau: pip install -r requirements.txt
 
-# 4. Jalankan JupyterLab
+# 4. Daftarkan kernel ke Jupyter / VS Code (opsional)
+python -m ipykernel install --user --name dl_web --display-name "Python 3.11 (dl_web .venv)"
+
+# 5. Jalankan JupyterLab atau buka di VS Code
 jupyter lab
 ```
 

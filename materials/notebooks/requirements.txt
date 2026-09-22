@@ -1,0 +1,14 @@
+# Deep Learning & Computer Vision
+torch>=2.0.0
+torchvision>=0.15.0
+torchinfo>=1.8.0
+
+# Scientific Computing & Data Visualization
+numpy>=1.22.0
+matplotlib>=3.5.0
+pillow>=9.0.0
+
+# Interactive Notebook Environment & Kernel
+ipykernel>=6.20.0
+jupyterlab>=4.0.0
+
