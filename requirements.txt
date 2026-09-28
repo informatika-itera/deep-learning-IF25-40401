@@ -1,6 +1,10 @@
+# Lingkungan Python modul hands-on IF25-40401 (dikelola dengan uv):
+#   uv venv --python 3.11 .venv && source .venv/bin/activate
+#   uv pip install -r requirements.txt
+
 # Deep Learning & Computer Vision
-torch>=2.0.0
-torchvision>=0.15.0
+torch>=2.1.0            # torch.utils.flop_counter (Notebook 04-05)
+torchvision>=0.16.0     # models.get_model / get_model_weights, detektor & segmentasi pretrained (Notebook 05-06)
 torchinfo>=1.8.0
 
 # Scientific Computing & Data Visualization
@@ -11,4 +15,4 @@ pillow>=9.0.0
 # Interactive Notebook Environment & Kernel
 ipykernel>=6.20.0
 jupyterlab>=4.0.0
-
+nbconvert>=7.0.0        # menjalankan ulang notebook: jupyter nbconvert --execute

@@ -143,7 +143,8 @@
                 <div class="course-card-badges">
                   <span class="badge-number">Pertemuan 05</span>
                   <span class="badge-type">Teori &amp; Arsitektur Modern</span>
-                  <span class="badge-status badge-status--placeholder">Materi Kelas</span>
+                  <span class="badge-status">Slide Lengkap (58 Slide)</span>
+                  <span class="badge-status">3 Notebook Hands-on</span>
                 </div>
                 <span class="course-card-time">Minggu 5 · TM: 3×50′ · TT: 3×60′</span>
               </div>
@@ -160,7 +161,7 @@
                     <li><strong>AlexNet &amp; VGG</strong>: blok konvolusi berlapis dengan filter kecil 3×3, kedalaman seragam (VGG16/19).</li>
                     <li><strong>ResNet vs MobileNet</strong>: <em>skip connection</em> untuk jaringan sangat dalam vs <em>depthwise separable convolution</em> untuk komputasi efisien.</li>
                     <li><strong>ConvNeXT</strong>: arsitektur CNN modern yang mengadopsi prinsip desain Vision Transformer (patchify stem, LayerNorm).</li>
-                    <li><strong>Object Detection &amp; Segmentasi</strong>: bounding box, IoU, mAP, pengantar R-CNN, YOLO, FCN/U-Net.</li>
+                    <li><strong>Object Detection &amp; Segmentasi</strong>: bounding box (format Pascal VOC, COCO, YOLO), IoU, mAP, pengantar R-CNN, YOLO, FCN/U-Net.</li>
                   </ul>
                 </div>
                 <div>
@@ -174,7 +175,28 @@
                 </div>
               </div>
 
+              <div class="course-card-notebooks-section" style="margin-top: 18px;">
+                <h4 class="course-card-subheading">Notebook Hands-on (3 Sesi)</h4>
+                <ul class="course-card-topics-list">
+                  <li><strong>04 · AlexNet, VGG &amp; ResNet</strong> — dimensi &amp; parameter, tumpukan 3×3, eksperimen degradation problem &nbsp;<a href="https://colab.research.google.com/github/informatika-itera/deep-learning-IF25-40401/blob/main/materials/notebooks/04-alexnet-vgg-resnet.ipynb" target="_blank" rel="noopener" style="font-weight: 600; text-decoration: underline; color: inherit;">[Colab ↗]</a></li>
+                  <li><strong>05 · MobileNet, ConvNeXt &amp; Perbandingan</strong> — depthwise separable, inverted residual, 10 backbone &nbsp;<a href="https://colab.research.google.com/github/informatika-itera/deep-learning-IF25-40401/blob/main/materials/notebooks/05-mobilenet-convnext-perbandingan.ipynb" target="_blank" rel="noopener" style="font-weight: 600; text-decoration: underline; color: inherit;">[Colab ↗]</a></li>
+                  <li><strong>06 · Deteksi &amp; Segmentasi</strong> — format bbox VOC/COCO/YOLO, IoU, NMS, mAP, U-Net &nbsp;<a href="https://colab.research.google.com/github/informatika-itera/deep-learning-IF25-40401/blob/main/materials/notebooks/06-bbox-iou-nms-deteksi-segmentasi.ipynb" target="_blank" rel="noopener" style="font-weight: 600; text-decoration: underline; color: inherit;">[Colab ↗]</a></li>
+                </ul>
+              </div>
+
               <div class="course-card-actions">
+                <a class="card-btn-primary" href="./materials/pertemuan-05-cnn-variations.pdf" download="IF25-40401-Pertemuan-05-CNN-Variations.pdf">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  Unduh Slide PDF (LaTeX)
+                </a>
+                <a class="card-btn-secondary" href="./materials/pertemuan-05-cnn-variations.pdf" target="_blank" rel="noopener">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  Buka Slide ↗
+                </a>
+                <a class="card-btn-code" href="https://github.com/informatika-itera/deep-learning-IF25-40401/tree/main/materials/notebooks" target="_blank" rel="noopener">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                  Notebook Hands-on (3) ↗
+                </a>
                 <a class="card-btn-code" href="https://pytorch.org/vision/stable/models.html" target="_blank" rel="noopener">
                   Backbone PyTorch ↗
                 </a>
@@ -262,6 +284,7 @@
             <h3>Unduhan Berkas</h3>
             <ul>
               <li><a href="./materials/pertemuan-04-cnn-from-scratch.pdf" download>Slide P04: CNN from Scratch (PDF)</a></li>
+              <li><a href="./materials/pertemuan-05-cnn-variations.pdf" download>Slide P05: CNN dan Variasinya (PDF)</a></li>
               <li><a href="./rps/">Dokumen Silabus 16 Minggu (RPS)</a></li>
               <li><a href="https://pytorch.org/docs/stable/index.html" target="_blank" rel="noopener">Dokumentasi PyTorch</a></li>
             </ul>

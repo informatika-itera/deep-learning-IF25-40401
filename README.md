@@ -32,21 +32,26 @@ dl_web/
 ├── rps-benchmark/
 │   └── index.html               # Halaman evaluasi benchmark kurikulum internasional
 ├── materials/                   # Naskah Beamer LaTeX, berkas PDF slide, & modul hands-on
-│   ├── notebooks/               # Modul Jupyter Notebook Hands-on Pertemuan 4
+│   ├── notebooks/               # Modul Jupyter Notebook Hands-on Pertemuan 4 & 5
 │   │   ├── README.md            # Panduan navigasi notebook, peta CPMK, & petunjuk Colab
 │   │   ├── 01-konvolusi-pooling-from-scratch.ipynb # Mekanika konvolusi & pooling NumPy
 │   │   ├── 02-lenet5-pytorch.ipynb                 # Arsitektur LeNet-5 PyTorch (MNIST)
-│   │   └── 03-analisis-eksperimen-cnn.ipynb        # Feature map hierarki, ablasi & CIFAR-10
+│   │   ├── 03-analisis-eksperimen-cnn.ipynb        # Feature map hierarki, ablasi & CIFAR-10
+│   │   ├── 04-alexnet-vgg-resnet.ipynb             # P5: AlexNet, VGG, Inception, degradation & ResNet
+│   │   ├── 05-mobilenet-convnext-perbandingan.ipynb # P5: depthwise, MobileNet, ConvNeXt, 10 backbone
+│   │   ├── 06-bbox-iou-nms-deteksi-segmentasi.ipynb # P5: format bbox, IoU, NMS, mAP, deteksi & U-Net
+│   │   └── requirements.txt                        # Salinan requirements.txt root
 │   ├── pertemuan-04-cnn-from-scratch.tex  # Naskah Beamer LaTeX Pertemuan 4
 │   ├── pertemuan-04-cnn-from-scratch.pdf  # PDF Slide Resmi Pertemuan 4 (72 slide)
-│   ├── pertemuan-05-cnn-variations.tex    # Naskah Beamer LaTeX Pertemuan 5 (Placeholder)
-│   ├── pertemuan-05-cnn-variations.pdf    # PDF Slide Pertemuan 5 (Placeholder)
+│   ├── pertemuan-05-cnn-variations.tex    # Naskah Beamer LaTeX Pertemuan 5
+│   ├── pertemuan-05-cnn-variations.pdf    # PDF Slide Pertemuan 5
 │   ├── pertemuan-06-finetuning-imagenet.tex # Naskah Beamer LaTeX Pertemuan 6 (Placeholder)
 │   ├── pertemuan-06-finetuning-imagenet.pdf # PDF Panduan Studio Pertemuan 6 (Placeholder)
 │   ├── slide_preview-01.png               # Thumbnail slide 1
 │   └── slide_preview-02.png               # Thumbnail slide 2
 ├── vite.config.js               # Konfigurasi bundler Vite (multi-page entry & rewrite URL)
 ├── package.json                 # Konfigurasi dependensi & npm scripts
+├── requirements.txt             # Dependensi Python notebook (environment uv)
 ├── DESIGN.md                    # Pedoman token desain, tipografi, dan komponen
 └── README.md                    # Dokumentasi repositori
 ```
@@ -62,6 +67,13 @@ dl_web/
 ### 2. Instalasi Dependensi
 ```bash
 npm install
+```
+
+Untuk menjalankan notebook hands-on, siapkan environment Python dengan [`uv`](https://docs.astral.sh/uv/):
+```bash
+uv venv --python 3.11 .venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
 ```
 
 ### 3. Menjalankan Development Server
