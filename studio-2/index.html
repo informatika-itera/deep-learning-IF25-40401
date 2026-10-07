@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kompetisi Studio 2 — IF25-40401</title>
+  <meta name="description" content="Studio Proyek 2 Deep Learning IF25-40401: kompetisi klasifikasi 5 jenis sampah khas Indonesia. Nilai ditentukan oleh performa model (macro-F1) pada validation set tersembunyi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body id="top">
+
+  <main class="rps-public-page">
+    <div class="rps-public-shell">
+
+      <!-- Hero -->
+      <header class="rps-public-hero">
+        <nav class="rps-public-nav" aria-label="Navigasi utama">
+          <a class="rps-public-back" href="../">← Beranda / Materi Kuliah</a>
+          <a class="rps-public-nav-link" href="../rps/#minggu-6">Silabus (RPS) →</a>
+        </nav>
+        <p class="eyebrow">STUDIO PROYEK 2 · IF25-40401</p>
+        <h1>Kompetisi Klasifikasi Sampah</h1>
+        <p class="rps-public-lead">Latih model CNN untuk mengenali lima jenis sampah yang paling sering kita temui di Indonesia — dari gelas plastik air mineral sampai bungkus mi instan. Nilai Studio 2 kelompok Anda ditentukan oleh <strong>performa model</strong> pada <em>validation set</em> tersembunyi yang hanya dipegang tim pengajar.</p>
+        <div class="rps-public-meta">
+          <span>Kelompok maks. 3 orang</span>
+          <span>3× preview skor</span>
+          <span>Final: Minggu, 25 Okt 2026</span>
+          <span>Metrik: Macro-F1</span>
+          <span>Bobot: 10% nilai akhir</span>
+        </div>
+      </header>
+
+      <div class="rps-public-content">
+
+        <section class="rps-public-notice">
+          <strong>Nilai berbasis performa.</strong> Nilai Studio 2 dihitung dari skor <strong>Macro-F1</strong> model kelompok pada validation set tersembunyi di putaran <strong>Final (25 Oktober 2026)</strong>, dikonversi dengan ambang nilai yang <strong>diumumkan kemudian</strong> (lihat <a href="#penilaian">Penilaian</a>). Skor Preview 1 dan Preview 2 hanya umpan balik dan tidak memengaruhi nilai.
+        </section>
+
+        <!-- Tugas -->
+        <section class="rps-public-section" id="tugas">
+          <h2>Tugas</h2>
+          <p>Bangun model klasifikasi citra yang menerima satu foto sampah dan memprediksi salah satu dari lima kelas di bawah. Anda bebas memilih pendekatan: CNN <em>from scratch</em> seperti di Pertemuan 4, arsitektur modern dari Pertemuan 5, atau <em>fine-tuning</em> backbone pretrained ImageNet sesuai materi Studio 2. Data tambahan dari luar juga diperbolehkan.</p>
+          <p>Kelompok tidak pernah melihat validation set. Asisten dosen yang menjalankan model (<code>model.pth</code>) kelompok Anda pada validation set menggunakan skrip <code>evaluate.py</code> yang sama persis dengan yang ada di starter kit, lalu mencatat skornya di Google Sheets skor kelompok.</p>
+        </section>
+
+        <!-- Dataset -->
+        <section class="rps-public-section" id="dataset">
+          <h2>Dataset</h2>
+          <p>Train set berisi <strong>±2.900 gambar</strong> dalam 5 kelas, dikumpulkan dari web lalu dibersihkan (deduplikasi, penyaringan otomatis, dan pemeriksaan manual oleh asisten). Validation set (<strong>±740 gambar</strong>) berasal dari pengumpulan yang sama, dipisahkan secara acak dan disimpan oleh tim pengajar. Label masih dapat mengandung sedikit <em>noise</em> — menangani hal itu adalah bagian dari tantangan.</p>
+
+          <div class="dl-cards-grid">
+            <article class="dl-card">
+              <span class="dl-card-tag">Kelas 0 · ±540 gambar</span>
+              <h3 class="dl-card-title"><code>botol_plastik</code></h3>
+              <div class="dl-card-desc">Botol PET bekas: air mineral, teh kemasan, minuman bersoda — utuh, penyok, dengan atau tanpa tutup. Ciri: memiliki leher botol atau tutup ulir.</div>
+            </article>
+            <article class="dl-card">
+              <span class="dl-card-tag">Kelas 1 · ±570 gambar</span>
+              <h3 class="dl-card-title"><code>gelas_plastik</code></h3>
+              <div class="dl-card-desc">Gelas air mineral bertutup segel, gelas plastik es teh / boba, cup minuman plastik. Ciri: tidak memiliki leher botol.</div>
+            </article>
+            <article class="dl-card">
+              <span class="dl-card-tag">Kelas 2 · ±395 gambar</span>
+              <h3 class="dl-card-title"><code>kertas_kardus</code></h3>
+              <div class="dl-card-desc">Kertas bekas, kertas diremas, kardus, kertas bungkus nasi, dan gelas kertas.</div>
+            </article>
+            <article class="dl-card">
+              <span class="dl-card-tag">Kelas 3 · ±760 gambar</span>
+              <h3 class="dl-card-title"><code>saset_kemasan</code></h3>
+              <div class="dl-card-desc">Saset dan kemasan plastik fleksibel: bungkus mi instan, saset kopi/sampo, bungkus makanan ringan.</div>
+            </article>
+            <article class="dl-card">
+              <span class="dl-card-tag">Kelas 4 · ±700 gambar</span>
+              <h3 class="dl-card-title"><code>styrofoam</code></h3>
+              <div class="dl-card-desc">Kotak makanan styrofoam, gelas styrofoam, dan gabus pengemas.</div>
+            </article>
+            <article class="dl-card">
+              <span class="dl-card-tag">Unduhan</span>
+              <h3 class="dl-card-title">Train set + starter kit</h3>
+              <div class="dl-card-desc">Folder Google Drive berisi dataset: <code>train/</code>, <code>train_sources.csv</code>, dan starter kit.</div>
+              <div class="course-card-actions" style="margin-top: 16px;">
+                <a class="card-btn-primary" href="https://drive.google.com/drive/folders/1_XcZoDFRznHB7fI603VHzdFxreg3ma60?usp=sharing" target="_blank" rel="noopener">Unduh Dataset (Google Drive) ↗</a>
+              </div>
+            </article>
+          </div>
+          <p style="margin-top: 18px;"><strong>Lisensi &amp; etika:</strong> gambar dikumpulkan dari internet untuk keperluan pendidikan non-komersial di kelas ini. Sumber setiap gambar tercatat di <code>train_sources.csv</code>. <strong>Jangan mengunggah ulang dataset</strong> ke repositori publik, Kaggle, atau Hugging Face — cukup unggah kode dan bobot model.</p>
+        </section>
+
+        <!-- Jadwal -->
+        <section class="rps-public-section" id="jadwal">
+          <h2>Jadwal &amp; Preview Skor</h2>
+          <p>Setiap kelompok mendapat tepat <strong>tiga kali</strong> evaluasi pada validation set. Pada setiap tenggat, asisten dosen mengambil <strong>commit terakhir di branch utama yang dibuat sebelum tenggat</strong>, menjalankan <code>evaluate.py</code>, lalu memperbarui Macro-F1 serta akurasi setiap kelompok di <strong>Google Sheets skor kelompok</strong> (tautan dibagikan asisten di grup kelas). Tidak ada evaluasi tambahan di luar tiga putaran ini. Informasi perubahan jadwal disampaikan asisten melalui grup kelas / ketua kelas.</p>
+          <div class="rps-grade-table rps-grade-table--wide">
+            <table>
+              <thead>
+                <tr><th>Putaran</th><th>Tenggat commit</th><th>Fungsi</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Preview 1</strong></td><td>Rabu, 14 Oktober 2026 · 23:59 WIB</td><td>Umpan balik — tidak dinilai. Kelompok &amp; tautan repo harus sudah terdaftar.</td></tr>
+                <tr><td><strong>Preview 2</strong></td><td>Rabu, 21 Oktober 2026 · 23:59 WIB</td><td>Umpan balik — tidak dinilai.</td></tr>
+                <tr class="rps-total-row"><td><strong>Final</strong></td><td>Minggu, 25 Oktober 2026 · 23:59 WIB</td><td>Skor ini yang menentukan nilai Studio 2.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Aturan -->
+        <section class="rps-public-section" id="aturan">
+          <h2>Aturan</h2>
+          <ol>
+            <li><strong>Kelompok</strong> beranggotakan maksimal <strong>3 orang</strong>. Daftarkan nama kelompok, anggota (nama + NIM), dan tautan repo GitHub kepada asisten dosen sebelum tenggat Preview 1.</li>
+            <li><strong>Repo GitHub wajib publik</strong> sejak pendaftaran hingga nilai diumumkan. Seluruh kode pelatihan dan submission berada di repo ini.</li>
+            <li><strong>Lacak progres lewat commit.</strong> Commit secara berkala selama pengerjaan — riwayat commit dipakai untuk melacak progres kelompok. Jangan mengunggah seluruh pekerjaan dalam satu commit di menit terakhir.</li>
+            <li><strong>README wajib jelas</strong> dan memuat: nama kelompok, <strong>nama lengkap dan NIM seluruh anggota</strong>, ringkasan pendekatan, sumber data tambahan (jika ada), dan cara reproduksi. Gunakan <a href="../materials/studio-2/starter-kit/README_TEMPLATE.md" target="_blank" rel="noopener"><code>README_TEMPLATE.md</code></a>.</li>
+            <li><strong>Pendekatan bebas:</strong> CNN from scratch, backbone pretrained (torchvision / timm), maupun data tambahan dari luar diperbolehkan. Cantumkan sumber data tambahan di README.</li>
+            <li><strong>Format submission wajib</strong> mengikuti kontrak di bagian <a href="#submission">Format Submission</a>. Submission yang gagal dijalankan oleh <code>evaluate.py</code> tidak mendapat skor pada putaran tersebut.</li>
+            <li><strong>Batas teknis:</strong> berkas <code>model.pth</code> maksimal 500 MB dan evaluasi seluruh validation set harus selesai dalam 15 menit. Bila bobot &gt; 100 MB (batas GitHub), lampirkan sebagai aset <em>GitHub Release</em> atau Git LFS dan tulis tautannya di README.</li>
+            <li><strong>Integritas:</strong> berbagi kode, bobot model, atau prediksi antarkelompok tidak diperbolehkan. Pelanggaran ditindaklanjuti sesuai aturan akademik ITERA.</li>
+          </ol>
+        </section>
+
+        <!-- Submission -->
+        <section class="rps-public-section" id="submission">
+          <h2>Format Submission</h2>
+          <p>Repo kelompok wajib memiliki folder <code>submission/</code> dengan struktur berikut:</p>
+          <div class="dl-code-box">
+            <div class="dl-code-header"><span>Struktur repo</span></div>
+<pre class="dl-code-pre"><code>repo-kelompok/
+├── README.md              # nama kelompok, anggota + NIM, pendekatan, hasil
+├── submission/
+│   ├── model.py           # get_model() dan get_transform()
+│   ├── model.pth          # state_dict model terbaik
+│   └── requirements.txt   # (opsional) paket tambahan, mis. timm
+├── evaluate.py            # salinan skrip evaluasi resmi
+└── ...                    # notebook / kode pelatihan</code></pre>
+          </div>
+          <div class="dl-code-box">
+            <div class="dl-code-header"><span>submission/model.py — kontrak</span></div>
+<pre class="dl-code-pre"><code>def get_model():
+    """Bangun arsitektur saja — JANGAN mengunduh bobot atau memuat model.pth di sini."""
+    ...
+    return model            # output: logits [batch, 5]
+
+def get_transform():
+    """Transform validasi: PIL.Image (RGB) -&gt; Tensor [3, H, W]."""
+    ...
+
+# Urutan kelas (alfabetis, sama dengan torchvision ImageFolder):
+# 0 botol_plastik · 1 gelas_plastik · 2 kertas_kardus · 3 saset_kemasan · 4 styrofoam
+
+# Simpan bobot dengan:
+torch.save(model.state_dict(), "submission/model.pth")</code></pre>
+          </div>
+          <p style="margin-top: 18px;">Sebelum tenggat, <strong>uji submission Anda sendiri</strong> pada split validasi yang Anda potong dari train set. Jika perintah ini berhasil, asisten juga dapat menjalankannya:</p>
+          <div class="dl-code-box">
+            <div class="dl-code-header"><span>Terminal</span></div>
+<pre class="dl-code-pre"><code>python evaluate.py --submission ./submission --data ./my_val</code></pre>
+          </div>
+        </section>
+
+        <!-- Starter kit -->
+        <section class="rps-public-section" id="starter-kit">
+          <h2>Starter Kit</h2>
+          <ul>
+            <li><a href="../materials/studio-2/starter-kit/evaluate.py" target="_blank" rel="noopener"><code>evaluate.py</code></a> — skrip evaluasi resmi (identik dengan milik asisten): Macro-F1, akurasi, F1 per kelas, confusion matrix.</li>
+            <li><a href="../materials/studio-2/starter-kit/submission/model.py" target="_blank" rel="noopener"><code>submission/model.py</code></a> — contoh submission ResNet-18.</li>
+            <li><a href="../materials/studio-2/starter-kit/train_baseline.py" target="_blank" rel="noopener"><code>train_baseline.py</code></a> — baseline fine-tuning ResNet-18 yang otomatis membuat split <code>my_val/</code> dan menyimpan <code>submission/model.pth</code>.</li>
+            <li><a href="../materials/studio-2/starter-kit/README_TEMPLATE.md" target="_blank" rel="noopener"><code>README_TEMPLATE.md</code></a> — templat README repo kelompok.</li>
+          </ul>
+          <p>Baseline ResNet-18 pretrained (8 epoch) mencapai Macro-F1 sekitar <strong>0,92</strong> pada validation set tersembunyi. Targetkan melampaui angka ini.</p>
+        </section>
+
+        <!-- Penilaian -->
+        <section class="rps-public-section" id="penilaian">
+          <h2>Evaluasi &amp; Penilaian</h2>
+          <p><strong>Macro-F1</strong> adalah rata-rata F1 dari kelima kelas, sehingga setiap kelas berbobot sama:</p>
+          <div class="dl-code-box">
+<pre class="dl-code-pre"><code>F1_k     = 2 · Precision_k · Recall_k / (Precision_k + Recall_k)
+Macro-F1 = (F1_botol + F1_gelas + F1_kertas + F1_saset + F1_styrofoam) / 5</code></pre>
+          </div>
+          <p style="margin-top: 18px;">Nilai Studio 2 (skala 0–100) ditentukan oleh Macro-F1 putaran Final dengan <strong>ambang absolut</strong> — bukan peringkat. Semua kelompok bisa mendapat nilai penuh.</p>
+          <p><strong>Tabel ambang nilai diumumkan kemudian.</strong></p>
+          <p style="margin-top: 14px;">Submission yang tidak dapat dijalankan pada putaran Final, repo yang tidak publik, atau README tanpa NIM anggota tidak dapat dievaluasi.</p>
+        </section>
+
+        <!-- FAQ -->
+        <section class="rps-public-section" id="faq">
+          <h2>FAQ</h2>
+          <ul>
+            <li><strong>Boleh pakai Kaggle / Google Colab?</strong> Boleh. Setelah selesai berlatih, unduh <code>model.pth</code> dan commit ke repo.</li>
+            <li><strong>Boleh memakai timm atau library lain?</strong> Boleh. Tulis paketnya di <code>submission/requirements.txt</code>; asisten memasangnya di environment terpisah. Paket dasar yang selalu tersedia: torch, torchvision, timm, pillow, numpy.</li>
+            <li><strong>Kenapa skor preview berbeda dengan validasi lokal?</strong> Split lokal Anda kecil dan bisa jadi lebih mudah atau lebih sulit. Gunakan validasi lokal untuk memilih model, dan skor preview untuk mengecek generalisasi.</li>
+            <li><strong>Commit kami terlambat beberapa menit dari tenggat.</strong> Asisten akan mengevaluasi commit terakhir <em>sebelum</em> tenggat. Jika tidak ada, kelompok tidak mendapat skor pada putaran tersebut.</li>
+            <li><strong>Bolehkah mengganti anggota kelompok?</strong> Hubungi asisten dosen sebelum Preview 1.</li>
+          </ul>
+        </section>
+
+      </div>
+
+      <!-- Footer -->
+      <footer class="dl-footer">
+        <div class="dl-footer-grid">
+          <div class="dl-footer-col">
+            <h3>Mata Kuliah</h3>
+            <p><strong>Deep Learning (IF25-40401)</strong><br />
+            Kurikulum Sarjana Teknik Informatika<br />
+            Institut Teknologi Sumatera (ITERA)</p>
+          </div>
+          <div class="dl-footer-col">
+            <h3>Kompetisi</h3>
+            <ul>
+              <li><a href="#dataset">Dataset</a></li>
+              <li><a href="#jadwal">Jadwal &amp; Preview</a></li>
+              <li><a href="#aturan">Aturan</a></li>
+              <li><a href="#penilaian">Penilaian</a></li>
+            </ul>
+          </div>
+          <div class="dl-footer-col">
+            <h3>Navigasi Portal</h3>
+            <ul>
+              <li><a href="../">Materi Kuliah</a></li>
+              <li><a href="../rps/">Silabus Lengkap (RPS)</a></li>
+              <li><a href="https://github.com/informatika-itera/deep-learning-IF25-40401" target="_blank" rel="noopener">Repositori GitHub</a></li>
+            </ul>
+          </div>
+          <div class="dl-footer-col">
+            <h3>Dosen Pengampu</h3>
+            <p>Tim Dosen Pembina Mata Kuliah Deep Learning<br />
+            Jurusan Teknologi Produksi dan Industri<br />
+            Institut Teknologi Sumatera</p>
+          </div>
+        </div>
+        <div class="dl-footer-bottom">
+          <span>&copy; 2026 Teknik Informatika ITERA — IF25-40401 Deep Learning. All rights reserved.</span>
+          <span>Desain minimalis mengikuti panduan tipografi dan grid DESIGN.md.</span>
+        </div>
+      </footer>
+
+    </div>
+  </main>
+
+  <script type="module" src="../script.js"></script>
+</body>
+</html>
