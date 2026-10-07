@@ -12,7 +12,7 @@ Website ini di-hosting menggunakan GitHub Pages pada domain organisasi:
 
 | Rute URL | Deskripsi Halaman | Konten Utama |
 |---|---|---|
-| [`/`](https://informatika-itera.github.io/deep-learning-IF25-40401/) | **Beranda / Modul Materi Kuliah** | Sistem tab dan kartu (card) materi perkuliahan terpilih: **Pertemuan 4, 5, dan 6** (Computer Vision, CNN From Scratch, Variasi Arsitektur, dan Studio ImageNet) dengan tombol aksi unduh PDF LaTeX dan tautan rincian RPS. |
+| [`/`](https://informatika-itera.github.io/deep-learning-IF25-40401/) | **Beranda / Modul Materi Kuliah** | Sistem tab dan kartu (card) materi perkuliahan terpilih: **Pertemuan 4, 5, dan 6** (Computer Vision, CNN From Scratch, Variasi Arsitektur, dan Kompetisi Studio 2) dengan tombol aksi unduh PDF LaTeX dan tautan rincian RPS. |
 | [`/rps/`](https://informatika-itera.github.io/deep-learning-IF25-40401/rps/) | **Silabus Lengkap (RPS)** | Rencana Pembelajaran Semester 16 minggu, CPMK, distribusi nilai, komponen evaluasi, studio proyek, dan tugas besar. |
 | [`/rps-benchmark/`](https://informatika-itera.github.io/deep-learning-IF25-40401/rps-benchmark/) | **Benchmark Kurikulum** | Analisis komparasi RPS terhadap 8 universitas top dunia (Stanford CS230/CS231n, MIT 6.S191, CMU 11-785, UC Berkeley, Oxford, ETH Zurich, Princeton). |
 | [`/studio-2/`](https://informatika-itera.github.io/deep-learning-IF25-40401/studio-2/) | **Kompetisi Studio 2** | Kompetisi klasifikasi 5 jenis sampah: dataset, jadwal 3× preview skor (14, 21, 25 Okt 2026), aturan, format submission, dan starter kit (`materials/studio-2/starter-kit/`). |

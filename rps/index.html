@@ -37,7 +37,7 @@
           <span>UTS: Minggu 8</span>
           <span>Kompetisi → sebelum UTS</span>
           <span>Poster → 5 Des 2026</span>
-          <span>Kelompok Studio Proyek: 2 orang</span>
+          <span>Kelompok Studio Proyek: 2 orang (Studio 2: maks. 3 orang)</span>
           <span>Kelompok Tugas Besar: 4 orang</span>
         </div>
 
@@ -84,7 +84,7 @@
                 <tbody>
                   <tr><td>Ujian Tengah Semester (UTS)</td><td>10%</td></tr>
                   <tr><td>Tugas Studio Proyek — Studio 1 (ANN/CIFAR-10)</td><td>10%</td></tr>
-                  <tr><td>Tugas Studio Proyek — Studio 2 (CNN/ImageNet)</td><td>10%</td></tr>
+                  <tr><td>Tugas Studio Proyek — Studio 2 (CNN/Kompetisi Klasifikasi Sampah)</td><td>10%</td></tr>
                   <tr><td>Tugas Studio Proyek — Studio 3 (NLP/Transformer)</td><td>10%</td></tr>
                   <tr><td>Tugas Besar</td><td>50%</td></tr>
                   <tr><td>Kuis Pra UTS</td><td>5%</td></tr>
@@ -267,28 +267,27 @@
             <article class="rps-week-card" id="minggu-6">
               <div class="rps-week-number">6</div>
               <div class="rps-week-body">
-                <h3>Studio Proyek 2: Fine-tuning CNN Pretrained pada ImageNet</h3>
+                <h3>Studio Proyek 2: Kompetisi Klasifikasi Sampah (CNN &amp; Fine-tuning Pretrained)</h3>
                 <div class="rps-week-columns">
                   <div><h4>Capaian Pembelajaran</h4><ol>
-                    <li>Merancang eksperimen fine-tuning CNN pretrained secara sistematis pada ImageNet.</li>
-                    <li>Membandingkan pengaruh variasi backbone CNN pretrained (AlexNet, VGG, ResNet, MobileNet, ConvNeXT) terhadap akurasi dan efisiensi.</li>
+                    <li>Merancang eksperimen pelatihan CNN — from scratch maupun fine-tuning backbone pretrained ImageNet — secara sistematis pada dataset baru.</li>
+                    <li>Membandingkan pengaruh variasi backbone CNN (AlexNet, VGG, ResNet, MobileNet, ConvNeXT) terhadap Macro-F1 dan efisiensi.</li>
                     <li>Menerapkan strategi fine-tuning: ganti last layer, freezing, linear probing vs full finetuning.</li>
-                    <li>Menyimpulkan strategi fine-tuning CNN terbaik berbasis bukti eksperimen.</li>
+                    <li>Mengemas model sesuai kontrak submission dan mengelola progres proyek melalui repositori GitHub.</li>
                   </ol></div>
                   <div><h4>Pokok Bahasan</h4><ul>
-                    <li>Dataset ImageNet: ±1,2 juta gambar berlabel dalam 1.000 kelas (ILSVRC) — sumber: <a href="https://www.image-net.org/" target="_blank" rel="noopener">image-net.org</a>.</li>
-                    <li>Studio fine-tuning (PyTorch) di <em>Kaggle</em> atau <em>Google Colab</em>: memakai CNN pretrained (ImageNet) — backbone dibekukan sebagian, <em>last layer</em> diganti sesuai jumlah kelas target bila berbeda.</li>
-                    <li>Eksperimen backbone: membandingkan AlexNet, VGG, ResNet, MobileNet, ConvNeXT sebagai feature extractor (kedalaman, filter, residual, efisiensi).</li>
-                    <li>Strategi fine-tuning: head replacement / ganti last layer, freezing layer awal, linear probing vs full finetuning, learning rate kecil untuk backbone.</li>
-                    <li>Sintesis: membandingkan run antar backbone &amp; strategi, memilih strategi CNN terbaik dan justifikasinya.</li>
+                    <li>Dataset kompetisi: ±3.700 citra sampah dalam 5 kelas (botol plastik, gelas plastik, kertas/kardus, saset/kemasan, styrofoam) — train set dibagikan, validation set disimpan tim pengajar. Rincian: <a href="../studio-2/">halaman Kompetisi Studio 2</a>.</li>
+                    <li>Studio (PyTorch) di <em>Kaggle</em> atau <em>Google Colab</em>: CNN from scratch atau CNN pretrained (ImageNet) — <em>last layer</em> diganti sesuai 5 kelas; data tambahan diperbolehkan.</li>
+                    <li>Eksperimen backbone &amp; strategi fine-tuning: head replacement, freezing layer awal, linear probing vs full finetuning, augmentasi.</li>
+                    <li>Evaluasi Macro-F1 oleh asisten dosen dengan 3× preview skor (14, 21, dan 25 Oktober 2026); nilai berbasis performa putaran Final.</li>
                   </ul></div>
                   <div><h4>Bentuk &amp; Metode</h4><ul>
-                    <li>Studio / hands-on di kelas</li>
-                    <li>Eksperimen kelompok (2 orang)</li>
-                    <li>Presentasi &amp; diskusi</li>
+                    <li>Studio / kompetisi kelas</li>
+                    <li>Kelompok maksimal 3 orang</li>
+                    <li>Repo GitHub publik (README dengan NIM anggota)</li>
                   </ul></div>
                   <div><h4>Estimasi Waktu</h4><ul><li>TM: 3×50′</li><li>TT: 3×60′</li></ul></div>
-                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa melakukan fine-tuning CNN pretrained dengan PyTorch di Kaggle / Google Colab untuk klasifikasi ImageNet (<a href="https://www.image-net.org/" target="_blank" rel="noopener">image-net.org</a>) — mengganti <em>last layer</em> bila jumlah kelas berbeda, membandingkan beberapa backbone dan strategi fine-tuning (freezing, head replacement, linear probing vs full finetuning), lalu menyimpulkan dan mempresentasikan strategi CNN terbaik di depan kelas.</p></div>
+                  <div><h4>Pengalaman Belajar</h4><p>Mahasiswa berkelompok (maks. 3 orang) melatih model klasifikasi lima jenis sampah khas Indonesia — dari CNN from scratch hingga fine-tuning backbone pretrained ImageNet di Kaggle / Google Colab — melacak progres di repositori GitHub publik, lalu mengirimkan <code>model.pth</code> yang dievaluasi asisten dosen pada validation set tersembunyi dalam tiga putaran preview skor.</p></div>
                 </div>
               </div>
             </article>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Materi Perkuliahan Deep Learning — IF25-40401</title>
-  <meta name="description" content="Portal materi perkuliahan Deep Learning IF25-40401: tab materi pertemuan 4, 5, dan 6 (Computer Vision, CNN from Scratch, Variasi CNN, dan Studio Fine-tuning ImageNet)." />
+  <meta name="description" content="Portal materi perkuliahan Deep Learning IF25-40401: tab materi pertemuan 4, 5, dan 6 (Computer Vision, CNN from Scratch, Variasi CNN, dan Kompetisi Studio 2: Klasifikasi Sampah)." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
@@ -61,7 +61,7 @@
             </button>
             <button class="dl-tab-btn" role="tab" id="tab-btn-p6" aria-selected="false" aria-controls="panel-p6" data-tab="panel-p6">
               <span>Pertemuan 06</span>
-              <span class="tab-badge">Studio ImageNet</span>
+              <span class="tab-badge">Kompetisi Studio 2</span>
             </button>
           </div>
 
@@ -220,19 +220,19 @@
                 <span class="course-card-time">Minggu 6 · TM: 3×50′ · TT: 3×60′</span>
               </div>
 
-              <h3 class="course-card-title">Studio Proyek 2: Fine-tuning CNN Pretrained pada ImageNet</h3>
+              <h3 class="course-card-title">Studio Proyek 2: Kompetisi Klasifikasi Sampah</h3>
               <p class="course-card-lead">
-                Praktikum studio berbasis proyek kelompok (2 mahasiswa) di Kaggle / Google Colab. Menerapkan transfer learning menggunakan backbone CNN pretrained pada ImageNet, mengganti last layer, membandingkan performa model, dan merumuskan strategi fine-tuning terbaik.
+                Kompetisi kelas berbasis proyek kelompok (maks. 3 mahasiswa) di Kaggle / Google Colab. Melatih model klasifikasi lima jenis sampah khas Indonesia — CNN from scratch maupun fine-tuning backbone pretrained ImageNet — dengan nilai ditentukan oleh performa (Macro-F1) pada validation set tersembunyi.
               </p>
 
               <div class="course-card-details">
                 <div>
                   <h4 class="course-card-subheading">Pokok Bahasan</h4>
                   <ul class="course-card-topics-list">
-                    <li><strong>Dataset ImageNet</strong>: ±1,2 juta citra berlabel dalam 1.000 kategori kelas (ILSVRC).</li>
+                    <li><strong>Dataset Kompetisi</strong>: ±3.700 citra sampah dalam 5 kelas (botol plastik, gelas plastik, kertas/kardus, saset/kemasan, styrofoam); validation set disimpan tim pengajar.</li>
                     <li><strong>Eksperimen Backbone</strong>: membandingkan AlexNet, VGG, ResNet, MobileNet, dan ConvNeXT sebagai <em>feature extractor</em>.</li>
                     <li><strong>Strategi Fine-Tuning</strong>: penggantian head layer, layer freezing awal, linear probing vs full fine-tuning.</li>
-                    <li><strong>Sintesis &amp; Evaluasi</strong>: perbandingan kurva konvergensi, trade-off akurasi vs jumlah parameter, dan justifikasi model terpilih.</li>
+                    <li><strong>Evaluasi &amp; Preview Skor</strong>: Macro-F1 dievaluasi asisten dosen pada 14, 21, dan 25 Oktober 2026; progres dilacak lewat repo GitHub publik.</li>
                   </ul>
                 </div>
                 <div>
@@ -241,7 +241,7 @@
                     <li>Merancang eksperimen fine-tuning CNN pretrained secara sistematis.</li>
                     <li>Membandingkan pengaruh variasi backbone terhadap akurasi dan efisiensi.</li>
                     <li>Menerapkan strategi freezing, linear probing vs full fine-tuning.</li>
-                    <li>Menyimpulkan dan mempresentasikan strategi CNN terbaik di depan kelas.</li>
+                    <li>Mengemas model sesuai kontrak submission dan mengelola progres proyek di GitHub.</li>
                   </ol>
                 </div>
               </div>
@@ -250,8 +250,8 @@
                 <a class="card-btn-primary" href="./studio-2/">
                   Kompetisi Studio 2: Klasifikasi Sampah →
                 </a>
-                <a class="card-btn-code" href="https://www.image-net.org/" target="_blank" rel="noopener">
-                  Dataset ImageNet ↗
+                <a class="card-btn-code" href="https://drive.google.com/drive/folders/1_XcZoDFRznHB7fI603VHzdFxreg3ma60?usp=sharing" target="_blank" rel="noopener">
+                  Dataset (Google Drive) ↗
                 </a>
                 <a class="card-btn-rps" href="./rps/#minggu-6">
                   Rincian Silabus RPS →
