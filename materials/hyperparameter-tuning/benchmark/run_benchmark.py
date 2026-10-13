@@ -68,6 +68,7 @@ EXPERIMENTS = {
     "model10": {f"model10-{m}": dict(model=m, train_fraction=0.1) for m in train.MODEL_ZOO},
     # Baseline yang sama dengan seed berbeda (seed juga mengubah split train/valid) -> ukuran noise
     "seed": {f"seed-{s}": dict(seed=s) for s in (1, 2, 3, 4)},
+    "seed10": {f"seed10-{s}": {**LOWDATA, **NOREG, "seed": s} for s in (1, 2, 3, 4)},
     "bs": {
         "bs-32": dict(batch_size=32),
         "bs-64": dict(batch_size=64),
