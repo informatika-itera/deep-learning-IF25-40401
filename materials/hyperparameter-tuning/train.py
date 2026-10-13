@@ -62,28 +62,28 @@ CONFIG = dict(
     momentum=0.9,              # dipakai sgd & rmsprop
     nesterov=True,             # dipakai sgd
     batch_size=64,
-    epochs=10,
+    epochs=30,                 # RTX 5070: ±2,5–4,5 menit untuk 30 epoch (bottleneck: loading data di CPU)
     grad_clip=None,            # None = tanpa clipping; mis. 1.0
     label_smoothing=0.0,       # 0.0 – 0.2
 
     # --- LR scheduler -------------------------------------------------------------
     scheduler="cosine",        # "none" | "step" | "cosine" | "onecycle" | "plateau"
     warmup_epochs=1,           # warmup linear (tidak dipakai onecycle & plateau)
-    step_size=3,               # scheduler "step": turunkan lr tiap N epoch ...
+    step_size=10,              # scheduler "step": turunkan lr tiap N epoch ...
     gamma=0.1,                 # ... dikali gamma
-    plateau_patience=1,        # scheduler "plateau": turunkan lr jika val_loss tak membaik N epoch
+    plateau_patience=2,        # scheduler "plateau": turunkan lr jika val_loss tak membaik N epoch
     min_lr=1e-6,
 
     # --- Early stopping -----------------------------------------------------------
     early_stopping=True,
-    patience=3,                # berhenti jika metrik tak membaik selama N epoch
+    patience=5,                # berhenti jika metrik tak membaik selama N epoch
     min_delta=1e-3,
     monitor="val_loss",        # "val_loss" (min) | "val_acc" (max) | "val_f1" (max)
 
     # --- Lain-lain ----------------------------------------------------------------
     seed=42,
     amp=True,                  # mixed precision (hanya aktif di GPU CUDA)
-    num_workers=4,
+    num_workers=8,             # proses loading data paralel; sesuaikan jumlah core CPU (Colab: 2)
     log_images=True,           # tabel contoh prediksi test set di W&B
 
     # --- Weights & Biases ---------------------------------------------------------

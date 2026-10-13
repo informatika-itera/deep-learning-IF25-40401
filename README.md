@@ -16,7 +16,8 @@ Website ini di-hosting menggunakan GitHub Pages pada domain organisasi:
 | [`/rps/`](https://informatika-itera.github.io/deep-learning-IF25-40401/rps/) | **Silabus Lengkap (RPS)** | Rencana Pembelajaran Semester 16 minggu, CPMK, distribusi nilai, komponen evaluasi, studio proyek, dan tugas besar. |
 | [`/rps-benchmark/`](https://informatika-itera.github.io/deep-learning-IF25-40401/rps-benchmark/) | **Benchmark Kurikulum** | Analisis komparasi RPS terhadap 8 universitas top dunia (Stanford CS230/CS231n, MIT 6.S191, CMU 11-785, UC Berkeley, Oxford, ETH Zurich, Princeton). |
 | [`/studio-2/`](https://informatika-itera.github.io/deep-learning-IF25-40401/studio-2/) | **Kompetisi Studio 2** | Kompetisi klasifikasi 5 jenis sampah: dataset, jadwal 3× preview skor (14, 21, 25 Okt 2026), aturan, format submission, dan starter kit (`materials/studio-2/starter-kit/`). |
-| [`/materials/`](https://informatika-itera.github.io/deep-learning-IF25-40401/materials/) | **Berkas Slide & Panduan PDF** | Berkas PDF LaTeX Beamer untuk Pertemuan 4 (`pertemuan-04-cnn-from-scratch.pdf`), Pertemuan 5 (`pertemuan-05-cnn-variations.pdf`), dan Pertemuan 6 (`pertemuan-06-finetuning-imagenet.pdf`). |
+| [`/materials/`](https://informatika-itera.github.io/deep-learning-IF25-40401/materials/) | **Berkas Slide & Panduan PDF** | Berkas PDF LaTeX Beamer untuk Pertemuan 4 (`pertemuan-04-cnn-from-scratch.pdf`), Pertemuan 5 (`pertemuan-05-cnn-variations.pdf`), dan Pertemuan 6 (`pertemuan-06-finetuning-imagenet.pdf`, materi pendamping `pertemuan-06-hyperparameter-tuning.pdf`). |
+| [`/materials/hyperparameter-tuning/`](https://github.com/informatika-itera/deep-learning-IF25-40401/tree/main/materials/hyperparameter-tuning) | **Eksperimen Hyperparameter (P6)** | `train.py` satu file (blok `CONFIG`, tanpa argparse): 5 backbone timm teringan (CNN & ViT) pada Imagenette dengan logging Weights & Biases; 30 epoch ±2,5–4,5 menit per run (RTX 5070) untuk demo kartu eksperimen di slide. |
 | [`/materials/notebooks/`](https://informatika-itera.github.io/deep-learning-IF25-40401/materials/notebooks/) | **Notebook Hands-on (3 Sesi)** | Tiga modul Jupyter Notebook interaktif Pertemuan 4: konvolusi from scratch, LeNet-5 PyTorch, dan analisis feature map & ablasi (dengan tombol 1-klik Open in Colab). |
 
 ---
@@ -48,6 +49,9 @@ dl_web/
 │   ├── pertemuan-05-cnn-variations.pdf    # PDF Slide Pertemuan 5
 │   ├── pertemuan-06-finetuning-imagenet.tex # Naskah Beamer LaTeX Pertemuan 6 (Placeholder)
 │   ├── pertemuan-06-finetuning-imagenet.pdf # PDF Panduan Studio Pertemuan 6 (Placeholder)
+│   ├── pertemuan-06-hyperparameter-tuning.tex # Beamer P6 (pendamping): hyperparameter tuning CNN & ViT
+│   ├── pertemuan-06-hyperparameter-tuning.pdf # PDF slide pendamping P6
+│   ├── hyperparameter-tuning/   # P6: train.py (CONFIG manual + W&B), requirements
 │   ├── slide_preview-01.png               # Thumbnail slide 1
 │   └── slide_preview-02.png               # Thumbnail slide 2
 ├── vite.config.js               # Konfigurasi bundler Vite (multi-page entry & rewrite URL)
