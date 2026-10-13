@@ -1,0 +1,6 @@
+# Pertemuan 6 — eksperimen hyperparameter (train.py)
+torch>=2.1.0
+torchvision>=0.17.0     # datasets.Imagenette, transforms.v2 (MixUp/CutMix)
+timm>=1.0.0             # backbone pretrained: ResNet, MobileNetV3, EfficientNet, ConvNeXt, ViT
+wandb>=0.17.0           # experiment tracking
+numpy>=1.22.0

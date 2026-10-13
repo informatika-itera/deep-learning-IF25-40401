@@ -15,3 +15,8 @@ data/
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
+
+# Eksperimen hyperparameter (materials/hyperparameter-tuning)
+wandb/
+checkpoints/
+/materials/hyperparameter-tuning/results.csv
