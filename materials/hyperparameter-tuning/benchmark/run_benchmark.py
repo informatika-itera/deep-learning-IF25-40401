@@ -42,6 +42,8 @@ EXPERIMENTS = {
         "sched-cosine-warmup": dict(scheduler="cosine", warmup_epochs=1),
         "sched-onecycle": dict(scheduler="onecycle"),
         "sched-plateau": dict(scheduler="plateau", warmup_epochs=0),
+        "sched-none-lr1e-2": dict(scheduler="none", warmup_epochs=0, lr=1e-2),
+        "sched-onecycle-lr1e-2": dict(scheduler="onecycle", lr=1e-2),
     },
     "ft": {
         "ft-scratch": dict(pretrained=False, backbone_lr_mult=1.0),
@@ -64,6 +66,8 @@ EXPERIMENTS = {
     },
     "model": {f"model-{m}": dict(model=m) for m in train.MODEL_ZOO},
     "model10": {f"model10-{m}": dict(model=m, train_fraction=0.1) for m in train.MODEL_ZOO},
+    # Baseline yang sama dengan seed berbeda (seed juga mengubah split train/valid) -> ukuran noise
+    "seed": {f"seed-{s}": dict(seed=s) for s in (1, 2, 3, 4)},
     "bs": {
         "bs-32": dict(batch_size=32),
         "bs-64": dict(batch_size=64),

@@ -52,7 +52,7 @@ CONFIG = dict(
     pretrained=True,           # False = latih dari nol (bandingkan!)
     freeze_backbone=False,     # True = linear probing (hanya head yang dilatih)
     dropout=0.0,               # dropout sebelum classifier head (0.0 – 0.5)
-    drop_path=0.0,             # stochastic depth, untuk convnext/vit/efficientnet (0.0 – 0.2)
+    drop_path=0.0,             # stochastic depth: buang cabang residual secara acak (0.0 – 0.2)
 
     # --- Optimizer ----------------------------------------------------------------
     optimizer="adamw",         # "sgd" | "adam" | "adamw" | "rmsprop"
