@@ -112,6 +112,9 @@
   },
 }
 
+% --- Contoh citra dataset (frame Imagenette) ---
+\newcommand{\sampel}[2]{\begin{tabular}{@{}c@{}}\includegraphics[width=1.38cm]{figures/imagenette/#1.jpg}\\[-1pt]{\tiny #2}\end{tabular}}
+
 % --- Section divider macro ---
 \newcommand{\bagian}[3]{%
 \begin{frame}[plain]
@@ -150,12 +153,14 @@
     \framesubtitle{Materi pendamping Studio Proyek 2}
 
     \begin{exampleblock}{Setelah mengikuti sesi ini, mahasiswa diharapkan mampu:}
+        \footnotesize
         \begin{enumerate}
             \item \textbf{Membedakan parameter dan hyperparameter} serta memprioritaskannya
-            \item \textbf{Merancang eksperimen yang jujur}: split train/val, satu kunci divariasikan per eksperimen, hipotesis tertulis
+            \item \textbf{Merancang eksperimen yang jujur}: protokol evaluasi (hold-out, $k$-fold, multi-seed), satu kunci per eksperimen, hipotesis tertulis
             \item \textbf{Memilih learning rate, optimizer, batch size, dan scheduler} berdasarkan kurva training
             \item \textbf{Mendiagnosis underfitting/overfitting} dan memilih regularisasi serta early stopping yang tepat
-            \item \textbf{Membandingkan strategi fine-tuning} (scratch, linear probing, full FT) pada CNN dan ViT
+            \item \textbf{Membandingkan strategi fine-tuning} (scratch, linear probing, full FT) dan \textbf{inisialisasi bobot} pada CNN dan ViT
+            \item \textbf{Menjelaskan presisi numerik} (fp16 AMP, fp32, fp64) dan dampaknya pada kecepatan, memori, dan akurasi
             \item \textbf{Melacak dan membandingkan eksperimen} dengan Weights \& Biases
         \end{enumerate}
     \end{exampleblock}
@@ -197,7 +202,7 @@
             \node[lyr, minimum width=4.6cm, below=of u] (t) {\textbf{2. Tebak} hasilnya (kolom \emph{Tebakan})};
             \node[lyrO, minimum width=4.6cm, below=of t] (r) {\textbf{3. Run} \texttt{python train.py} (loop)};
             \node[lyrB, minimum width=4.6cm, below=of r] (i) {\textbf{4. Isi} tabel dari W\&B / ringkasan};
-            \node[lyr, minimum width=4.6cm, below=of i] (b) {\textbf{5. Bandingkan} dengan noise (Kartu 0)};
+            \node[lyr, minimum width=4.6cm, below=of i] (b) {\textbf{5. Simpulkan} (hati-hati selisih kecil)};
             \draw[arr] (u) -- (t); \draw[arr] (t) -- (r); \draw[arr] (r) -- (i); \draw[arr] (i) -- (b);
         \end{tikzpicture}
         \end{center}
@@ -237,12 +242,87 @@
 
 %================================================
 \section{Metodologi Eksperimen}
-\bagian{BAGIAN 01 · METODOLOGI}{Eksperimen yang Jujur}{Split Data, Satu Kunci per Eksperimen, dan Prioritas}
+\bagian{BAGIAN 01 · METODOLOGI}{Eksperimen yang Jujur}{Dataset, Protokol Evaluasi, Satu Kunci per Eksperimen}
 
 %------------------------------------------------
 \begin{frame}
-    \frametitle{Dua Split, Dua Peran}
-    \framesubtitle{Train untuk belajar, val untuk memilih}
+    \frametitle{Dataset: Imagenette}
+    \framesubtitle{10 kelas ImageNet yang mudah dibedakan}
+    \footnotesize
+
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \vspace{2pt}
+        \setlength{\tabcolsep}{1pt}
+        \begin{tabular}{ccccc}
+            \sampel{tench}{tench (ikan)} & \sampel{springer}{English springer} & \sampel{cassette}{cassette player} & \sampel{chainsaw}{chain saw} & \sampel{church}{church} \\[2pt]
+            \sampel{horn}{French horn} & \sampel{garbagetruck}{garbage truck} & \sampel{gaspump}{gas pump} & \sampel{golfball}{golf ball} & \sampel{parachute}{parachute} \\
+        \end{tabular}
+
+        \vspace{0.15cm}
+        {\scriptsize\color{dlMute} Satu contoh per kelas dari split \texttt{val}, versi 160 px.}
+
+        \column{0.46\textwidth}
+        \begin{itemize}
+            \item J.\ Howard (fast.ai, 2019): subset ImageNet untuk \textbf{eksperimen cepat}; versi \textbf{160 px} ($\pm$94 MB, unduh otomatis).
+            \item \textbf{train} 9.469 (858--993/kelas) · \textbf{val} 3.925 (357--419/kelas): \textbf{hampir seimbang}, akurasi bermakna.
+            \item \texttt{train} dari ImageNet train, \texttt{val} dari ImageNet val.
+        \end{itemize}
+        \begin{alertblock}{Konsekuensi}
+            Bobot pretrained ImageNet \textbf{sudah melihat} kelas ini, jadi fine-tuning sangat mudah. Versi sulit: \textbf{Imagewoof} (10 ras anjing).
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+    \frametitle{Protokol Evaluasi}
+    \framesubtitle{Dari yang termurah sampai yang paling bisa dipercaya}
+    \footnotesize
+
+    \begin{columns}[T]
+        \column{0.36\textwidth}
+        \textbf{5-fold cross-validation}
+        \begin{center}
+        \begin{tikzpicture}[x=0.55cm, y=0.42cm]
+            \foreach \r in {0,...,4} {
+                \node[font=\scriptsize, anchor=east] at (-0.1,-\r) {fold \the\numexpr\r+1\relax};
+                \foreach \c in {0,...,4} {
+                    \ifnum\c=\r \fill[dlBlue!25, draw=dlBlue] (\c,-\r-0.35) rectangle (\c+0.92,-\r+0.35);
+                    \else \fill[dlTeal!20, draw=dlTeal] (\c,-\r-0.35) rectangle (\c+0.92,-\r+0.35); \fi
+                }
+            }
+            \node[font=\scriptsize, anchor=west] at (0,-5.0) {\textcolor{dlTeal}{\rule{6pt}{6pt}} train \quad \textcolor{dlBlue}{\rule{6pt}{6pt}} val};
+        \end{tikzpicture}
+        \end{center}
+        {\scriptsize Setiap data jadi val tepat sekali; skor = \textbf{rata-rata $\pm$ std} dari 5 run. \textbf{Stratified}: proporsi kelas di tiap fold sama dengan data aslinya.}
+
+        \column{0.60\textwidth}
+        \scriptsize
+        \renewcommand{\arraystretch}{1.25}
+        \begin{tabular}{>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}p{3.6cm}c}
+            \toprule
+            \textbf{Protokol} & \textbf{Kapan dipakai} & \textbf{Biaya} \\
+            \midrule
+            \textbf{Train / val tetap} & iterasi cepat, demo kelas \textbf{(kode kita)} & 1$\times$ \\
+            Train / val / test & butuh angka akhir yang jujur (paper, laporan) & 1$\times$ \\
+            $k$-fold CV ($k$=5) & data sedikit; butuh error bar & 5$\times$ \\
+            Stratified $k$-fold & + kelas tidak seimbang (mis.\ data medis, sampah) & 5$\times$ \\
+            Multi-seed & mengukur noise init, urutan batch, augmentasi & $n\times$ \\
+            \bottomrule
+        \end{tabular}
+
+        \vspace{0.15cm}
+        \begin{exampleblock}{Bisa digabung}
+            Stratified 5-fold $\times$ 3 seed = 15 run per konfigurasi. Laporkan \textbf{mean $\pm$ std}; selisih yang lebih kecil dari std \con{belum tentu nyata}.
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+    \frametitle{Pilihan Kita: Train/Val Tetap}
+    \framesubtitle{Demi waktu kelas: satu split, satu seed}
     \footnotesize
 
     \begin{center}
@@ -260,16 +340,20 @@
     \end{tikzpicture}
     \end{center}
 
-    \vspace{0.1cm}
+    \vspace{0.05cm}
     \begin{columns}[T]
         \column{0.48\textwidth}
-        \begin{block}{Skor val sedikit optimistis}
-            Kita \textbf{memilih} konfigurasi terbaik memakai val, jadi val ikut ``dilatih'' oleh keputusan kita. Untuk angka akhir yang jujur dibutuhkan data yang \con{tidak pernah} dipakai memilih.
+        \begin{block}{Kenapa cukup ini?}
+            Satu run $\pm$1 menit; stratified 5-fold $\times$ 3 seed membuat setiap kartu \textbf{15$\times$ lebih lama}. Split tetap + \texttt{seed=42} membuat semua run bisa dibandingkan dan muat di satu sesi kelas.
         \end{block}
         \column{0.48\textwidth}
-        \begin{exampleblock}{Analogi di Studio 2}
-            Split lokal (\texttt{my\_val/}) = val Anda; tuning hanya pada \texttt{my\_val/}. \textbf{Validation set tersembunyi} milik asisten berperan sebagai data ``tak tersentuh'' tadi.
-        \end{exampleblock}
+        \begin{alertblock}{Harganya (bias)}
+            \begin{itemize}
+                \item skor val \con{sedikit optimistis}: val juga dipakai memilih
+                \item satu seed: selisih kecil (mis.\ $<$0,5 poin) bisa kebetulan
+            \end{itemize}
+            Studio 2: \textbf{validation set tersembunyi} milik asisten = test set.
+        \end{alertblock}
     \end{columns}
 \end{frame}
 
@@ -297,54 +381,14 @@
         \textbf{Aturan main}
         \begin{itemize}
             \item \textbf{Satu kunci divariasikan per eksperimen} (boleh ditambah \texttt{model}) --- dua kunci sekaligus = efek tak bisa diatribusikan, dan jumlah run berlipat.
-            \item \textbf{Seed tetap} (\texttt{seed=[42]}), split tetap.
+            \item \textbf{Seed tetap} (\texttt{seed=42}), split tetap.
             \item \textbf{Catat semuanya}, termasuk run yang gagal.
-            \item \textbf{Ukur noise dulu}: ulangi baseline dengan \textbf{seed berbeda}; selisih lebih kecil dari noise = \con{bukan temuan}.
+            \item \textbf{Satu seed} demi waktu: selisih kecil \con{belum tentu temuan}; konfirmasi dengan multi-seed / $k$-fold di luar kelas.
             \item Hipotesis ditulis \textbf{sebelum} run, bukan setelah melihat hasil.
         \end{itemize}
     \end{columns}
 \end{frame}
 
-%------------------------------------------------
-\begin{frame}
-    \frametitle{Kartu 0: Seberapa Besar Noise?}
-    \framesubtitle{Baseline yang sama, seed berbeda}
-    \footnotesize
-
-    \begin{columns}[T]
-        \column{0.40\textwidth}
-        \begin{block}{List di CONFIG}
-            {\ttfamily\scriptsize seed=[42, 1, 2]\\model=["resnet18", "vit\_tiny"]\\\# 3 x 2 = 6 run, $\pm$6 menit}
-        \end{block}
-        \textbf{Hipotesis} (tulis di \texttt{notes})
-        \begin{itemize}
-            \item Hasil \textbf{berbeda} walau konfigurasi sama: seed mengubah init head, urutan batch, dan augmentasi.
-            \item Seed sama $\Rightarrow$ hasil identik: run ulang tanpa ganti seed \textbf{tidak} mengukur noise.
-        \end{itemize}
-
-        \column{0.56\textwidth}
-        \vspace{2pt}
-        \scriptsize
-        \setlength{\tabcolsep}{4pt}
-        \renewcommand{\arraystretch}{1.6}
-        \arrayrulecolor{dlHairline}
-        \begin{tabular}{|l|c|c|c|c|}
-            \rowcolor{dlSoftCloud} & \multicolumn{2}{c|}{\textbf{ResNet-18}} & \multicolumn{2}{c|}{\textbf{ViT-Tiny}} \\
-            \rowcolor{dlSoftCloud} \textbf{Seed} & \textbf{Best ep} & \textbf{Val acc} & \textbf{Best ep} & \textbf{Val acc} \\ \hline
-            42 (baseline) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            1 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            \textbf{Rentang} (maks $-$ min) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-        \end{tabular}
-        \arrayrulecolor{black}
-
-        \vspace{0.12cm}
-        {\scriptsize Rentang ini = \textbf{ambang} untuk semua kartu berikutnya: selisih lebih kecil dari ini \con{belum tentu nyata}.}
-
-        \vspace{0.1cm}
-        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} group \texttt{seed}; \texttt{val/acc} keenam run bertumpuk di satu panel.}
-    \end{columns}
-\end{frame}
 
 %------------------------------------------------
 \begin{frame}
@@ -367,6 +411,7 @@
         \cellcolor{dlSoftCloud}3 & Regularisasi & penting saat data sedikit / overfit & \texttt{augment}, \texttt{dropout} \\
         \cellcolor{dlSoftCloud}3 & Early stopping & hemat waktu, checkpoint terbaik & \texttt{patience}, \texttt{monitor} \\
         \cellcolor{dlSoftCloud}4 & Arsitektur \& resolusi & ganti setelah resep training stabil & \texttt{model}, \texttt{img\_size} \\
+        \cellcolor{dlSoftCloud}-- & Presisi numerik & kecepatan \& memori, bukan akurasi & \texttt{precision} \\
         \bottomrule
     \end{tabular}
     \end{center}
@@ -432,19 +477,18 @@
 
 %------------------------------------------------
 \begin{frame}
-    \frametitle{Dataset \& Lima Backbone}
-    \framesubtitle{Imagenette 160 px · timm pretrained}
+    \frametitle{Lima Backbone}
+    \framesubtitle{timm, pretrained ImageNet}
     \footnotesize
 
     \begin{columns}[T]
         \column{0.30\textwidth}
-        \textbf{Imagenette} (J. Howard, fast.ai)
         \begin{itemize}
-            \item subset \textbf{10 kelas} ImageNet yang mudah dibedakan (ikan tench, gereja, parasut, truk sampah, \ldots)
-            \item 9.469 train · 3.925 val · versi 160 px $\approx$ 94 MB
-            \item unduh otomatis lewat \texttt{torchvision}
+            \item varian \textbf{teringan} tiap keluarga: 3 CNN klasik, 1 CNN modern, 1 Transformer
+            \item bobot ImageNet-1k (ViT-Tiny: ImageNet-21k $\to$ 1k)
+            \item head 1000 kelas diganti head \textbf{10 kelas acak}
         \end{itemize}
-        {\scriptsize\color{dlMute} Kenapa bukan data sampah? Agar konfigurasi terbaik untuk kompetisi tetap menjadi temuan kelompok Anda sendiri.}
+        {\scriptsize\color{dlMute} Kenapa Imagenette, bukan data sampah? Agar konfigurasi terbaik untuk kompetisi tetap menjadi temuan kelompok Anda sendiri.}
 
         \column{0.66\textwidth}
         \vspace{4pt}
@@ -529,6 +573,8 @@ CONFIG = dict(
     # --- Model ---
     model=["resnet18", "vit_tiny"],
     finetune=["full_ft"],   # scratch | linear_probe
+    init=["default"],       # khusus scratch: kaiming
+                            # | xavier | normal
     backbone_lr_mult=[0.1], # lr backbone = lr * 0.1
     dropout=[0.0], drop_path=[0.0],
     # --- Optimizer ---
@@ -546,8 +592,10 @@ CONFIG = dict(
     warmup_epochs=[1],
     # --- Early stopping ---
     patience=[3],           # None = tanpa ES
-    seed=[42],
+    # --- Presisi numerik ---
+    precision=["fp16_amp"], # fp32 | fp64
     # --- Tetap (bukan list) ---
+    seed=42,
     monitor="val_loss",     # val_acc | val_f1
     wandb_project="if25-p6-hyperparameter",
     wandb_mode="online",    # offline | disabled
@@ -1156,7 +1204,7 @@ wandb.finish()
         \arrayrulecolor{black}
 
         \vspace{0.12cm}
-        {\scriptsize $^{*}$train $-$ val di epoch terakhir; dengan augmentasi/MixUp akurasi train dihitung pada citra teraugmentasi, jadi gap bisa negatif. List berisi nilai Kartu 5 (mis.\ \texttt{0.0}) membuat baris baseline ikut dijalankan ulang. Noise di data sedikit lebih besar: \texttt{seed=[42, 1]}.}
+        {\scriptsize $^{*}$train $-$ val di epoch terakhir; dengan augmentasi/MixUp akurasi train dihitung pada citra teraugmentasi, jadi gap bisa negatif. List berisi nilai Kartu 5 (mis.\ \texttt{0.0}) membuat baris baseline ikut dijalankan ulang. Dengan data sedikit, satu seed makin rawan kebetulan.}
 
         \vspace{0.1cm}
         {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{epoch/gap\_acc} semua run dalam satu panel.}
@@ -1205,8 +1253,8 @@ wandb.finish()
 \end{frame}
 
 %================================================
-\section{Strategi Fine-tuning \& Pilihan Model}
-\bagian{BAGIAN 06 · FINE-TUNING}{Fine-tuning \& CNN vs ViT}{Bagian Mana yang Dilatih, dan Seberapa Cepat}
+\section{Fine-tuning, Pilihan Model \& Inisialisasi}
+\bagian{BAGIAN 06 · FINE-TUNING}{Fine-tuning, CNN vs ViT \& Init}{Titik Awal, Bagian yang Dilatih, dan Seberapa Cepat}
 
 %------------------------------------------------
 \begin{frame}
@@ -1328,9 +1376,233 @@ wandb.finish()
     \end{columns}
 \end{frame}
 
+%------------------------------------------------
+\begin{frame}
+    \frametitle{Inisialisasi Bobot}
+    \framesubtitle{Hanya berarti saat melatih dari nol}
+    \footnotesize
+
+    \begin{columns}[T]
+        \column{0.52\textwidth}
+        Satu layer $y = \sum_{i=1}^{n_{\text{in}}} w_i x_i$:
+        \[ \mathrm{Var}(y) = n_{\text{in}}\,\mathrm{Var}(w)\,\mathrm{Var}(x) \]
+
+        \renewcommand{\arraystretch}{1.3}
+        \begin{tabular}{ll>{\raggedright\arraybackslash}p{2.9cm}}
+            \toprule
+            \texttt{init} & $\mathrm{Var}(w)$ & Ide \\
+            \midrule
+            \texttt{normal} & $0{,}01^2$ & tetap, abaikan ukuran layer \\
+            \texttt{xavier} & $\frac{2}{n_{\text{in}}+n_{\text{out}}}$ & jaga varians maju \& mundur \\
+            \texttt{kaiming} & $\frac{2}{n_{\text{in}}}$ & ReLU membuang separuh $\Rightarrow \times 2$ \\
+            \bottomrule
+        \end{tabular}
+
+        \vspace{0.15cm}
+        {\scriptsize \texttt{default} = bawaan timm (umumnya Kaiming untuk CNN, truncated normal untuk ViT). Bobot pretrained \textbf{tidak} ditimpa: \texttt{init} hanya berlaku untuk \texttt{finetune="scratch"}.}
+
+        \column{0.44\textwidth}
+        \begin{tikzpicture}
+        \begin{axis}[dlaxis, width=\linewidth, height=3.9cm, xmin=0, xmax=18, ymode=log, ymin=1e-12, ymax=10,
+            xlabel={kedalaman layer}, ylabel={std aktivasi}, legend style={at={(0.5,1.03)}, anchor=south, legend columns=3},
+            ytick={1e-12,1e-8,1e-4,1}]
+            \addplot[dlTeal, very thick, domain=0:18, samples=19] {1};
+            \addlegendentry{kaiming}
+            \addplot[dlBlue, domain=0:18, samples=19] {0.5^(x/2)};
+            \addlegendentry{xavier}
+            \addplot[dlOrange, densely dashed, domain=0:18, samples=19] {0.0288^(x/2)};
+            \addlegendentry{normal}
+        \end{axis}
+        \end{tikzpicture}
+        {\scriptsize\color{dlMute} Ilustrasi teoretis: jaringan polos ReLU tanpa normalisasi, $n_{\text{in}} = n_{\text{out}} = 3\cdot3\cdot64 = 576$. Sinyal yang mengecil ke nol = \textbf{vanishing}, gradien ikut hilang.}
+
+        \vspace{0.05cm}
+        {\scriptsize BatchNorm/LayerNorm \& residual membuat jaringan modern \textbf{jauh lebih toleran} terhadap init.}
+    \end{columns}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+    \frametitle{Kartu 10: Inisialisasi Bobot}
+    \framesubtitle{Dari nol, tanpa bobot pretrained}
+    \footnotesize
+
+    \begin{columns}[T]
+        \column{0.42\textwidth}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize finetune=["scratch"]\\init=["default", "kaiming",\\\hspace*{2.6em}"xavier", "normal"]\\model=["resnet18", "vit\_tiny"]\\\# 4 x 2 = 8 run, $\pm$7 menit}
+        \end{block}
+        \textbf{Hipotesis} (tulis di \texttt{notes})
+        \begin{itemize}
+            \item \texttt{normal} (std tetap 0,01) paling buruk: sinyal mengecil di tiap layer.
+            \item ResNet-18 (BatchNorm + residual) \textbf{toleran}; ViT lebih sensitif.
+            \item Semua jauh di bawah pretrained (Kartu 8).
+        \end{itemize}
+
+        \column{0.54\textwidth}
+        \vspace{2pt}
+        \scriptsize
+        \setlength{\tabcolsep}{4pt}
+        \renewcommand{\arraystretch}{1.35}
+        \arrayrulecolor{dlHairline}
+        \begin{tabular}{|l|c|c|c|}
+            \rowcolor{dlSoftCloud} & & \multicolumn{2}{c|}{\textbf{Val acc}} \\
+            \rowcolor{dlSoftCloud} \textbf{\texttt{init}} & \textbf{Tebakan} & \textbf{ResNet-18} & \textbf{ViT-Tiny} \\ \hline
+            \texttt{default} (timm) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            \texttt{kaiming} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            \texttt{xavier} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            \texttt{normal} (0; 0,01) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            \textit{pretrained (Kartu 8)} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+        \end{tabular}
+        \arrayrulecolor{black}
+
+        \vspace{0.12cm}
+        {\scriptsize Satu seed: selisih $<$1 poin \con{belum tentu nyata}. \texttt{init} selain \texttt{default} dengan \texttt{finetune} pretrained $\Rightarrow$ \texttt{ValueError} (bobot pretrained tidak ditimpa).}
+
+        \vspace{0.1cm}
+        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{train/loss} beberapa ratus step pertama; init buruk = loss lama tertahan di $\ln 10 \approx 2{,}3$.}
+    \end{columns}
+\end{frame}
+
+%================================================
+\section{Presisi Numerik}
+\bagian{BAGIAN 07 · PRESISI}{fp16 AMP vs fp32 vs fp64}{Berapa Bit yang Benar-Benar Dibutuhkan?}
+
+%------------------------------------------------
+\begin{frame}
+    \frametitle{Format Bilangan Floating-Point}
+    \framesubtitle{tanda · eksponen (rentang) · mantissa (ketelitian)}
+    \footnotesize
+
+    \begin{center}
+    \begin{tikzpicture}[x=0.19cm, y=0.5cm]
+        \foreach \row/\name/\e/\m in {0/fp64/11/52, 1/fp32/8/23, 2/fp16/5/10} {
+            \node[font=\scriptsize\bfseries, anchor=east] at (-0.6,-\row) {\name};
+            \fill[dlCharcoal] (0,-\row-0.35) rectangle (1,-\row+0.35);
+            \fill[dlOrange!60, draw=dlOrange] (1,-\row-0.35) rectangle (1+\e,-\row+0.35);
+            \node[font=\tiny] at (1+\e/2,-\row) {\e};
+            \fill[dlTeal!35, draw=dlTeal] (1+\e,-\row-0.35) rectangle (1+\e+\m,-\row+0.35);
+            \node[font=\tiny] at (1+\e+\m/2,-\row) {\m};
+        }
+        \node[font=\scriptsize, anchor=west] at (66,0) {\textcolor{dlCharcoal}{\rule{6pt}{6pt}} tanda};
+        \node[font=\scriptsize, anchor=west] at (66,-1) {\textcolor{dlOrange}{\rule{6pt}{6pt}} eksponen};
+        \node[font=\scriptsize, anchor=west] at (66,-2) {\textcolor{dlTeal}{\rule{6pt}{6pt}} mantissa};
+    \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.05cm}
+    \begin{columns}[T]
+        \column{0.54\textwidth}
+        \scriptsize
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{lrrr}
+            \toprule
+            & \textbf{maks} & \textbf{ketelitian} $\varepsilon$ & \textbf{byte/bobot} \\
+            \midrule
+            fp64 & $1{,}8\cdot10^{308}$ & $2{,}2\cdot10^{-16}$ & 8 \\
+            fp32 & $3{,}4\cdot10^{38}$ & $1{,}2\cdot10^{-7}$ & 4 \\
+            fp16 & $65.504$ & $9{,}8\cdot10^{-4}$ & 2 \\
+            \bottomrule
+        \end{tabular}
+
+        \vspace{0.1cm}
+        {\scriptsize $\varepsilon$ = selisih terkecil terhadap 1. Di fp16, $1 + 0{,}0001 = 1$: update kecil \con{hilang}. Bilangan $< 6\cdot10^{-8}$ menjadi 0 (\textbf{underflow}).}
+
+        \column{0.42\textwidth}
+        \textbf{Di GPU}
+        \begin{itemize}
+            \item fp32: standar training sejak awal deep learning
+            \item fp16: dijalankan \textbf{Tensor Core}, memori aktivasi separuh
+            \item fp64: simulasi ilmiah; GPU consumer (RTX 5070) hanya 1/64 throughput fp32
+        \end{itemize}
+        {\scriptsize\color{dlMute} bf16 (8/7 bit): rentang fp32, populer untuk LLM; tidak kita uji.}
+    \end{columns}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}[fragile]
+    \frametitle{Mixed Precision (AMP)}
+    \framesubtitle{Micikevicius et al.\ (2018)}
+    \footnotesize
+
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{enumerate}
+            \item \textbf{autocast}: konvolusi \& matmul dihitung di fp16; operasi sensitif (softmax, loss, reduksi) tetap fp32.
+            \item \textbf{Bobot master fp32}: update $\eta\,g \approx 10^{-6}$ akan hilang jika bobot disimpan di fp16.
+            \item \textbf{GradScaler}: loss dikali $S$ (mis.\ $2^{16}$) sebelum backward agar gradien kecil tidak underflow; dibagi $S$ lagi sebelum \texttt{step}. Jika muncul Inf/NaN: step dilewati, $S$ diperkecil.
+        \end{enumerate}
+        {\scriptsize\color{dlMute} \texttt{fp16\_amp} hanya aktif di GPU CUDA; di MPS/CPU sama dengan fp32. fp64 tidak didukung MPS.}
+
+        \column{0.48\textwidth}
+\begin{lstlisting}[style=py]
+# train.py, train_one_epoch (fp16_amp)
+scaler = torch.amp.GradScaler("cuda")
+with torch.autocast("cuda", dtype=torch.float16):
+    logits = model(x)
+    loss = loss_fn(logits, y)
+opt.zero_grad()
+scaler.scale(loss).backward()  # loss * S
+scaler.unscale_(opt)           # gradien / S
+scaler.step(opt)               # lewati jika Inf
+scaler.update()                # atur S
+
+# fp64: model.to(device, torch.float64)
+#       x.to(device, torch.float64)
+\end{lstlisting}
+    \end{columns}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+    \frametitle{Kartu 11: Presisi Numerik}
+    \framesubtitle{Seberapa berpengaruh? Hasil benchmark RTX 5070}
+    \footnotesize
+
+    \begin{columns}[T]
+        \column{0.36\textwidth}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize precision=["fp16\_amp", "fp32",\\\hspace*{5.0em}"fp64"]\\model=["resnet18", "vit\_tiny"]\\epochs=[3]   \# 6 run}
+        \end{block}
+        {\scriptsize fp64 $\pm$2 menit/epoch; demo cepat: \texttt{python benchmark\_precision.py} ($<$1 menit).}
+
+        \scriptsize
+        \begin{itemize}
+            \item \textbf{Akurasi}: praktis sama ($\le$0,15 poin).
+            \item \textbf{fp16 AMP}: 1,7$\times$ lebih cepat di GPU, memori $-$30\%.
+            \item \textbf{fp64}: 20--30$\times$ lebih lambat, memori 2$\times$, \con{tanpa} manfaat.
+        \end{itemize}
+
+        \column{0.60\textwidth}
+        \vspace{2pt}
+        \scriptsize
+        \setlength{\tabcolsep}{3.5pt}
+        \renewcommand{\arraystretch}{1.3}
+        \begin{tabular}{llrrrr}
+            \toprule
+            \textbf{Model} & \textbf{Presisi} & \textbf{citra/s}$^{a}$ & \textbf{s/epoch}$^{b}$ & \textbf{Memori}$^{b}$ & \textbf{Val acc}$^{b}$ \\
+            \midrule
+            ResNet-18 & fp16 AMP & \textbf{3.778} & \textbf{4,2} & \textbf{0,65 GB} & 0,9541 \\
+                      & fp32 & 2.248 & 6,1 & 0,95 GB & 0,9544 \\
+                      & fp64 & 80 & \con{140,7} & 1,79 GB & 0,9557 \\
+            \midrule
+            ViT-Tiny  & fp16 AMP & \textbf{4.286} & \textbf{4,9} & \textbf{0,70 GB} & 0,9801 \\
+                      & fp32 & 2.454 & 5,5 & 1,10 GB & 0,9789 \\
+                      & fp64 & 104 & \con{106,6} & 2,36 GB & 0,9799 \\
+            \bottomrule
+        \end{tabular}
+
+        \vspace{0.12cm}
+        {\scriptsize $^{a}$\texttt{benchmark\_precision.py}: train step, batch 64, 160 px, data sintetis (murni GPU). $^{b}$\texttt{train.py}: 3 epoch data penuh + validasi; median s/epoch, memori GPU puncak, val acc terbaik.}
+
+        \vspace{0.05cm}
+        {\scriptsize Di \texttt{train.py} keunggulan fp16 mengecil (ResNet 1,45$\times$, ViT 1,1$\times$) karena \textbf{loading data di CPU} jadi bottleneck. fp32 sudah memakai TF32 untuk konvolusi (bawaan PyTorch).}
+    \end{columns}
+\end{frame}
+
 %================================================
 \section{Strategi Pencarian \& Resep Praktis}
-\bagian{BAGIAN 07 · PENCARIAN}{Strategi Pencarian \& Resep}{Dari Tebakan Manual ke Pencarian Sistematis}
+\bagian{BAGIAN 08 · PENCARIAN}{Strategi Pencarian \& Resep}{Dari Tebakan Manual ke Pencarian Sistematis}
 
 %------------------------------------------------
 \begin{frame}
@@ -1390,7 +1662,7 @@ wandb.finish()
             \item \textbf{Halus}: hyperparameter prioritas 2--3 pada lr terbaik.
             \item \textbf{Konfirmasi}: ulangi konfigurasi terbaik dengan 2--3 seed.
         \end{enumerate}
-        {\scriptsize\color{dlMute} List di \texttt{CONFIG} di kelas = langkah 1--2 (mis.\ \texttt{seed=[42, 1, 2]} untuk langkah 4). W\&B Sweeps mengotomatiskan langkah 2--3.}
+        {\scriptsize\color{dlMute} List di \texttt{CONFIG} di kelas = langkah 1--2. W\&B Sweeps mengotomatiskan langkah 2--3.}
 
         \column{0.50\textwidth}
         \textbf{W\&B Sweeps} (Bayesian / random / grid)
@@ -1422,7 +1694,7 @@ wandb.agent(sweep_id, function=..., count=20)
     \begin{columns}[T]
         \column{0.58\textwidth}
         \begin{enumerate}
-            \item \textbf{Baseline} starter kit + split lokal tetap; ukur noise dengan 2--3 seed (Kartu 0).
+            \item \textbf{Baseline} starter kit + split lokal tetap (stratified); bila waktu cukup, ukur noise dengan 2--3 seed.
             \item \textbf{Pretrained}; bandingkan \textbf{linear probe} vs \textbf{full FT} di data sendiri (Kartu 8).
             \item \textbf{Sweep lr} dalam skala log; ganti optimizer/batch/backbone $\Rightarrow$ cek lr ulang.
             \item \textbf{AdamW} (bukan Adam + L2), cosine + warmup 1 epoch, \texttt{backbone\_lr\_mult} 0,1.
@@ -1475,7 +1747,7 @@ wandb.agent(sweep_id, function=..., count=20)
 
 %------------------------------------------------
 \begin{frame}
-    \frametitle{Referensi (1/2)}
+    \frametitle{Referensi (1/3)}
     \framesubtitle{Optimasi \& Pencarian}
     \scriptsize
     \begin{thebibliography}{9}
@@ -1493,7 +1765,7 @@ wandb.agent(sweep_id, function=..., count=20)
 
 %------------------------------------------------
 \begin{frame}
-    \frametitle{Referensi (2/2)}
+    \frametitle{Referensi (2/3)}
     \framesubtitle{Regularisasi, Transfer Learning \& Pustaka}
     \scriptsize
     \begin{thebibliography}{9}
@@ -1507,6 +1779,21 @@ wandb.agent(sweep_id, function=..., count=20)
         \bibitem{vit} A. Dosovitskiy et al. An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale. \textit{ICLR}, 2021.
         \bibitem{augreg} A. Steiner et al. How to Train Your ViT? Data, Augmentation, and Regularization in Vision Transformers. \textit{TMLR}, 2022.
         \bibitem{tools} R. Wightman. PyTorch Image Models (timm) · J. Howard. Imagenette · Weights \& Biases Docs. \url{https://docs.wandb.ai}
+    \end{thebibliography}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+    \frametitle{Referensi (3/3)}
+    \framesubtitle{Evaluasi, Inisialisasi \& Presisi}
+    \scriptsize
+    \begin{thebibliography}{9}
+        \bibitem{kohavi} R. Kohavi. A Study of Cross-Validation and Bootstrap for Accuracy Estimation and Model Selection. \textit{IJCAI}, 1995.
+        \bibitem{bouthillier} X. Bouthillier et al. Accounting for Variance in Machine Learning Benchmarks. \textit{MLSys}, 2021.
+        \bibitem{glorot} X. Glorot, Y. Bengio. Understanding the Difficulty of Training Deep Feedforward Neural Networks. \textit{AISTATS}, 2010.
+        \bibitem{he} K. He, X. Zhang, S. Ren, J. Sun. Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification. \textit{ICCV}, 2015.
+        \bibitem{amp} P. Micikevicius et al. Mixed Precision Training. \textit{ICLR}, 2018.
+        \bibitem{imagenette} J. Howard. Imagenette: A Smaller Subset of 10 Easily Classified Classes from ImageNet. \url{https://github.com/fastai/imagenette}, 2019.
     \end{thebibliography}
 \end{frame}
 

@@ -20,6 +20,7 @@ import csv
 import itertools
 import math
 import random
+import statistics
 import time
 from pathlib import Path
 
@@ -50,6 +51,8 @@ CONFIG = dict(
     # --- Model --------------------------------------------------------------------
     model=["resnet18", "vit_tiny"],  # "resnet18" | "mobilenetv3" | "efficientnet_b0" | "convnext_atto" | "vit_tiny"
     finetune=["full_ft"],        # "scratch" (bobot acak) | "linear_probe" (backbone beku) | "full_ft"
+                                 # linear_probe & full_ft = bobot pretrained ImageNet
+    init=["default"],            # hanya untuk scratch: "default" (timm) | "kaiming" | "xavier" | "normal"
     backbone_lr_mult=[0.1],      # lr backbone = lr * mult (1.0 = sama dengan head)
     dropout=[0.0],               # dropout sebelum classifier head (0.0 – 0.5)
     drop_path=[0.0],             # stochastic depth (0.0 – 0.2)
@@ -69,9 +72,11 @@ CONFIG = dict(
     # --- Early stopping -----------------------------------------------------------
     patience=[3],                # berhenti jika val tak membaik N epoch; None = tanpa early stopping
 
-    seed=[42],                   # mis. [42, 1, 2] untuk mengukur noise antar-run
+    # --- Presisi numerik ----------------------------------------------------------
+    precision=["fp16_amp"],      # "fp16_amp" (mixed precision, hanya CUDA) | "fp32" | "fp64" (sangat lambat)
 
     # --- Pengaturan tetap (jarang diubah) -----------------------------------------
+    seed=42,                     # satu seed untuk semua run (demi waktu; selisih kecil bisa saja noise)
     momentum=0.9,                # sgd & rmsprop
     step_size=4,                 # scheduler "step": lr dikali gamma tiap step_size epoch
     gamma=0.1,                   # dipakai "step" & "plateau"
@@ -82,7 +87,6 @@ CONFIG = dict(
     grad_clip=None,              # None = tanpa clipping; mis. 1.0
     data_root="./data",
     num_workers=8,               # proses loading data paralel; sesuaikan jumlah core CPU (Colab: 2)
-    amp=True,                    # mixed precision (hanya aktif di GPU CUDA)
 
     # --- Weights & Biases ---------------------------------------------------------
     wandb_project="if25-p6-hyperparameter",
@@ -134,6 +138,17 @@ def get_device():
     if torch.backends.mps.is_available():
         return "mps"
     return "cpu"
+
+
+def get_dtype(c, device):
+    """Tipe data bobot & input. fp16_amp tetap menyimpan bobot di fp32; autocast menurunkan sebagian operasi ke fp16."""
+    if c["precision"] == "fp64":
+        if device == "mps":
+            raise ValueError("fp64 tidak didukung MPS (Apple Silicon); pakai GPU CUDA atau CPU")
+        return torch.float64
+    if c["precision"] not in ("fp16_amp", "fp32"):
+        raise ValueError(f"precision tidak dikenal: {c['precision']}")
+    return torch.float32
 
 
 def build_optimizer(groups, c):
@@ -206,12 +221,14 @@ class EarlyStopping:
 # =====================================================================================
 def train_one_epoch(model, loader, opt, sched, loss_fn, scaler, c, device, step):
     set_train_mode(model, c)
-    use_amp = c["amp"] and device == "cuda"
+    use_amp = c["precision"] == "fp16_amp" and device == "cuda"
+    dtype = get_dtype(c, device)
     params = [p for p in model.parameters() if p.requires_grad]
     total_loss, correct, n = 0.0, 0, 0
 
     for x, y in loader:
-        x, y = x.to(device), y.to(device)
+        x = x.to(device, dtype)
+        y = y.to(device, dtype) if y.is_floating_point() else y.to(device)  # label soft (MixUp) ikut dtype
         with torch.autocast(device_type="cuda", dtype=torch.float16, enabled=use_amp):
             logits = model(x)
             loss = loss_fn(logits, y)
@@ -240,13 +257,16 @@ def train_one_epoch(model, loader, opt, sched, loss_fn, scaler, c, device, step)
 
 
 @torch.no_grad()
-def evaluate(model, loader, loss_fn, device):
+def evaluate(model, loader, loss_fn, c, device):
     model.eval()
+    use_amp = c["precision"] == "fp16_amp" and device == "cuda"
+    dtype = get_dtype(c, device)
     total_loss, preds, targets = 0.0, [], []
     for x, y in loader:
-        x, y = x.to(device), y.to(device)
-        logits = model(x)
-        total_loss += loss_fn(logits, y).item() * x.size(0)
+        x, y = x.to(device, dtype), y.to(device)
+        with torch.autocast(device_type="cuda", dtype=torch.float16, enabled=use_amp):
+            logits = model(x)
+            total_loss += loss_fn(logits, y).item() * x.size(0)
         preds.append(logits.argmax(1).cpu())
         targets.append(y.cpu())
     preds, targets = torch.cat(preds), torch.cat(targets)
@@ -271,13 +291,16 @@ def run_experiment(c, varied):
     model = build_model(c, NUM_CLASSES)
     data_cfg = timm.data.resolve_data_config(model=model)  # mean/std sesuai bobot pretrained
     train_dl, val_dl, class_names = build_loaders(c, data_cfg["mean"], data_cfg["std"], device)
-    model.to(device)
+    model.to(device, get_dtype(c, device))  # fp64: semua bobot & buffer BatchNorm jadi float64
+    if device == "cuda":
+        torch.cuda.reset_peak_memory_stats()
 
     opt = build_optimizer(parameter_groups(model, c), c)
     sched = build_scheduler(opt, c, len(train_dl))
     train_loss_fn = nn.CrossEntropyLoss(label_smoothing=c["label_smoothing"])
     val_loss_fn = nn.CrossEntropyLoss()
-    scaler = torch.amp.GradScaler("cuda", enabled=c["amp"] and device == "cuda")
+    # GradScaler: kalikan loss sebelum backward agar gradien fp16 yang kecil tidak menjadi 0 (underflow)
+    scaler = torch.amp.GradScaler("cuda", enabled=c["precision"] == "fp16_amp" and device == "cuda")
     stopper = EarlyStopping(c["monitor"], c["patience"], c["min_delta"])
 
     n_params = sum(p.numel() for p in model.parameters())
@@ -298,7 +321,7 @@ def run_experiment(c, varied):
 
     ckpt_path = Path("checkpoints") / f"{name}.pth"
     ckpt_path.parent.mkdir(exist_ok=True)
-    step, best, best_epoch, stopped_epoch = 0, None, 0, c["epochs"]
+    step, best, best_epoch, stopped_epoch, epoch_times = 0, None, 0, c["epochs"], []
     t_start = time.time()
 
     for epoch in range(1, c["epochs"] + 1):
@@ -311,7 +334,8 @@ def run_experiment(c, varied):
             print(f"epoch {epoch:2d} | loss NaN/Inf -> DIVERGEN, run dihentikan (learning rate terlalu besar?)")
             break
 
-        val = evaluate(model, val_dl, val_loss_fn, device)
+        val = evaluate(model, val_dl, val_loss_fn, c, device)
+        epoch_times.append(time.time() - t0)
         if c["scheduler"] == "plateau":
             sched.step(val["loss"])
 
@@ -324,9 +348,9 @@ def run_experiment(c, varied):
         wandb.log({"epoch": epoch, "epoch/train_loss": train_loss, "epoch/train_acc": train_acc,
                    "val/loss": val["loss"], "val/acc": val["acc"], "val/f1": val["f1"],
                    "epoch/gap_acc": train_acc - val["acc"], "epoch/lr": lr,
-                   "epoch/time_sec": time.time() - t0}, step=step)
+                   "epoch/time_sec": epoch_times[-1]}, step=step)
         print(f"epoch {epoch:2d} | train loss {train_loss:.4f} acc {train_acc:.4f} | val loss {val['loss']:.4f}"
-              f" acc {val['acc']:.4f} f1 {val['f1']:.4f} | lr {lr:.2e} | {time.time() - t0:.0f}s"
+              f" acc {val['acc']:.4f} f1 {val['f1']:.4f} | lr {lr:.2e} | {epoch_times[-1]:.0f}s"
               f"{'  *' if is_best else ''}")
 
         if stopper.should_stop:
@@ -335,14 +359,18 @@ def run_experiment(c, varied):
             break
 
     minutes = (time.time() - t_start) / 60
+    sec_per_epoch = statistics.median(epoch_times) if epoch_times else math.nan  # median: abaikan epoch 1 yang lambat
+    gpu_mem_gb = torch.cuda.max_memory_allocated() / 1e9 if device == "cuda" else math.nan
     result = {"run_name": name, "best_epoch": best_epoch, "stopped_epoch": stopped_epoch,
               "val_acc": round(best["acc"], 4) if best else math.nan,
-              "val_f1": round(best["f1"], 4) if best else math.nan, "minutes": round(minutes, 1)}
+              "val_f1": round(best["f1"], 4) if best else math.nan, "minutes": round(minutes, 1),
+              "sec_per_epoch": round(sec_per_epoch, 1), "gpu_mem_gb": round(gpu_mem_gb, 2)}
     print(f"TERBAIK (epoch {best_epoch}) | val acc {result['val_acc']} macro-F1 {result['val_f1']}"
-          f" | {minutes:.1f} menit")
+          f" | {minutes:.1f} menit, {sec_per_epoch:.1f} s/epoch, memori GPU puncak {gpu_mem_gb:.2f} GB")
 
     run.summary.update({"best/val_acc": result["val_acc"], "best/val_f1": result["val_f1"],
-                        "best_epoch": best_epoch, "stopped_epoch": stopped_epoch, "train_time_min": minutes})
+                        "best_epoch": best_epoch, "stopped_epoch": stopped_epoch, "train_time_min": minutes,
+                        "sec_per_epoch": sec_per_epoch, "gpu_mem_gb": gpu_mem_gb})
     if best:
         wandb.log({"val/confusion_matrix": wandb.plot.confusion_matrix(
             y_true=best["targets"].tolist(), preds=best["preds"].tolist(), class_names=class_names)}, step=step)
@@ -376,7 +404,8 @@ def main():
     print("\n===== RINGKASAN (urut val acc) =====")
     for r in sorted(results, key=lambda r: -r["val_acc"] if math.isfinite(r["val_acc"]) else 1):
         print(f"{r['run_name']:<45} val acc {r['val_acc']:<7} f1 {r['val_f1']:<7}"
-              f" best ep {r['best_epoch']:>2}/{r['stopped_epoch']:<2} {r['minutes']} menit")
+              f" best ep {r['best_epoch']:>2}/{r['stopped_epoch']:<2} {r['sec_per_epoch']} s/epoch"
+              f" {r['minutes']} menit")
 
 
 if __name__ == "__main__":

@@ -16,7 +16,8 @@ model=["resnet18", "vit_tiny"],
 hyperparameter-tuning/
 ├── train.py          # CONFIG, loop semua kombinasi, training, evaluasi, logging W&B
 ├── datareader.py     # Imagenette -> DataLoader train & val (augmentasi, MixUp/CutMix)
-├── models.py         # memilih arsitektur + strategi fine-tuning (scratch / linear_probe / full_ft)
+├── models.py         # memilih arsitektur + strategi fine-tuning (scratch / linear_probe / full_ft) + init bobot
+├── benchmark_precision.py  # kecepatan GPU murni: fp16 AMP vs fp32 vs fp64 (data sintetis)
 └── architectures/    # satu file per arsitektur, masing-masing berisi build(...)
     ├── resnet18.py
     ├── mobilenetv3.py
@@ -60,8 +61,10 @@ Imagenette versi 160 px (±94 MB) diunduh otomatis ke `./data` saat pertama kali
 | train | Imagenette `train` | 9.469 | update bobot (diaugmentasi) |
 | val | Imagenette `val` | 3.925 | dievaluasi tiap epoch: early stopping, checkpoint terbaik, membandingkan run |
 
-Karena konfigurasi terbaik dipilih memakai val, skor val terbaik sedikit optimistis. Di Studio 2,
-validation set tersembunyi milik asisten berperan sebagai data yang tidak pernah dipakai memilih.
+Demi waktu kelas, semua run memakai split train/val tetap dan satu seed (`seed=42`). Harganya: skor val terbaik
+sedikit optimistis (val juga dipakai memilih), dan selisih kecil antar-run bisa saja kebetulan. Untuk angka yang
+lebih bisa dipercaya: train/val/test, stratified k-fold, dan/atau beberapa seed (lihat slide "Protokol Evaluasi").
+Di Studio 2, validation set tersembunyi milik asisten berperan sebagai test set.
 
 | `model` | Checkpoint timm | Param (10 kelas) |
 |---|---|---:|
@@ -79,14 +82,14 @@ Nilai tunggal (bukan list) tetap untuk semua run. Jumlah run = perkalian panjang
 | Kelompok | Kunci (list) | Pilihan / rentang wajar |
 |---|---|---|
 | Data | `img_size`, `train_fraction`, `augment`, `mixup_alpha`, `cutmix_alpha` | 128–224 · 0,1–1,0 · `none`/`basic`/`strong` · 0,2 · 1,0 |
-| Model | `model`, `finetune`, `backbone_lr_mult`, `dropout`, `drop_path` | lihat tabel di atas · `scratch`/`linear_probe`/`full_ft` · 0,1–1 · 0–0,5 · 0–0,2 |
+| Model | `model`, `finetune`, `init`, `backbone_lr_mult`, `dropout`, `drop_path` | lihat tabel di atas · `scratch`/`linear_probe`/`full_ft` · `default`/`kaiming`/`xavier`/`normal` (hanya scratch) · 0,1–1 · 0–0,5 · 0–0,2 |
 | Optimizer | `optimizer`, `lr`, `weight_decay`, `batch_size`, `epochs`, `label_smoothing` | `sgd`/`adam`/`adamw`/`nadam`/`rmsprop` · 1e-5–1e-1 · 0–0,1 · 32–256 · 10 · 0–0,2 |
 | Scheduler | `scheduler`, `warmup_epochs` | `none`/`step`/`cosine`/`onecycle`/`plateau` · 0–1 |
 | Early stopping | `patience` | `None` (mati) / 2–5 |
-| Noise | `seed` | `[42, 1, 2]` untuk mengukur noise antar-run |
+| Presisi | `precision` | `fp16_amp` (mixed precision, hanya CUDA) / `fp32` / `fp64` (sangat lambat, tidak didukung MPS) |
 
-Pengaturan tetap (bukan list): `momentum`, `step_size`, `gamma`, `plateau_patience`, `min_lr`, `monitor`
-(`val_loss`/`val_acc`/`val_f1`), `min_delta`, `grad_clip`, `data_root`, `num_workers`, `amp`, dan pengaturan W&B
+Pengaturan tetap (bukan list): `seed`, `momentum`, `step_size`, `gamma`, `plateau_patience`, `min_lr`, `monitor`
+(`val_loss`/`val_acc`/`val_f1`), `min_delta`, `grad_clip`, `data_root`, `num_workers`, dan pengaturan W&B
 (`wandb_project`, `wandb_entity`, `wandb_mode`, `wandb_group`, `notes`).
 
 Aturan main: **ubah satu kunci menjadi list per eksperimen** (boleh ditambah `model`), tulis hipotesis di `notes`,
@@ -98,7 +101,8 @@ lalu bandingkan di W&B. Nama run dan group dibuat otomatis dari kunci yang divar
 - `config`: **seluruh** hyperparameter run tersebut + daftar kunci yang divariasikan, jumlah parameter, device, ukuran split
 - per 10 step: `train/loss`, `train/lr`, `train/grad_norm`
 - per epoch: `epoch/train_loss`, `epoch/train_acc`, `val/loss`, `val/acc`, `val/f1`, `epoch/gap_acc`, `epoch/lr`, `epoch/time_sec`
-- akhir run: `best/val_acc`, `best/val_f1`, `best_epoch`, `stopped_epoch`, `train_time_min`, confusion matrix val (epoch terbaik)
+- akhir run: `best/val_acc`, `best/val_f1`, `best_epoch`, `stopped_epoch`, `train_time_min`, `sec_per_epoch` (median),
+  `gpu_mem_gb` (memori GPU puncak), confusion matrix val (epoch terbaik)
 
 Setiap run juga ditambahkan ke `results.csv` lokal (berguna jika internet bermasalah); checkpoint terbaik
 disimpan di `checkpoints/<nama run>.pth`.
@@ -120,7 +124,7 @@ MacBook (MPS) jauh lebih lambat: untuk demo di laptop pakai `model=["mobilenetv3
 
 ## Kartu eksperimen di slide
 
-Slide berisi 10 kartu (noise antar-seed, learning rate, optimizer, batch size, scheduler, overfitting,
-regularisasi, early stopping, strategi fine-tuning, CNN vs ViT). Setiap kartu menyebut list yang diisi di `CONFIG`,
+Slide berisi 11 kartu (learning rate, optimizer, batch size, scheduler, overfitting, regularisasi, early stopping,
+strategi fine-tuning, CNN vs ViT, inisialisasi bobot, presisi numerik). Setiap kartu menyebut list yang diisi di `CONFIG`,
 hipotesis, dan tabel kosong yang diisi dari hasil run di kelas. Kembalikan list ke satu nilai (baseline) sebelum
 pindah kartu.
