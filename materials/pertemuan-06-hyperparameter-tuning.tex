@@ -152,7 +152,7 @@
     \begin{exampleblock}{Setelah mengikuti sesi ini, mahasiswa diharapkan mampu:}
         \begin{enumerate}
             \item \textbf{Membedakan parameter dan hyperparameter} serta memprioritaskannya
-            \item \textbf{Merancang eksperimen yang jujur}: split train/valid/test, satu perubahan per run, hipotesis tertulis
+            \item \textbf{Merancang eksperimen yang jujur}: split train/val, satu kunci divariasikan per eksperimen, hipotesis tertulis
             \item \textbf{Memilih learning rate, optimizer, batch size, dan scheduler} berdasarkan kurva training
             \item \textbf{Mendiagnosis underfitting/overfitting} dan memilih regularisasi serta early stopping yang tepat
             \item \textbf{Membandingkan strategi fine-tuning} (scratch, linear probing, full FT) pada CNN dan ViT
@@ -183,25 +183,25 @@
             Berapa poin akurasi yang hilang? \textbf{0? 5? 50?}
         \end{exampleblock}
         \vspace{0.1cm}
-        Jawabannya kita \textbf{ukur sendiri} hari ini: setiap topik punya \textbf{kartu eksperimen} yang dijalankan langsung di kelas.
+        Kita \textbf{ukur sendiri}: tiap topik punya \textbf{kartu eksperimen} --- pindah ke kode, run, kembali ke slide.
         \begin{itemize}
-            \item satu run = \texttt{python train.py}, maks.\ 30 epoch
-            \item RTX 5070: $\pm$2,5--4,5 menit per run (early stopping sering lebih cepat)
-            \item semua run masuk ke satu proyek W\&B
+            \item nilai yang dicoba = \textbf{list} di \texttt{CONFIG}, mis.\ \texttt{optimizer=["adam", "adamw", "nadam"]}
+            \item \texttt{python train.py} mencoba \textbf{semua} nilai di \textbf{beberapa arsitektur}
+            \item $\pm$1 menit per run (RTX 5070, 10 epoch), semua tercatat di W\&B
         \end{itemize}
 
         \column{0.46\textwidth}
         \begin{center}
         \begin{tikzpicture}[node distance=0.42cm]
-            \node[lyrT, minimum width=4.6cm] (u) {\textbf{1. Ubah} satu kunci di \texttt{CONFIG}};
+            \node[lyrT, minimum width=4.6cm] (u) {\textbf{1. Ubah} satu kunci menjadi list};
             \node[lyr, minimum width=4.6cm, below=of u] (t) {\textbf{2. Tebak} hasilnya (kolom \emph{Tebakan})};
-            \node[lyrO, minimum width=4.6cm, below=of t] (r) {\textbf{3. Run} \texttt{python train.py}};
-            \node[lyrB, minimum width=4.6cm, below=of r] (i) {\textbf{4. Isi} tabel dari W\&B / terminal};
+            \node[lyrO, minimum width=4.6cm, below=of t] (r) {\textbf{3. Run} \texttt{python train.py} (loop)};
+            \node[lyrB, minimum width=4.6cm, below=of r] (i) {\textbf{4. Isi} tabel dari W\&B / ringkasan};
             \node[lyr, minimum width=4.6cm, below=of i] (b) {\textbf{5. Bandingkan} dengan noise (Kartu 0)};
             \draw[arr] (u) -- (t); \draw[arr] (t) -- (r); \draw[arr] (r) -- (i); \draw[arr] (i) -- (b);
         \end{tikzpicture}
         \end{center}
-        {\scriptsize\color{dlMute} Kembalikan nilai yang diubah ke baseline sebelum pindah kartu.}
+        {\scriptsize\color{dlMute} Kembalikan list ke satu nilai (baseline) sebelum pindah kartu.}
     \end{columns}
 \end{frame}
 
@@ -221,7 +221,7 @@
         Contoh & bobot kernel konvolusi, bias, $\gamma/\beta$ BatchNorm, bobot attention & learning rate, optimizer, batch size, epoch, dropout, augmentasi, scheduler \\
         Ditentukan oleh & \textbf{gradient descent} (otomatis) & \textbf{Anda} (sebelum training) \\
         Jumlah & jutaan (ResNet-18: 11,2 M) & belasan (\texttt{CONFIG} di \texttt{train.py}) \\
-        Dipilih memakai & data \textbf{train} & data \textbf{valid} \\
+        Dipilih memakai & data \textbf{train} & data \textbf{val} \\
         \bottomrule
     \end{tabular}
     \end{center}
@@ -230,48 +230,45 @@
     \[
         \underbrace{\bm{\theta}^{*}(\bm{\lambda}) = \arg\min_{\bm{\theta}} \mathcal{L}_{\text{train}}(\bm{\theta};\bm{\lambda})}_{\text{training (loop dalam)}}
         \qquad
-        \underbrace{\bm{\lambda}^{*} = \arg\max_{\bm{\lambda}} \text{Skor}_{\text{valid}}\big(\bm{\theta}^{*}(\bm{\lambda})\big)}_{\text{hyperparameter tuning (loop luar)}}
+        \underbrace{\bm{\lambda}^{*} = \arg\max_{\bm{\lambda}} \text{Skor}_{\text{val}}\big(\bm{\theta}^{*}(\bm{\lambda})\big)}_{\text{hyperparameter tuning (loop luar)}}
     \]
     {\scriptsize\color{dlMute} $\bm{\lambda}$ = vektor hyperparameter. Setiap evaluasi loop luar = satu training penuh $\Rightarrow$ mahal, jadi harus dirancang dengan cermat.}
 \end{frame}
 
 %================================================
 \section{Metodologi Eksperimen}
-\bagian{BAGIAN 01 · METODOLOGI}{Eksperimen yang Jujur}{Split Data, Satu Perubahan per Run, dan Prioritas}
+\bagian{BAGIAN 01 · METODOLOGI}{Eksperimen yang Jujur}{Split Data, Satu Kunci per Eksperimen, dan Prioritas}
 
 %------------------------------------------------
 \begin{frame}
-    \frametitle{Tiga Split, Tiga Peran}
-    \framesubtitle{Test set hanya disentuh sekali}
+    \frametitle{Dua Split, Dua Peran}
+    \framesubtitle{Train untuk belajar, val untuk memilih}
     \footnotesize
 
     \begin{center}
     \begin{tikzpicture}[x=0.95cm]
-        % Imagenette train -> train + valid
-        \node[font=\scriptsize\bfseries, anchor=west] at (0,1.05) {Imagenette \texttt{train} (9.469)};
-        \fill[dlTeal!25, draw=dlTeal] (0,0) rectangle (8.05,0.7);
-        \node[font=\scriptsize] at (4.03,0.35) {\textbf{train} 8.049 (85\%) --- update bobot $\bm{\theta}$};
-        \fill[dlBlue!15, draw=dlBlue] (8.05,0) rectangle (9.47,0.7);
-        \node[font=\scriptsize, align=center] at (8.76,0.35) {\textbf{valid}\\1.420};
-        % Imagenette val -> test
+        % Imagenette train -> train
+        \node[font=\scriptsize\bfseries, anchor=west] at (0,1.05) {Imagenette \texttt{train}};
+        \fill[dlTeal!25, draw=dlTeal] (0,0) rectangle (9.47,0.7);
+        \node[font=\scriptsize] at (4.74,0.35) {\textbf{train} 9.469 --- update bobot $\bm{\theta}$ (diaugmentasi)};
+        % Imagenette val -> val
         \node[font=\scriptsize\bfseries, anchor=west] at (10.0,1.05) {Imagenette \texttt{val}};
-        \fill[dlOrange!20, draw=dlOrange] (10.0,0) rectangle (13.93,0.7);
-        \node[font=\scriptsize] at (11.96,0.35) {\textbf{test} 3.925};
+        \fill[dlBlue!15, draw=dlBlue] (10.0,0) rectangle (13.93,0.7);
+        \node[font=\scriptsize] at (11.96,0.35) {\textbf{val} 3.925};
         % roles
-        \draw[arr] (8.76,-0.05) -- (8.76,-0.55) node[below, font=\scriptsize, align=center] {pilih hyperparameter,\\early stopping, checkpoint};
-        \draw[arr] (11.96,-0.05) -- (11.96,-0.55) node[below, font=\scriptsize, align=center] {laporan akhir\\(\textbf{sekali}, bobot terbaik)};
+        \draw[arr] (11.96,-0.05) -- (11.96,-0.55) node[below, font=\scriptsize, align=center] {dievaluasi tiap epoch: early stopping,\\checkpoint terbaik, membandingkan run};
     \end{tikzpicture}
     \end{center}
 
     \vspace{0.1cm}
     \begin{columns}[T]
         \column{0.48\textwidth}
-        \begin{block}{Kenapa test tidak boleh dipakai memilih?}
-            Setiap kali skor test memengaruhi keputusan, test ikut ``dilatih''. Skor jadi \con{optimistis} dan tidak lagi mengukur generalisasi.
+        \begin{block}{Skor val sedikit optimistis}
+            Kita \textbf{memilih} konfigurasi terbaik memakai val, jadi val ikut ``dilatih'' oleh keputusan kita. Untuk angka akhir yang jujur dibutuhkan data yang \con{tidak pernah} dipakai memilih.
         \end{block}
         \column{0.48\textwidth}
         \begin{exampleblock}{Analogi di Studio 2}
-            \textbf{Validation set tersembunyi} milik asisten = test set. Split lokal (\texttt{my\_val/}) = valid set Anda. Tuning hanya pada \texttt{my\_val/}.
+            Split lokal (\texttt{my\_val/}) = val Anda; tuning hanya pada \texttt{my\_val/}. \textbf{Validation set tersembunyi} milik asisten berperan sebagai data ``tak tersentuh'' tadi.
         \end{exampleblock}
     \end{columns}
 \end{frame}
@@ -288,9 +285,9 @@
         \begin{tikzpicture}[node distance=0.55cm]
             \node[lyrT, minimum width=3.6cm] (b) {\textbf{1. Baseline} (CONFIG awal)};
             \node[lyr, minimum width=3.6cm, below=of b] (h) {\textbf{2. Hipotesis} di \texttt{notes}};
-            \node[lyrO, minimum width=3.6cm, below=of h] (c) {\textbf{3. Ubah SATU} hyperparameter};
-            \node[lyr, minimum width=3.6cm, below=of c] (r) {\textbf{4. Run} + log ke W\&B};
-            \node[lyrB, minimum width=3.6cm, below=of r] (a) {\textbf{5. Bandingkan} di \texttt{valid}};
+            \node[lyrO, minimum width=3.6cm, below=of h] (c) {\textbf{3. SATU kunci} jadi list};
+            \node[lyr, minimum width=3.6cm, below=of c] (r) {\textbf{4. Run} loop + log ke W\&B};
+            \node[lyrB, minimum width=3.6cm, below=of r] (a) {\textbf{5. Bandingkan} di \texttt{val}};
             \draw[arr] (b) -- (h); \draw[arr] (h) -- (c); \draw[arr] (c) -- (r); \draw[arr] (r) -- (a);
             \draw[arr] (a.east) -- ++(0.6,0) |- node[pos=0.25, right, font=\scriptsize, align=left] {lebih baik?\\jadikan baseline\\baru} (h.east);
         \end{tikzpicture}
@@ -299,8 +296,8 @@
         \column{0.46\textwidth}
         \textbf{Aturan main}
         \begin{itemize}
-            \item \textbf{Satu perubahan per run} --- dua perubahan sekaligus = efek tak bisa diatribusikan.
-            \item \textbf{Seed tetap} (\texttt{seed=42}), split tetap.
+            \item \textbf{Satu kunci divariasikan per eksperimen} (boleh ditambah \texttt{model}) --- dua kunci sekaligus = efek tak bisa diatribusikan, dan jumlah run berlipat.
+            \item \textbf{Seed tetap} (\texttt{seed=[42]}), split tetap.
             \item \textbf{Catat semuanya}, termasuk run yang gagal.
             \item \textbf{Ukur noise dulu}: ulangi baseline dengan \textbf{seed berbeda}; selisih lebih kecil dari noise = \con{bukan temuan}.
             \item Hipotesis ditulis \textbf{sebelum} run, bukan setelah melihat hasil.
@@ -316,12 +313,12 @@
 
     \begin{columns}[T]
         \column{0.40\textwidth}
-        \begin{block}{Ubah di CONFIG}
-            {\ttfamily\scriptsize seed=42  \# baseline\\seed=1\\seed=2\\wandb\_group="noise"}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize seed=[42, 1, 2]\\model=["resnet18", "vit\_tiny"]\\\# 3 x 2 = 6 run, $\pm$6 menit}
         \end{block}
         \textbf{Hipotesis} (tulis di \texttt{notes})
         \begin{itemize}
-            \item Hasil \textbf{berbeda} walau konfigurasi sama: seed mengubah init head, urutan batch, augmentasi, dan split.
+            \item Hasil \textbf{berbeda} walau konfigurasi sama: seed mengubah init head, urutan batch, dan augmentasi.
             \item Seed sama $\Rightarrow$ hasil identik: run ulang tanpa ganti seed \textbf{tidak} mengukur noise.
         \end{itemize}
 
@@ -331,12 +328,13 @@
         \setlength{\tabcolsep}{4pt}
         \renewcommand{\arraystretch}{1.6}
         \arrayrulecolor{dlHairline}
-        \begin{tabular}{|l|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{Seed} & \textbf{Best ep} & \textbf{Valid} & \textbf{Test} \\ \hline
-            42 (baseline) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            1 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            \textbf{Rentang} (maks $-$ min) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+        \begin{tabular}{|l|c|c|c|c|}
+            \rowcolor{dlSoftCloud} & \multicolumn{2}{c|}{\textbf{ResNet-18}} & \multicolumn{2}{c|}{\textbf{ViT-Tiny}} \\
+            \rowcolor{dlSoftCloud} \textbf{Seed} & \textbf{Best ep} & \textbf{Val acc} & \textbf{Best ep} & \textbf{Val acc} \\ \hline
+            42 (baseline) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            1 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            \textbf{Rentang} (maks $-$ min) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
         \end{tabular}
         \arrayrulecolor{black}
 
@@ -344,7 +342,7 @@
         {\scriptsize Rentang ini = \textbf{ambang} untuk semua kartu berikutnya: selisih lebih kecil dari ini \con{belum tentu nyata}.}
 
         \vspace{0.1cm}
-        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{valid/acc} ketiga run bertumpuk di satu panel.}
+        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} group \texttt{seed}; \texttt{val/acc} keenam run bertumpuk di satu panel.}
     \end{columns}
 \end{frame}
 
@@ -362,7 +360,7 @@
         \textbf{Prio.} & \textbf{Hyperparameter} & \textbf{Kenapa} & \textbf{Kunci di \texttt{CONFIG}} \\
         \midrule
         \cellcolor{dlTeal!25}1 & Learning rate & paling sensitif; meleset satu orde = gagal & \texttt{lr}, \texttt{backbone\_lr\_mult} \\
-        \cellcolor{dlTeal!25}1 & Pretrained \& strategi FT & menentukan titik awal optimasi & \texttt{pretrained}, \texttt{freeze\_backbone} \\
+        \cellcolor{dlTeal!25}1 & Pretrained \& strategi FT & menentukan titik awal optimasi & \texttt{finetune} \\
         \cellcolor{dlTeal!12}2 & Optimizer \& weight decay & berinteraksi kuat dengan lr & \texttt{optimizer}, \texttt{weight\_decay} \\
         \cellcolor{dlTeal!12}2 & Scheduler \& epoch & bentuk lr sepanjang training & \texttt{scheduler}, \texttt{warmup\_epochs} \\
         \cellcolor{dlTeal!12}2 & Batch size & noise gradien \& lr optimal & \texttt{batch\_size} \\
@@ -378,7 +376,7 @@
 %------------------------------------------------
 \begin{frame}
     \frametitle{Diagnosis Dulu, Baru Tuning}
-    \framesubtitle{loss train (garis) vs valid (putus-putus)}
+    \framesubtitle{loss train (garis) vs val (putus-putus)}
     \footnotesize
 
     \pgfmathsetmacro{\xbest}{2*ln(11.25)}
@@ -422,15 +420,15 @@
         \end{axis}
         \end{tikzpicture}
         \begin{itemize}
-            \item train terus turun, valid naik
+            \item train terus turun, val naik
             \item augmentasi, dropout, wd, label smoothing, MixUp, \textbf{early stopping}
         \end{itemize}
     \end{columns}
 \end{frame}
 
 %================================================
-\section{Setup: \texttt{train.py} \& Weights \& Biases}
-\bagian{BAGIAN 02 · SETUP}{\texttt{train.py} \& W\&B}{Satu File, Satu Blok CONFIG, Semua Run Tercatat}
+\section{Setup: Kode Eksperimen \& Weights \& Biases}
+\bagian{BAGIAN 02 · SETUP}{Kode Eksperimen \& W\&B}{Tiga File, CONFIG Berisi List, Semua Run Tercatat}
 
 %------------------------------------------------
 \begin{frame}
@@ -455,56 +453,68 @@
         \renewcommand{\arraystretch}{1.2}
         \begin{tabular}{llrrr}
             \toprule
-            \texttt{model} & \textbf{Keluarga} & \textbf{Param} & \textbf{s/epoch}$^{*}$ & \textbf{30 ep}$^{*}$ \\
+            \texttt{model} & \textbf{Keluarga} & \textbf{Param} & \textbf{s/epoch}$^{*}$ & \textbf{10 ep}$^{*}$ \\
             \midrule
-            \texttt{resnet18} & CNN residual & 11,2 M & 4,8 & 2,5 menit \\
-            \texttt{mobilenetv3} & depthwise + SE & 1,5 M & 5,7 & 3,0 menit \\
-            \texttt{efficientnet\_b0} & compound scaling & 4,0 M & 8,6 & 4,4 menit \\
-            \texttt{convnext\_atto} & CNN modern & 3,4 M & 5,4 & 3,0 menit \\
-            \texttt{vit\_tiny} & Transformer & 5,5 M & 6,3 & 3,3 menit \\
+            \texttt{resnet18} & CNN residual & 11,2 M & 4 & $\pm$0,8 menit \\
+            \texttt{mobilenetv3} & depthwise + SE & 1,5 M & 5 & $\pm$0,9 menit \\
+            \texttt{efficientnet\_b0} & compound scaling & 4,0 M & 7 & $\pm$1,3 menit \\
+            \texttt{convnext\_atto} & CNN modern & 3,4 M & 5 & $\pm$1,0 menit \\
+            \texttt{vit\_tiny} & Transformer & 5,5 M & 5 & $\pm$0,9 menit \\
             \bottomrule
         \end{tabular}
 
         \vspace{0.15cm}
-        {\scriptsize $^{*}$terukur di RTX 5070 (batch 64, 160 px, AMP, 8 worker), termasuk validasi. Bottleneck-nya \textbf{loading data di CPU}, bukan ukuran model: MobileNetV3 (1,5 M) tidak lebih cepat dari ResNet-18 (11,2 M). Semua: varian \textbf{teringan} di keluarganya, head 10 kelas via \texttt{timm.create\_model(..., num\_classes=10)}.}
+        {\scriptsize $^{*}$terukur di RTX 5070 (batch 64, 160 px, AMP, 8 worker), termasuk validasi 3.925 citra; epoch pertama $\pm$5 s lebih lambat. Bottleneck-nya \textbf{loading data di CPU}, bukan ukuran model: MobileNetV3 (1,5 M) tidak lebih cepat dari ResNet-18 (11,2 M). Semua: varian \textbf{teringan} di keluarganya, satu file per arsitektur di \texttt{architectures/}, head 10 kelas via \texttt{timm.create\_model(..., num\_classes=10)}.}
     \end{columns}
 \end{frame}
 
 %------------------------------------------------
 \begin{frame}
-    \frametitle{Anatomi \texttt{train.py}}
+    \frametitle{Anatomi Kode}
     \framesubtitle{materials/hyperparameter-tuning/}
     \footnotesize
 
-    \begin{center}
-    \begin{tikzpicture}[node distance=0.35cm]
-        \node[lyrO, minimum width=2.2cm, minimum height=1.0cm] (cfg) {\textbf{CONFIG}\\(diubah manual)};
-        \node[lyr, right=0.7cm of cfg, minimum width=2.3cm, minimum height=1.0cm] (data) {\texttt{build\_loaders}\\split + augmentasi};
-        \node[lyr, right=of data, minimum width=2.3cm, minimum height=1.0cm] (model) {\texttt{build\_model}\\timm + head 10};
-        \node[lyr, right=of model, minimum width=2.5cm, minimum height=1.0cm] (opt) {\texttt{build\_optimizer}\\\texttt{build\_scheduler}};
-        \node[lyrT, below=0.9cm of model, minimum width=3.2cm, minimum height=1.0cm] (loop) {\textbf{loop epoch}\\\texttt{train\_one\_epoch} $\to$ \texttt{evaluate}};
-        \node[lyr, left=0.8cm of loop, minimum width=2.4cm, minimum height=1.0cm] (es) {\texttt{EarlyStopping}\\simpan checkpoint terbaik};
-        \node[lyrB, right=0.8cm of loop, minimum width=2.5cm, minimum height=1.0cm] (test) {\textbf{test} sekali\\bobot terbaik};
-        \node[lyrT, below=0.6cm of loop, minimum width=9.6cm, fill=dlBlue!8, draw=dlBlue] (wb) {\textbf{wandb}: \texttt{init(config=CONFIG)} · \texttt{log} per step \& epoch · confusion matrix · tabel prediksi · \texttt{summary}};
-        \draw[arr] (cfg) -- (data); \draw[arr] (data) -- (model); \draw[arr] (model) -- (opt);
-        \draw[arr] (opt.south) |- (loop.east);
-        \draw[arr] (loop) -- (es); \draw[arr] (es.north) to[bend left=25] node[above, font=\scriptsize]{lanjut?} (loop.north west);
-        \draw[arr] (loop) -- (test);
-        \draw[arr, dlBlue] (loop) -- (wb); \draw[arr, dlBlue] (test.south) -- (test.south |- wb.north);
-    \end{tikzpicture}
-    \end{center}
+    \begin{columns}[T]
+        \column{0.36\textwidth}
+        {\ttfamily\scriptsize
+        hyperparameter-tuning/\\
+        +-- \textbf{train.py}\\
+        |\hspace{2.2em}{\rmfamily\color{dlMute} CONFIG, loop, training, W\&B}\\
+        +-- \textbf{datareader.py}\\
+        |\hspace{2.2em}{\rmfamily\color{dlMute} Imagenette $\to$ DataLoader}\\
+        +-- \textbf{models.py}\\
+        |\hspace{2.2em}{\rmfamily\color{dlMute} pilih arsitektur + strategi FT}\\
+        +-- \textbf{architectures/}\\
+        \hspace*{2.4em}+-- resnet18.py\\
+        \hspace*{2.4em}+-- mobilenetv3.py\\
+        \hspace*{2.4em}+-- efficientnet\_b0.py\\
+        \hspace*{2.4em}+-- convnext\_atto.py\\
+        \hspace*{2.4em}+-- vit\_tiny.py\par}
+        \vspace{0.1cm}
+        {\scriptsize\color{dlMute} Tiap arsitektur: satu file berisi \texttt{build(...)}. Tanpa argparse: edit \texttt{CONFIG}, simpan, run. Run divergen ditandai \texttt{diverged}, loop lanjut.}
 
-    \begin{itemize}
-        \item \textbf{Tanpa argparse}: setiap eksperimen = edit \texttt{CONFIG}, simpan, \texttt{python train.py}.
-        \item \texttt{main(config)} juga bisa dipanggil dari skrip lain (mis. loop beberapa nilai \texttt{lr} dalam satu skrip).
-        \item Divergen (loss NaN/Inf) $\Rightarrow$ training berhenti rapi dan ditandai \texttt{diverged} di W\&B.
-    \end{itemize}
+        \column{0.60\textwidth}
+        \begin{center}
+        \begin{tikzpicture}[node distance=0.25cm]
+            \node[lyrO, minimum width=6.4cm] (cfg) {\textbf{CONFIG} berisi list $\to$ \texttt{expand\_grid}: semua kombinasi};
+            \node[lyr, below=of cfg, minimum width=6.4cm, fill=dlSoftCloud] (run) {\textbf{untuk setiap kombinasi:} \texttt{run\_experiment(c)}};
+            \node[lyr, below=0.32cm of run, xshift=-1.65cm, minimum width=3.1cm, minimum height=0.9cm] (data) {\texttt{datareader.py}\\\texttt{build\_loaders}};
+            \node[lyr, below=0.32cm of run, xshift=1.65cm, minimum width=3.1cm, minimum height=0.9cm] (model) {\texttt{models.py}\\\texttt{build\_model}};
+            \node[lyrT, below=1.55cm of run, minimum width=6.4cm] (loop) {\textbf{loop epoch}: \texttt{train\_one\_epoch} $\to$ \texttt{evaluate} (val) $\to$ \texttt{EarlyStopping}};
+            \node[lyrT, below=of loop, minimum width=6.4cm, fill=dlBlue!8, draw=dlBlue] (wb) {\textbf{wandb}: \texttt{init(config=c)} · \texttt{log} per step \& epoch · \texttt{summary}};
+            \node[lyr, below=of wb, minimum width=6.4cm] (sum) {ringkasan semua run di terminal + \texttt{results.csv}};
+            \draw[arr] (cfg) -- (run); \draw[arr] (run) -- (data); \draw[arr] (run) -- (model);
+            \draw[arr] (data) -- (data |- loop.north); \draw[arr] (model) -- (model |- loop.north);
+            \draw[arr, dlBlue] (loop) -- (wb); \draw[arr] (wb) -- (sum);
+        \end{tikzpicture}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 %------------------------------------------------
 \begin{frame}[fragile]
     \frametitle{Blok CONFIG}
-    \framesubtitle{Semua hyperparameter di satu tempat}
+    \framesubtitle{List = dicoba satu per satu}
     \footnotesize
 
     \begin{columns}[T]
@@ -512,42 +522,40 @@
 \begin{lstlisting}[style=py]
 CONFIG = dict(
     # --- Data ---
-    img_size=160,          # 128 | 160 | 224
-    train_fraction=1.0,    # 0.2 = 20% data train
-    augment="basic",       # "none"|"basic"|"strong"
-    mixup_alpha=0.0, cutmix_alpha=0.0,
+    img_size=[160],         # 128 | 160 | 224
+    train_fraction=[1.0],   # 0.1 = 10% data train
+    augment=["basic"],      # none | basic | strong
+    mixup_alpha=[0.0], cutmix_alpha=[0.0],
     # --- Model ---
-    model="resnet18",      # mobilenetv3 | vit_tiny ...
-    pretrained=True,
-    freeze_backbone=False, # True = linear probing
-    dropout=0.0, drop_path=0.0,
+    model=["resnet18", "vit_tiny"],
+    finetune=["full_ft"],   # scratch | linear_probe
+    backbone_lr_mult=[0.1], # lr backbone = lr * 0.1
+    dropout=[0.0], drop_path=[0.0],
     # --- Optimizer ---
-    optimizer="adamw",     # sgd|adam|adamw|rmsprop
-    lr=1e-3,
-    backbone_lr_mult=0.1,  # lr backbone = lr * 0.1
-    weight_decay=0.05,
-    batch_size=64, epochs=30,
-    label_smoothing=0.0,
+    optimizer=["adamw"],    # sgd | adam | adamw
+                            # | nadam | rmsprop
+    lr=[1e-3], weight_decay=[0.05],
+    batch_size=[64], epochs=[10],
+    label_smoothing=[0.0],
 \end{lstlisting}
         \column{0.46\textwidth}
 \begin{lstlisting}[style=py]
     # --- LR scheduler ---
-    scheduler="cosine",    # none|step|cosine
-                           # |onecycle|plateau
-    warmup_epochs=1,
+    scheduler=["cosine"],   # none | step | cosine
+                            # | onecycle | plateau
+    warmup_epochs=[1],
     # --- Early stopping ---
-    early_stopping=True,
-    patience=5, min_delta=1e-3,
-    monitor="val_loss",    # val_acc | val_f1
-    # --- Weights & Biases ---
+    patience=[3],           # None = tanpa ES
+    seed=[42],
+    # --- Tetap (bukan list) ---
+    monitor="val_loss",     # val_acc | val_f1
     wandb_project="if25-p6-hyperparameter",
-    wandb_group=None,      # mis. "sweep-lr"
-    wandb_mode="online",   # offline | disabled
-    notes="",              # tulis HIPOTESIS!
+    wandb_mode="online",    # offline | disabled
+    notes="",               # tulis HIPOTESIS!
 )
 \end{lstlisting}
         \vspace{-0.1cm}
-        {\scriptsize\color{dlMute} Nama run dibuat otomatis, mis. \texttt{resnet18-adamw-lr0.001-cosine-do0.3}, sehingga mudah difilter di dashboard.}
+        {\scriptsize Jumlah run = \textbf{perkalian panjang semua list} (di atas: 2 run). Nama run \& group W\&B otomatis, mis.\ \texttt{vit\_tiny-optimizer=nadam}.}
     \end{columns}
 \end{frame}
 
@@ -560,19 +568,22 @@ CONFIG = dict(
     \begin{columns}[T]
         \column{0.53\textwidth}
 \begin{lstlisting}[style=py]
-run = wandb.init(project="if25-p6-hyperparameter",
-                 name=run_name, group="sweep-lr",
-                 config=CONFIG,     # semua hyperparameter
-                 notes="lr 1e-2 akan divergen?")
+# sekali per run, di dalam loop kombinasi
+run = wandb.init(
+    project="if25-p6-hyperparameter",
+    name="vit_tiny-optimizer=nadam",
+    group="optimizer",
+    config=c,   # SEMUA hyperparameter run ini
+    notes="nadam ~ adam?")
 # per 10 step
 wandb.log({"train/loss": loss, "train/lr": lr,
-           "train/grad_norm": gnorm}, step=global_step)
+           "train/grad_norm": gnorm}, step=step)
 # per epoch
-wandb.log({"epoch": ep, "valid/loss": vl,
-           "valid/acc": va, "valid/f1": vf})
-# akhir run
-run.summary.update({"test/acc": acc, "test/f1": f1})
-wandb.log({"test/confusion_matrix":
+wandb.log({"epoch": ep, "val/loss": vl,
+           "val/acc": va, "val/f1": vf})
+# akhir run: metrik di epoch terbaik
+run.summary.update({"best/val_acc": acc})
+wandb.log({"val/confusion_matrix":
            wandb.plot.confusion_matrix(...)})
 wandb.finish()
 \end{lstlisting}
@@ -580,14 +591,13 @@ wandb.finish()
         \column{0.43\textwidth}
         \textbf{Di dashboard, gunakan:}
         \begin{itemize}
-            \item \textbf{Runs table}: urutkan menurut \texttt{valid/acc}, tampilkan kolom config.
-            \item \textbf{Group / filter}: \texttt{group = "sweep-lr"}, tag \texttt{adamw}.
+            \item \textbf{Runs table}: urutkan menurut \texttt{best/val\_acc}, tampilkan kolom config.
+            \item \textbf{Group / filter}: group \texttt{optimizer}, tag \texttt{vit\_tiny}.
             \item \textbf{Parallel coordinates}: hyperparameter mana yang berkorelasi dengan skor.
-            \item \textbf{Line plot \texttt{train/lr}}: memastikan scheduler bekerja seperti yang dibayangkan.
-            \item \textbf{Report}: rangkuman eksperimen kelompok untuk laporan Studio 2.
+            \item \textbf{Line plot \texttt{train/lr}}: cek bentuk scheduler.
+            \item \textbf{Report}: rangkuman untuk laporan Studio 2.
         \end{itemize}
-        \vspace{0.1cm}
-        {\scriptsize\color{dlMute} Tanpa internet: \texttt{wandb\_mode="offline"}, unggah nanti dengan \texttt{wandb sync wandb/offline-run-*}.}
+        {\scriptsize\color{dlMute} Tanpa internet: \texttt{wandb\_mode="offline"}, lalu \texttt{wandb sync}.}
     \end{columns}
 \end{frame}
 
@@ -638,13 +648,14 @@ wandb.finish()
 
     \begin{columns}[T]
         \column{0.40\textwidth}
-        \begin{block}{Ubah di CONFIG}
-            {\ttfamily\scriptsize lr=1e-5\\lr=1e-4\\lr=1e-3  \# baseline\\lr=1e-2\\lr=1e-1\\wandb\_group="sweep-lr"}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize lr=[1e-5, 1e-4, 1e-3, 1e-2, 1e-1]\\model=["resnet18", "vit\_tiny"]\\\# 5 x 2 = 10 run, $\pm$10 menit}
         \end{block}
         \textbf{Hipotesis} (tulis di \texttt{notes})
         \begin{itemize}
-            \item Akurasi vs $\log_{10}\eta$ berbentuk \textbf{U terbalik}.
+            \item Akurasi vs $\log_{10}\eta$ berbentuk \textbf{U terbalik}, untuk kedua arsitektur.
             \item lr terlalu besar: berhenti cepat (divergen / early stopping).
+            \item lr terbaik ViT \textbf{belum tentu} sama dengan ResNet.
         \end{itemize}
 
         \column{0.56\textwidth}
@@ -654,7 +665,8 @@ wandb.finish()
         \renewcommand{\arraystretch}{1.5}
         \arrayrulecolor{dlHairline}
         \begin{tabular}{|c|c|c|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{\texttt{lr}} & \textbf{Tebakan} & \textbf{Best ep} & \textbf{Henti ep} & \textbf{Valid} & \textbf{Test} \\ \hline
+            \rowcolor{dlSoftCloud} & & \multicolumn{2}{c|}{\textbf{ResNet-18}} & \multicolumn{2}{c|}{\textbf{ViT-Tiny}} \\
+            \rowcolor{dlSoftCloud} \textbf{\texttt{lr}} & \textbf{Tebakan} & \textbf{Henti ep} & \textbf{Val acc} & \textbf{Henti ep} & \textbf{Val acc} \\ \hline
             $10^{-5}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             $10^{-4}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             $10^{-3}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
@@ -664,10 +676,10 @@ wandb.finish()
         \arrayrulecolor{black}
 
         \vspace{0.12cm}
-        {\scriptsize Setelah orde terbaik ketemu, haluskan dengan faktor $\pm3\times$ (mis.\ $3\cdot10^{-4}$, $3\cdot10^{-3}$).}
+        {\scriptsize Setelah orde terbaik ketemu, haluskan dengan faktor $\pm3\times$: \texttt{lr=[3e-4, 1e-3, 3e-3]}.}
 
         \vspace{0.1cm}
-        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{train/loss} per step dan \texttt{valid/acc}; panel \emph{Parallel coordinates} \texttt{lr} $\to$ \texttt{valid/acc}.}
+        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} group \texttt{lr}; \texttt{train/loss} per step dan \texttt{val/acc}; panel \emph{Parallel coordinates} \texttt{lr} $\to$ \texttt{best/val\_acc}.}
     \end{columns}
 \end{frame}
 
@@ -702,6 +714,7 @@ wandb.finish()
         \begin{itemize}
             \item bobot dengan gradien kecil mendapat langkah relatif besar
             \item lr default $10^{-3}$ biasanya ``langsung jalan''
+            \item \texttt{"nadam"} (Dozat, 2016): Adam + momentum \textbf{Nesterov} --- $\hat{\mathbf{m}}_t$ ``melihat ke depan'' satu langkah
             \item \texttt{"rmsprop"}: hanya $\mathbf{s}_t$, tanpa $\mathbf{m}_t$ dan koreksi bias
         \end{itemize}
     \end{columns}
@@ -715,14 +728,15 @@ wandb.finish()
 
     \begin{columns}[T]
         \column{0.42\textwidth}
-        \begin{block}{Ubah di CONFIG}
-            {\ttfamily\scriptsize optimizer="sgd", lr=1e-3\\optimizer="sgd", lr=1e-2\\optimizer="adam", weight\_decay=0.0\\optimizer="adam"  \# wd 0.05 = L2\\optimizer="rmsprop"\\optimizer="adamw"  \# baseline}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize optimizer=["sgd", "adam", "adamw",\\\hspace*{5.6em}"nadam", "rmsprop"]\\model=["resnet18", "vit\_tiny"]\\\# 5 x 2 = 10 run, $\pm$10 menit}
         \end{block}
         \textbf{Hipotesis} (tulis di \texttt{notes})
         \begin{itemize}
-            \item SGD butuh lr $\sim$10$\times$ lebih besar dari Adam.
-            \item Adam + L2 dengan $\lambda$ ala AdamW \con{lebih buruk} dari Adam tanpa decay (slide berikut).
+            \item Pada lr $10^{-3}$, SGD tertinggal: butuh lr $\sim$10$\times$ lebih besar.
+            \item NAdam $\approx$ Adam; AdamW unggul tipis (wd 0,05 decoupled).
         \end{itemize}
+        {\scriptsize Lanjutan: \texttt{optimizer=["sgd"]}, \texttt{lr=[1e-3, 1e-2]}.}
 
         \column{0.54\textwidth}
         \vspace{2pt}
@@ -730,22 +744,23 @@ wandb.finish()
         \setlength{\tabcolsep}{4pt}
         \renewcommand{\arraystretch}{1.4}
         \arrayrulecolor{dlHairline}
-        \begin{tabular}{|l|c|c|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{Optimizer} & \textbf{lr} & \textbf{wd} & \textbf{Tebakan} & \textbf{Valid} & \textbf{Test} \\ \hline
-            SGD+mom. & $10^{-3}$ & 0,05 L2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            SGD+mom. & $10^{-2}$ & 0,05 L2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            Adam & $10^{-3}$ & 0 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            Adam & $10^{-3}$ & 0,05 L2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            RMSprop & $10^{-3}$ & 0,05 L2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            AdamW & $10^{-3}$ & 0,05 dec. & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+        \begin{tabular}{|l|c|c|c|c|}
+            \rowcolor{dlSoftCloud} & & & \multicolumn{2}{c|}{\textbf{Val acc}} \\
+            \rowcolor{dlSoftCloud} \textbf{Optimizer} & \textbf{wd} & \textbf{Tebakan} & \textbf{ResNet-18} & \textbf{ViT-Tiny} \\ \hline
+            SGD+mom. & 0,05 L2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            Adam & 0,05 L2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            AdamW & 0,05 dec. & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            NAdam & 0,05 L2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            RMSprop & 0,05 L2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            SGD, lr $10^{-2}$ & 0,05 L2 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
         \end{tabular}
         \arrayrulecolor{black}
 
         \vspace{0.12cm}
-        {\scriptsize L2 = decay lewat gradien; dec.\ = decoupled (AdamW). \texttt{momentum=0.9} untuk SGD \& RMSprop.}
+        {\scriptsize Semua lr $10^{-3}$ kecuali baris terakhir. L2 = decay lewat gradien; dec.\ = decoupled (AdamW). \texttt{momentum=0.9} untuk SGD \& RMSprop.}
 
         \vspace{0.1cm}
-        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} kurva \texttt{valid/acc} per optimizer di satu panel (filter \texttt{group}).}
+        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} group \texttt{optimizer}; kurva \texttt{val/acc} per optimizer di satu panel, pisahkan per tag \texttt{model}.}
     \end{columns}
 \end{frame}
 
@@ -773,12 +788,11 @@ wandb.finish()
         {\scriptsize Semua bobot menyusut dengan laju yang sama $\eta\lambda$ --- perilaku yang memang diinginkan dari weight decay.}
 
         \column{0.41\textwidth}
-        \begin{block}{Cek di Kartu 2}
-            Bandingkan tiga baris:
+        \begin{block}{Kartu 2b: dua list sekaligus}
+            {\ttfamily\scriptsize optimizer=["adam", "adamw"]\\weight\_decay=[0.0, 0.05]\\\# 2 x 2 x 2 model = 8 run}
             \begin{itemize}
-                \item Adam, $\lambda=0$
-                \item Adam + L2, $\lambda=0{,}05$
-                \item AdamW, $\lambda=0{,}05$
+                \item $\lambda=0$: Adam dan AdamW \textbf{identik}
+                \item $\lambda=0{,}05$: Adam + L2 vs AdamW
             \end{itemize}
             Jika Adam + L2 paling rendah: $\lambda$ yang wajar untuk AdamW \con{terlalu kuat} sebagai L2.
         \end{block}
@@ -799,29 +813,32 @@ wandb.finish()
         \]
         {\scriptsize Batch 4$\times$ lebih besar = langkah 4$\times$ lebih sedikit per epoch; kompensasi dengan lr 4$\times$ lebih besar (perlu warmup).}
         \begin{itemize}
-            \item Batch besar: gradien lebih akurat, GPU lebih efisien, tetapi \textbf{lebih sedikit update}.
-            \item Batch kecil: gradien berisik (efek regularisasi), lebih lambat per epoch.
-            \item \texttt{CUDA out of memory}: turunkan \texttt{batch\_size} \emph{dan} lr secara proporsional.
+            \item Batch besar: gradien lebih akurat, GPU efisien, tetapi \textbf{lebih sedikit update}.
+            \item Batch kecil: gradien berisik (efek regularisasi), lebih lambat.
+            \item \texttt{CUDA out of memory}: turunkan \texttt{batch\_size} \emph{dan} lr.
         \end{itemize}
-        \textbf{Hipotesis}: baris 256 + $4\cdot10^{-3}$ menyamai baseline; 256 + $10^{-3}$ tertinggal.
+        \textbf{Hipotesis}: 256 + $4\cdot10^{-3}$ menyamai baseline (64 + $10^{-3}$); 256 + $10^{-3}$ tertinggal.
 
         \column{0.54\textwidth}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize batch\_size=[32, 64, 256]\\lr=[1e-3, 4e-3]\\model=["resnet18"]   \# 3 x 2 = 6 run, $\pm$6 menit}
+        \end{block}
         \vspace{2pt}
         \scriptsize
         \setlength{\tabcolsep}{4pt}
-        \renewcommand{\arraystretch}{1.6}
+        \renewcommand{\arraystretch}{1.5}
         \arrayrulecolor{dlHairline}
-        \begin{tabular}{|l|c|r|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{\texttt{batch\_size}} & \textbf{lr} & \textbf{Step/ep} & \textbf{Tebakan} & \textbf{s/epoch} & \textbf{Test} \\ \hline
-            32 & $10^{-3}$ & 252 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            64 (baseline) & $10^{-3}$ & 126 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            256 & $10^{-3}$ & 32 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            256 & $4\cdot10^{-3}$ & 32 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+        \begin{tabular}{|l|r|c|c|c|c|}
+            \rowcolor{dlSoftCloud} & & & & \multicolumn{2}{c|}{\textbf{Val acc, lr}} \\
+            \rowcolor{dlSoftCloud} \textbf{Batch} & \textbf{Step/ep} & \textbf{Tebakan} & \textbf{s/epoch} & \textbf{$10^{-3}$} & \textbf{$4\cdot10^{-3}$} \\ \hline
+            32 & 295 & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
+            64 (baseline) & 147 & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
+            256 & 36 & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
         \end{tabular}
         \arrayrulecolor{black}
 
         \vspace{0.12cm}
-        {\scriptsize Step/ep = $\lceil 8.049 / B \rceil$ (data train 85\%). \texttt{wandb\_group="batch"}.}
+        {\scriptsize Step/ep = $\lfloor 9.469 / B \rfloor$ (batch terakhir yang tidak penuh dibuang). Dua list = grid $3\times2$: kombinasi lain ikut dicoba sebagai bonus. Ada waktu? tambahkan \texttt{"vit\_tiny"}.}
     \end{columns}
 \end{frame}
 
@@ -832,30 +849,30 @@ wandb.finish()
 %------------------------------------------------
 \begin{frame}
     \frametitle{Bentuk-Bentuk Scheduler}
-    \framesubtitle{lr relatif terhadap \texttt{lr} di CONFIG, 30 epoch}
+    \framesubtitle{lr relatif terhadap \texttt{lr} di CONFIG, 10 epoch}
     \footnotesize
 
     \begin{columns}[T]
         \column{0.58\textwidth}
         \begin{tikzpicture}
-        \begin{axis}[dlaxis, width=\linewidth, height=5.6cm, xmin=0, xmax=30, ymin=0, ymax=1.12,
+        \begin{axis}[dlaxis, width=\linewidth, height=5.6cm, xmin=0, xmax=10, ymin=0, ymax=1.12,
             xlabel={epoch}, ylabel={lr / lr$_{\max}$}, legend pos=north east, legend cell align=left]
-            \addplot[dlMute, domain=0:30, samples=2] {1};
+            \addplot[dlMute, domain=0:10, samples=2] {1};
             \addlegendentry{none}
-            \addplot[dlCharcoal, densely dashed, domain=0:30, samples=600, const plot] {0.1^(floor(x/10))};
-            \addlegendentry{step (10, $\gamma$=0,1)}
+            \addplot[dlCharcoal, densely dashed, domain=0:10, samples=600, const plot] {0.1^(floor(x/4))};
+            \addlegendentry{step (4, $\gamma$=0,1)}
             \addplot[dlTeal, very thick, domain=0:1, samples=20, forget plot] {0.01+0.99*x};
-            \addplot[dlTeal, very thick, domain=1:30, samples=120] {0.5*(1+cos(180*(x-1)/29))};
+            \addplot[dlTeal, very thick, domain=1:10, samples=120] {0.5*(1+cos(180*(x-1)/9))};
             \addlegendentry{cosine + warmup 1}
-            \addplot[dlOrange, domain=0:7.5, samples=60, forget plot] {0.04+0.96*(1-cos(180*x/7.5))/2};
-            \addplot[dlOrange, domain=7.5:30, samples=120] {0.5*(1+cos(180*(x-7.5)/22.5))};
+            \addplot[dlOrange, domain=0:2.5, samples=60, forget plot] {0.04+0.96*(1-cos(180*x/2.5))/2};
+            \addplot[dlOrange, domain=2.5:10, samples=120] {0.5*(1+cos(180*(x-2.5)/7.5))};
             \addlegendentry{onecycle}
         \end{axis}
         \end{tikzpicture}
 
         \column{0.38\textwidth}
         \begin{itemize}
-            \item \textbf{step}: turun $\times\gamma$ tiap \texttt{step\_size} epoch; sederhana, tapi waktu turunnya harus ditebak.
+            \item \textbf{step}: turun $\times\gamma$ tiap \texttt{step\_size} (= 4) epoch; sederhana, tapi waktu turunnya harus ditebak.
             \item \textbf{cosine}: turun mulus ke \texttt{min\_lr}; default modern (ConvNeXt, ViT).
             \item \textbf{onecycle}: naik lalu turun; lr puncak boleh lebih besar.
             \item \textbf{plateau}: turun $\times\gamma$ \textbf{hanya jika} \texttt{val\_loss} macet \texttt{plateau\_patience} epoch --- reaktif, tidak terjadwal.
@@ -901,45 +918,49 @@ wandb.finish()
 
     \begin{columns}[T]
         \column{0.40\textwidth}
-        \begin{block}{Ubah di CONFIG}
-            {\ttfamily\scriptsize scheduler="none"\\scheduler="step"  \# step\_size=10\\scheduler="cosine", warmup\_epochs=0\\scheduler="cosine"  \# baseline\\scheduler="onecycle"\\scheduler="plateau"\\\# dua baris terakhir: lr=1e-2}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize scheduler=["none", "step", "cosine",\\\hspace*{5.6em}"onecycle", "plateau"]\\model=["resnet18", "vit\_tiny"]\\\# 5 x 2 = 10 run, $\pm$10 menit}
         \end{block}
+        {\scriptsize\textbf{4b}, lr kebesaran: \texttt{lr=[1e-2]}, \texttt{scheduler=["none", "cosine"]}, \texttt{warmup\_epochs=[0, 1]} (8 run)}
+
         \textbf{Hipotesis} (tulis di \texttt{notes})
         \begin{itemize}
             \item Pada lr yang sudah pas, scheduler mengubah sedikit.
-            \item Pada lr kebesaran, cosine \textbf{menyelamatkan} run.
+            \item Pada lr kebesaran, cosine + warmup \textbf{menyelamatkan} run, terutama ViT.
         \end{itemize}
 
         \column{0.56\textwidth}
         \vspace{2pt}
         \scriptsize
         \setlength{\tabcolsep}{4pt}
-        \renewcommand{\arraystretch}{1.3}
+        \renewcommand{\arraystretch}{1.25}
         \arrayrulecolor{dlHairline}
         \begin{tabular}{|l|c|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{Scheduler} & \textbf{lr} & \textbf{Tebakan} & \textbf{Henti ep} & \textbf{Test} \\ \hline
+            \rowcolor{dlSoftCloud} & & & \multicolumn{2}{c|}{\textbf{Val acc}} \\
+            \rowcolor{dlSoftCloud} \textbf{Scheduler} & \textbf{lr} & \textbf{Tebakan} & \textbf{ResNet-18} & \textbf{ViT-Tiny} \\ \hline
             none & $10^{-3}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            step (10, 0,1) & $10^{-3}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            cosine, warmup 0 & $10^{-3}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            step (4, 0,1) & $10^{-3}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             cosine, warmup 1 & $10^{-3}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             onecycle & $10^{-3}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             plateau & $10^{-3}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            none & $10^{-2}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            none, warmup 0 & $10^{-2}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            none, warmup 1 & $10^{-2}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            cosine, warmup 0 & $10^{-2}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             cosine, warmup 1 & $10^{-2}$ & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
         \end{tabular}
         \arrayrulecolor{black}
 
         \vspace{0.12cm}
-        {\scriptsize OneCycle menaikkan lr selama 25\% awal ($\approx$ epoch 1--7): early stopping bisa memotong run \emph{sebelum} lr turun. Perhatikan kolom \emph{Henti ep}.}
+        {\scriptsize Plateau hanya turun jika \texttt{val\_loss} macet 2 epoch: dalam 10 epoch bisa saja \textbf{tidak pernah} turun.}
 
         \vspace{0.1cm}
-        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{train/lr} per step (bentuk kurva) dan \texttt{valid/loss}.}
+        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{train/lr} per step (bentuk kurva) dan \texttt{val/loss}.}
     \end{columns}
 \end{frame}
 
 %================================================
 \section{Regularisasi \& Early Stopping}
-\bagian{BAGIAN 05 · REGULARISASI}{Regularisasi \& Early Stopping}{Menutup Gap antara Train dan Valid}
+\bagian{BAGIAN 05 · REGULARISASI}{Regularisasi \& Early Stopping}{Menutup Gap antara Train dan Val}
 
 %------------------------------------------------
 \begin{frame}
@@ -949,13 +970,13 @@ wandb.finish()
 
     \begin{columns}[T]
         \column{0.40\textwidth}
-        \begin{block}{Ubah di CONFIG}
-            {\ttfamily\scriptsize train\_fraction=0.1\\augment="none"\\weight\_decay=0.0\\early\_stopping=False\\\# dropout=0, label\_smoothing=0 (default)\\wandb\_group="reg"}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize train\_fraction=[0.1]\\augment=["none"]\\weight\_decay=[0.0]\\patience=[None]  \# tanpa ES\\epochs=[30]\\model=["resnet18", "vit\_tiny"]}
         \end{block}
         \textbf{Hipotesis} (tulis di \texttt{notes})
         \begin{itemize}
-            \item Akurasi train mendekati 100\%, valid tertinggal jauh: \textbf{gap} besar.
-            \item Loss train terus turun; loss valid mendatar atau naik.
+            \item Akurasi train mendekati 100\%, val tertinggal jauh: \textbf{gap} besar.
+            \item Loss train terus turun; loss val mendatar atau naik.
         \end{itemize}
 
         \column{0.56\textwidth}
@@ -965,7 +986,8 @@ wandb.finish()
         \renewcommand{\arraystretch}{1.6}
         \arrayrulecolor{dlHairline}
         \begin{tabular}{|c|c|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{Epoch} & \textbf{Train acc} & \textbf{Valid} & \textbf{Gap} & \textbf{Valid loss} \\ \hline
+            \rowcolor{dlSoftCloud} & \multicolumn{2}{c|}{\textbf{ResNet-18}} & \multicolumn{2}{c|}{\textbf{ViT-Tiny}} \\
+            \rowcolor{dlSoftCloud} \textbf{Epoch} & \textbf{Train acc} & \textbf{Val acc} & \textbf{Train acc} & \textbf{Val acc} \\ \hline
             5 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             10 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             20 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
@@ -974,10 +996,10 @@ wandb.finish()
         \arrayrulecolor{black}
 
         \vspace{0.12cm}
-        {\scriptsize Run ini cepat ($\pm$1,5 s/epoch) dan menjadi \textbf{baseline Kartu 6}. Studio 2 ($\pm$3.700 citra) juga termasuk ``data sedikit''.}
+        {\scriptsize Data train $\pm$950 citra: run cepat dan menjadi \textbf{baseline Kartu 6}. Studio 2 ($\pm$3.700 citra) juga termasuk ``data sedikit''.}
 
         \vspace{0.1cm}
-        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{epoch/train\_acc} vs \texttt{valid/acc} dan \texttt{epoch/gap\_acc}.}
+        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{epoch/train\_acc} vs \texttt{val/acc} dan \texttt{epoch/gap\_acc}.}
     \end{columns}
 \end{frame}
 
@@ -1014,7 +1036,7 @@ wandb.finish()
         \begin{itemize}
             \item jaringan ``acak lebih dangkal'' tiap batch $\Rightarrow$ ensemble implisit
             \item standar di ConvNeXt \& ViT (\texttt{drop\_path} 0,1--0,2)
-            \item didukung kelima model di \texttt{train.py} (timm \texttt{drop\_path\_rate})
+            \item didukung kelima model di \texttt{architectures/} (timm \texttt{drop\_path\_rate})
         \end{itemize}
     \end{columns}
 \end{frame}
@@ -1070,14 +1092,14 @@ wandb.finish()
             \toprule
             \texttt{augment} & Transformasi train \\
             \midrule
-            \texttt{none} & resize + center crop (sama dengan valid) \\
+            \texttt{none} & resize + center crop (sama dengan val) \\
             \texttt{basic} & \texttt{RandomResizedCrop}(0,35--1) + flip horizontal \\
             \texttt{strong} & \texttt{basic} + \texttt{TrivialAugmentWide} + \texttt{RandomErasing}(p=0,25) \\
             \bottomrule
         \end{tabular}
 
         \vspace{0.2cm}
-        {\scriptsize Valid \& test \textbf{tidak pernah} diaugmentasi. Augmentasi harus masuk akal untuk domain: flip vertikal untuk foto sampah? Mungkin. Untuk angka ``6'' vs ``9''? \con{Tidak}.}
+        {\scriptsize Citra val \textbf{tidak pernah} diaugmentasi (\texttt{datareader.py}). Augmentasi harus masuk akal untuk domain: flip vertikal untuk foto sampah? Mungkin. Untuk angka ``6'' vs ``9''? \con{Tidak}.}
 
         \column{0.50\textwidth}
         \textbf{MixUp} (Zhang et al., 2018): campur dua citra \emph{dan} labelnya
@@ -1105,13 +1127,13 @@ wandb.finish()
 
     \begin{columns}[T]
         \column{0.40\textwidth}
-        \begin{block}{Ubah di CONFIG}
-            {\ttfamily\scriptsize augment="basic"\\augment="strong"\\dropout=0.5\\weight\_decay=0.05\\label\_smoothing=0.1\\mixup\_alpha=0.2, cutmix\_alpha=1.0\\\# semua di atas sekaligus}
+        \begin{block}{List di CONFIG (satu per satu)}
+            {\ttfamily\scriptsize augment=["none", "basic", "strong"]\\\# kembalikan augment=["none"], lalu:\\dropout=[0.0, 0.5]\\weight\_decay=[0.0, 0.05]\\label\_smoothing=[0.0, 0.1]\\mixup\_alpha=[0.2], cutmix\_alpha=[1.0]}
         \end{block}
         \textbf{Hipotesis} (tulis di \texttt{notes})
         \begin{itemize}
             \item Augmentasi paling ampuh saat data sedikit.
-            \item Gap mengecil $\neq$ test pasti naik.
+            \item Gap mengecil $\neq$ val acc pasti naik.
         \end{itemize}
 
         \column{0.56\textwidth}
@@ -1120,21 +1142,21 @@ wandb.finish()
         \setlength{\tabcolsep}{4pt}
         \renewcommand{\arraystretch}{1.3}
         \arrayrulecolor{dlHairline}
-        \begin{tabular}{|l|c|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{Perubahan} & \textbf{Tebakan} & \textbf{Gap$^{*}$} & \textbf{Valid} & \textbf{Test} \\ \hline
-            (Kartu 5) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            aug.\ basic & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            aug.\ strong & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            dropout 0,5 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            wd 0,05 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            label smooth.\ 0,1 & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            MixUp + CutMix & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            semua & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+        \begin{tabular}{|l|c|c|c|c|c|}
+            \rowcolor{dlSoftCloud} & & \multicolumn{2}{c|}{\textbf{ResNet-18}} & \multicolumn{2}{c|}{\textbf{ViT-Tiny}} \\
+            \rowcolor{dlSoftCloud} \textbf{Perubahan} & \textbf{Tebakan} & \textbf{Gap$^{*}$} & \textbf{Val} & \textbf{Gap$^{*}$} & \textbf{Val} \\ \hline
+            (Kartu 5) & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
+            aug.\ basic & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
+            aug.\ strong & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
+            dropout 0,5 & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
+            wd 0,05 & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
+            label smooth.\ 0,1 & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
+            MixUp + CutMix & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} & \hspace{0.6cm} \\ \hline
         \end{tabular}
         \arrayrulecolor{black}
 
         \vspace{0.12cm}
-        {\scriptsize $^{*}$train $-$ valid di epoch terakhir; dengan augmentasi/MixUp akurasi train dihitung pada citra teraugmentasi, jadi gap bisa negatif. Noise di data sedikit lebih besar: ulangi Kartu 5 dengan seed lain.}
+        {\scriptsize $^{*}$train $-$ val di epoch terakhir; dengan augmentasi/MixUp akurasi train dihitung pada citra teraugmentasi, jadi gap bisa negatif. List berisi nilai Kartu 5 (mis.\ \texttt{0.0}) membuat baris baseline ikut dijalankan ulang. Noise di data sedikit lebih besar: \texttt{seed=[42, 1]}.}
 
         \vspace{0.1cm}
         {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{epoch/gap\_acc} semua run dalam satu panel.}
@@ -1155,31 +1177,30 @@ wandb.finish()
         \]
         \begin{itemize}
             \item $m$ = \texttt{monitor} (\texttt{val\_loss} turun; \texttt{val\_acc}/\texttt{val\_f1} naik), $\delta$ = \texttt{min\_delta}, $P$ = \texttt{patience}
-            \item setiap kali membaik: \textbf{simpan checkpoint}; test memakai checkpoint ini, \emph{bukan} bobot epoch terakhir
+            \item setiap kali membaik: \textbf{simpan checkpoint}; hasil run = metrik di epoch terbaik, \emph{bukan} epoch terakhir
             \item Studio 2 dinilai dengan macro-F1 $\Rightarrow$ \texttt{monitor="val\_f1"}
         \end{itemize}
 
         \column{0.46\textwidth}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize patience=[None, 5, 2]   \# None = penuh\\epochs=[30]\\model=["resnet18"]   \# 3 run, $\pm$6 menit}
+        \end{block}
         \vspace{2pt}
         \scriptsize
         \setlength{\tabcolsep}{4pt}
-        \renewcommand{\arraystretch}{1.6}
+        \renewcommand{\arraystretch}{1.5}
         \arrayrulecolor{dlHairline}
         \begin{tabular}{|l|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{} & \textbf{Penuh} & \textbf{$P=5$} & \textbf{$P=2$} \\ \hline
-            \texttt{early\_stopping} & False & True & True \\ \hline
+            \rowcolor{dlSoftCloud} \textbf{\texttt{patience}} & \textbf{None} & \textbf{5} & \textbf{2} \\ \hline
             Epoch dijalankan & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             Epoch terbaik & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             Waktu (menit) & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            Test \\ \hline
+            Val acc terbaik & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
         \end{tabular}
         \arrayrulecolor{black}
 
-        \vspace{0.12cm}
-        {\scriptsize Konfigurasi baseline (data penuh, 30 epoch); hanya \texttt{early\_stopping} dan \texttt{patience} yang diubah.}
-
         \vspace{0.1cm}
-        \textbf{Hipotesis}: test hampir sama (sama-sama memakai checkpoint terbaik), waktu jauh lebih singkat; $P$ terlalu kecil berhenti di plateau sementara.
+        \textbf{Hipotesis}: val acc terbaik hampir sama, waktu jauh lebih singkat; $P$ terlalu kecil berhenti di plateau sementara.
     \end{columns}
 \end{frame}
 
@@ -1214,10 +1235,10 @@ wandb.finish()
         \toprule
         \textbf{Strategi} & \textbf{CONFIG} & \textbf{Cocok ketika} & \textbf{Risiko} \\
         \midrule
-        Scratch & \texttt{pretrained=False} & domain jauh + data banyak & lambat, haus data \\
-        Linear probing & \texttt{freeze\_backbone=True} & data sangat sedikit & fitur tak beradaptasi \\
-        Full FT & \texttt{backbone\_lr\_mult=1.0} & data cukup & fitur rusak bila lr besar \\
-        LR diskriminatif & \texttt{backbone\_lr\_mult=0.1} & default yang aman & +1 hyperparameter \\
+        Scratch & \texttt{finetune="scratch"} & domain jauh + data banyak & lambat, haus data \\
+        Linear probing & \texttt{finetune="linear\_probe"} & data sangat sedikit & fitur tak beradaptasi \\
+        Full FT & \texttt{"full\_ft"}, \texttt{backbone\_lr\_mult=1.0} & data cukup & fitur rusak bila lr besar \\
+        LR diskriminatif & \texttt{"full\_ft"}, \texttt{backbone\_lr\_mult=0.1} & default yang aman & +1 hyperparameter \\
         \bottomrule
     \end{tabular}
     \end{center}
@@ -1226,14 +1247,16 @@ wandb.finish()
 %------------------------------------------------
 \begin{frame}
     \frametitle{Kartu 8: Strategi Fine-tuning}
-    \framesubtitle{ResNet-18, data penuh}
+    \framesubtitle{ResNet-18 \& ViT-Tiny, data penuh}
     \footnotesize
 
     \begin{columns}[T]
         \column{0.42\textwidth}
-        \begin{block}{Ubah di CONFIG}
-            {\ttfamily\scriptsize pretrained=False, backbone\_lr\_mult=1.0\\freeze\_backbone=True, lr=1e-3\\freeze\_backbone=True, lr=1e-2\\backbone\_lr\_mult=1.0\\backbone\_lr\_mult=0.1  \# baseline\\wandb\_group="finetune"}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize finetune=["scratch", "linear\_probe",\\\hspace*{5.0em}"full\_ft"]\\model=["resnet18", "vit\_tiny"]\\\# 3 x 2 = 6 run, $\pm$6 menit}
         \end{block}
+        {\scriptsize Lanjutan: \texttt{finetune=["full\_ft"]}, \texttt{backbone\_lr\_mult=[1.0, 0.1]} (4 run).}
+
         \textbf{Hipotesis} (tulis di \texttt{notes})
         \begin{itemize}
             \item Scratch tertinggal \textbf{jauh}: bobot pretrained adalah hyperparameter terpenting.
@@ -1247,10 +1270,10 @@ wandb.finish()
         \renewcommand{\arraystretch}{1.5}
         \arrayrulecolor{dlHairline}
         \begin{tabular}{|l|c|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{Strategi} & \textbf{Dilatih} & \textbf{Tebakan} & \textbf{Valid} & \textbf{Test} \\ \hline
+            \rowcolor{dlSoftCloud} & & & \multicolumn{2}{c|}{\textbf{Val acc}} \\
+            \rowcolor{dlSoftCloud} \textbf{Strategi} & \textbf{Dilatih (R18)} & \textbf{Tebakan} & \textbf{ResNet-18} & \textbf{ViT-Tiny} \\ \hline
             Scratch & 11,2 M & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            Linear probe, $10^{-3}$ & 5 K & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
-            Linear probe, $10^{-2}$ & 5 K & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
+            Linear probe & 5 K & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             Full FT $\times$1 & 11,2 M & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             Full FT $\times$0,1 & 11,2 M & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
         \end{tabular}
@@ -1260,7 +1283,7 @@ wandb.finish()
         {\scriptsize $\times$1 / $\times$0,1 = \texttt{backbone\_lr\_mult}. Data sampah berbeda domain dari ImageNet $\Rightarrow$ ulangi perbandingan ini di data Anda.}
 
         \vspace{0.1cm}
-        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{valid/acc} epoch 1: pretrained langsung tinggi, scratch mulai dari $\approx$10\%.}
+        {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{val/acc} epoch 1: pretrained langsung tinggi, scratch mulai dari $\approx$10\%.}
     \end{columns}
 \end{frame}
 
@@ -1272,8 +1295,8 @@ wandb.finish()
 
     \begin{columns}[T]
         \column{0.42\textwidth}
-        \begin{block}{Ubah di CONFIG}
-            {\ttfamily\scriptsize model="resnet18"  \# baseline\\model="mobilenetv3"\\model="efficientnet\_b0"\\model="convnext\_atto"\\model="vit\_tiny"\\\# ulangi dgn train\_fraction=0.1}
+        \begin{block}{List di CONFIG}
+            {\ttfamily\scriptsize model=["resnet18", "mobilenetv3",\\\hspace*{3.2em}"efficientnet\_b0",\\\hspace*{3.2em}"convnext\_atto", "vit\_tiny"]\\train\_fraction=[1.0, 0.1]\\\# 5 x 2 = 10 run, $\pm$8 menit}
         \end{block}
         \textbf{Hipotesis} (tulis di \texttt{notes})
         \begin{itemize}
@@ -1288,7 +1311,7 @@ wandb.finish()
         \renewcommand{\arraystretch}{1.55}
         \arrayrulecolor{dlHairline}
         \begin{tabular}{|l|r|c|c|c|}
-            \rowcolor{dlSoftCloud} \textbf{Model} & \textbf{Param} & \textbf{Tebakan} & \textbf{Test 100\%} & \textbf{Test 10\%} \\ \hline
+            \rowcolor{dlSoftCloud} \textbf{Model} & \textbf{Param} & \textbf{Tebakan} & \textbf{Val 100\%} & \textbf{Val 10\%} \\ \hline
             ResNet-18 & 11,2 M & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             MobileNetV3-S & 1,5 M & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
             EfficientNet-B0 & 4,0 M & \hspace{0.75cm} & \hspace{0.75cm} & \hspace{0.75cm} \\ \hline
@@ -1298,7 +1321,7 @@ wandb.finish()
         \arrayrulecolor{black}
 
         \vspace{0.12cm}
-        {\scriptsize CNN: lokalitas \& translation equivariance ``dibangun'' di konvolusi. ViT: attention global antar-patch $16\times16$; di 160 px = $10\times10$ patch (\texttt{img\_size=160}). Run 10\% data $<$1 menit.}
+        {\scriptsize CNN: lokalitas \& translation equivariance ``dibangun'' di konvolusi. ViT: attention global antar-patch $16\times16$; di 160 px = $10\times10$ patch (\texttt{img\_size=[160]}). Run 10\% data $<$1 menit.}
 
         \vspace{0.1cm}
         {\scriptsize\color{dlMute} \textbf{Amati di W\&B:} \texttt{best\_epoch}; jika terbaik di epoch 1--2, lr kemungkinan kebesaran.}
@@ -1347,6 +1370,7 @@ wandb.finish()
             \item Random: 9 run $\Rightarrow$ \pos{9 nilai berbeda} untuk setiap dimensi.
             \item Kurva oranye = skor vs hyperparameter penting; puncaknya sempit dan mudah terlewat oleh grid.
             \item Sampling lr dalam \textbf{skala log}: $\eta = 10^{u}$, $u\sim\mathcal{U}(-5,-1)$.
+            \item List di \texttt{CONFIG} kita = \textbf{grid search}: cocok untuk 1--2 kunci, mahal untuk banyak kunci.
         \end{itemize}
     \end{columns}
 \end{frame}
@@ -1366,14 +1390,14 @@ wandb.finish()
             \item \textbf{Halus}: hyperparameter prioritas 2--3 pada lr terbaik.
             \item \textbf{Konfirmasi}: ulangi konfigurasi terbaik dengan 2--3 seed.
         \end{enumerate}
-        {\scriptsize\color{dlMute} Tuning manual lewat \texttt{CONFIG} di kelas = langkah 1--2. W\&B Sweeps mengotomatiskan langkah 2--3.}
+        {\scriptsize\color{dlMute} List di \texttt{CONFIG} di kelas = langkah 1--2 (mis.\ \texttt{seed=[42, 1, 2]} untuk langkah 4). W\&B Sweeps mengotomatiskan langkah 2--3.}
 
         \column{0.50\textwidth}
         \textbf{W\&B Sweeps} (Bayesian / random / grid)
 \begin{lstlisting}[style=py]
 sweep = {
   "method": "random",       # "bayes" | "grid"
-  "metric": {"name": "valid/acc",
+  "metric": {"name": "best/val_acc",
              "goal": "maximize"},
   "parameters": {
     "lr": {"distribution": "log_uniform_values",
@@ -1385,7 +1409,7 @@ sweep = {
 sweep_id = wandb.sweep(sweep, project="if25-p6")
 wandb.agent(sweep_id, function=..., count=20)
 \end{lstlisting}
-        {\scriptsize\color{dlMute} Agar \texttt{train.py} bisa di-sweep: baca nilai dari \texttt{wandb.config} setelah \texttt{wandb.init()}, bukan dari \texttt{CONFIG}.}
+        {\scriptsize\color{dlMute} Agar bisa di-sweep, \texttt{run\_experiment} perlu membaca nilai dari \texttt{wandb.config} setelah \texttt{wandb.init()}, bukan dari \texttt{CONFIG}.}
     \end{columns}
 \end{frame}
 
@@ -1432,8 +1456,8 @@ wandb.agent(sweep_id, function=..., count=20)
         \column{0.55\textwidth}
         \begin{enumerate}
             \item Buat proyek W\&B kelompok; isi \texttt{wandb\_entity}.
-            \item Jalankan \textbf{baseline} \texttt{train.py} apa adanya (catat \texttt{valid/acc}).
-            \item Setiap anggota memilih \textbf{satu} hyperparameter dari tabel prioritas, menulis hipotesis di \texttt{notes}, lalu menjalankan 2--3 nilai.
+            \item Jalankan \textbf{baseline} \texttt{train.py} apa adanya (catat \texttt{best/val\_acc}).
+            \item Setiap anggota memilih \textbf{satu} hyperparameter dari tabel prioritas, menulis hipotesis di \texttt{notes}, lalu mengisinya sebagai list 2--3 nilai.
             \item Bandingkan di dashboard: siapa yang mengalahkan baseline melebihi noise?
             \item Terapkan temuan terbaik ke \textbf{data kompetisi sampah} (\texttt{train\_baseline.py} di starter kit).
         \end{enumerate}
@@ -1441,11 +1465,11 @@ wandb.agent(sweep_id, function=..., count=20)
         \column{0.41\textwidth}
         \begin{exampleblock}{Dikumpulkan (Studio 2)}
             \begin{itemize}
-                \item tautan \textbf{W\&B Report}: tabel run, kurva valid, hipotesis vs hasil
+                \item tautan \textbf{W\&B Report}: tabel run, kurva val, hipotesis vs hasil
                 \item 3 kalimat: hyperparameter apa yang paling berpengaruh pada data sampah, dan buktinya
             \end{itemize}
         \end{exampleblock}
-        {\scriptsize\color{dlMute} Tips laptop (CPU/MPS): \texttt{model="mobilenetv3"}, \texttt{train\_fraction=0.3}, \texttt{epochs=5}. GPU (RTX 5070): 30 epoch $\pm$2,5--4,5 menit.}
+        {\scriptsize\color{dlMute} Tips laptop (CPU/MPS): \texttt{model=["mobilenetv3"]}, \texttt{train\_fraction=[0.3]}, \texttt{epochs=[5]}. GPU (RTX 5070): 10 epoch $\pm$1 menit per run.}
     \end{columns}
 \end{frame}
 
@@ -1457,6 +1481,7 @@ wandb.agent(sweep_id, function=..., count=20)
     \begin{thebibliography}{9}
         \bibitem{smith} L. N. Smith. A Disciplined Approach to Neural Network Hyper-Parameters: Part 1 --- Learning Rate, Batch Size, Momentum, and Weight Decay. \textit{arXiv:1803.09820}, 2018.
         \bibitem{adam} D. P. Kingma, J. Ba. Adam: A Method for Stochastic Optimization. \textit{ICLR}, 2015.
+        \bibitem{nadam} T. Dozat. Incorporating Nesterov Momentum into Adam. \textit{ICLR Workshop}, 2016.
         \bibitem{adamw} I. Loshchilov, F. Hutter. Decoupled Weight Decay Regularization. \textit{ICLR}, 2019.
         \bibitem{sgdr} I. Loshchilov, F. Hutter. SGDR: Stochastic Gradient Descent with Warm Restarts. \textit{ICLR}, 2017.
         \bibitem{goyal} P. Goyal et al. Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour. \textit{arXiv:1706.02677}, 2017.
@@ -1493,7 +1518,7 @@ wandb.agent(sweep_id, function=..., count=20)
     \vspace{1.5cm}
     {\scriptsize\bfseries\color{dlMute}IF25-40401 · DEEP LEARNING}\\[0.4cm]
     {\Huge\bfseries Terima Kasih}\\[0.4cm]
-    {\small Kode: \texttt{materials/hyperparameter-tuning/train.py} · Kompetisi: Studio Proyek 2 --- Klasifikasi Sampah}\\[1.0cm]
+    {\small Kode: \texttt{materials/hyperparameter-tuning/} (\texttt{train.py} · \texttt{datareader.py} · \texttt{models.py}) · Kompetisi: Studio Proyek 2 --- Klasifikasi Sampah}\\[1.0cm]
     \vfill
     {\scriptsize\textbf{Tim Dosen Deep Learning} · Institut Teknologi Sumatera (ITERA)}
   \end{beamercolorbox}

@@ -1,8 +1,32 @@
 # Pertemuan 6 — Eksperimen Hyperparameter (CNN & ViT)
 
 Kode pendamping slide [`pertemuan-06-hyperparameter-tuning.pdf`](../pertemuan-06-hyperparameter-tuning.pdf).
-Satu file, [`train.py`](./train.py), untuk melatih & mengevaluasi 5 backbone ringan pada **Imagenette**
-dan mencatat setiap eksperimen ke **Weights & Biases**. Tidak ada argparse: ubah nilai di blok `CONFIG`, lalu jalankan.
+Melatih & mengevaluasi 5 backbone ringan pada **Imagenette** dan mencatat setiap run ke **Weights & Biases**.
+Tidak ada argparse: tulis nilai yang ingin dicoba sebagai **list** di blok `CONFIG` (`train.py`), lalu jalankan.
+
+```python
+optimizer=["adam", "adamw", "nadam"],
+model=["resnet18", "vit_tiny"],
+# -> 3 x 2 = 6 run, satu run W&B per kombinasi, ringkasan dicetak di akhir
+```
+
+## Struktur
+
+```text
+hyperparameter-tuning/
+├── train.py          # CONFIG, loop semua kombinasi, training, evaluasi, logging W&B
+├── datareader.py     # Imagenette -> DataLoader train & val (augmentasi, MixUp/CutMix)
+├── models.py         # memilih arsitektur + strategi fine-tuning (scratch / linear_probe / full_ft)
+└── architectures/    # satu file per arsitektur, masing-masing berisi build(...)
+    ├── resnet18.py
+    ├── mobilenetv3.py
+    ├── efficientnet_b0.py
+    ├── convnext_atto.py
+    └── vit_tiny.py
+```
+
+Folder arsitektur tidak dinamai `models/` karena akan bentrok dengan `models.py` saat di-import.
+Menambah arsitektur: buat `architectures/<nama>.py` berisi `build(...)`, lalu daftarkan di `ARCHITECTURES` (`models.py`).
 
 ## Menjalankan
 
@@ -33,9 +57,11 @@ Imagenette versi 160 px (±94 MB) diunduh otomatis ke `./data` saat pertama kali
 
 | Split | Sumber | Jumlah | Dipakai untuk |
 |---|---|---:|---|
-| train | 85% Imagenette `train` | 8.049 | update bobot |
-| valid | 15% Imagenette `train` | 1.420 | early stopping, memilih checkpoint, membandingkan run |
-| test | Imagenette `val` | 3.925 | **sekali** di akhir, dengan checkpoint terbaik |
+| train | Imagenette `train` | 9.469 | update bobot (diaugmentasi) |
+| val | Imagenette `val` | 3.925 | dievaluasi tiap epoch: early stopping, checkpoint terbaik, membandingkan run |
+
+Karena konfigurasi terbaik dipilih memakai val, skor val terbaik sedikit optimistis. Di Studio 2,
+validation set tersembunyi milik asisten berperan sebagai data yang tidak pernah dipakai memilih.
 
 | `model` | Checkpoint timm | Param (10 kelas) |
 |---|---|---:|
@@ -47,48 +73,54 @@ Imagenette versi 160 px (±94 MB) diunduh otomatis ke `./data` saat pertama kali
 
 ## Hyperparameter di `CONFIG`
 
-| Kelompok | Kunci | Pilihan / rentang wajar |
+Nilai berbentuk list dicoba satu per satu (semua kombinasi antar-list = grid search).
+Nilai tunggal (bukan list) tetap untuk semua run. Jumlah run = perkalian panjang semua list.
+
+| Kelompok | Kunci (list) | Pilihan / rentang wajar |
 |---|---|---|
 | Data | `img_size`, `train_fraction`, `augment`, `mixup_alpha`, `cutmix_alpha` | 128–224 · 0,1–1,0 · `none`/`basic`/`strong` · 0,2 · 1,0 |
-| Model | `model`, `pretrained`, `freeze_backbone`, `dropout`, `drop_path` | lihat tabel di atas · `True`/`False` · 0–0,5 · 0–0,2 |
-| Optimizer | `optimizer`, `lr`, `backbone_lr_mult`, `weight_decay`, `momentum`, `batch_size`, `grad_clip`, `label_smoothing` | `sgd`/`adam`/`adamw`/`rmsprop` · 1e-5–1e-1 · 0,1–1 · 0–0,1 · 0,9 · 32–256 · `None`/1,0 · 0–0,2 |
-| Scheduler | `scheduler`, `warmup_epochs`, `step_size`, `gamma`, `plateau_patience` | `none`/`step`/`cosine`/`onecycle`/`plateau` |
-| Early stopping | `early_stopping`, `patience`, `min_delta`, `monitor` | `val_loss`/`val_acc`/`val_f1` |
-| W&B | `wandb_project`, `wandb_entity`, `wandb_group`, `wandb_mode`, `notes` | tulis hipotesis di `notes` |
+| Model | `model`, `finetune`, `backbone_lr_mult`, `dropout`, `drop_path` | lihat tabel di atas · `scratch`/`linear_probe`/`full_ft` · 0,1–1 · 0–0,5 · 0–0,2 |
+| Optimizer | `optimizer`, `lr`, `weight_decay`, `batch_size`, `epochs`, `label_smoothing` | `sgd`/`adam`/`adamw`/`nadam`/`rmsprop` · 1e-5–1e-1 · 0–0,1 · 32–256 · 10 · 0–0,2 |
+| Scheduler | `scheduler`, `warmup_epochs` | `none`/`step`/`cosine`/`onecycle`/`plateau` · 0–1 |
+| Early stopping | `patience` | `None` (mati) / 2–5 |
+| Noise | `seed` | `[42, 1, 2]` untuk mengukur noise antar-run |
 
-Aturan main: **ubah satu hyperparameter per run**, tulis hipotesis di `notes`, lalu bandingkan di W&B
-(filter per `group`/tag, panel *Parallel coordinates*, dan tabel run diurutkan menurut `valid/acc`).
+Pengaturan tetap (bukan list): `momentum`, `step_size`, `gamma`, `plateau_patience`, `min_lr`, `monitor`
+(`val_loss`/`val_acc`/`val_f1`), `min_delta`, `grad_clip`, `data_root`, `num_workers`, `amp`, dan pengaturan W&B
+(`wandb_project`, `wandb_entity`, `wandb_mode`, `wandb_group`, `notes`).
+
+Aturan main: **ubah satu kunci menjadi list per eksperimen** (boleh ditambah `model`), tulis hipotesis di `notes`,
+lalu bandingkan di W&B. Nama run dan group dibuat otomatis dari kunci yang divariasikan, mis. run
+`vit_tiny-optimizer=nadam` di group `optimizer`.
 
 ## Yang dicatat ke W&B
 
+- `config`: **seluruh** hyperparameter run tersebut + daftar kunci yang divariasikan, jumlah parameter, device, ukuran split
 - per 10 step: `train/loss`, `train/lr`, `train/grad_norm`
-- per epoch: `epoch/train_loss`, `epoch/train_acc`, `valid/loss`, `valid/acc`, `valid/f1`, `epoch/gap_acc`, `epoch/lr`, `epoch/time_sec`
-- akhir run: `test/acc`, `test/f1`, confusion matrix, tabel contoh prediksi, `best_epoch`, `stopped_epoch`
-- seluruh `CONFIG` + jumlah parameter, device, ukuran split
+- per epoch: `epoch/train_loss`, `epoch/train_acc`, `val/loss`, `val/acc`, `val/f1`, `epoch/gap_acc`, `epoch/lr`, `epoch/time_sec`
+- akhir run: `best/val_acc`, `best/val_f1`, `best_epoch`, `stopped_epoch`, `train_time_min`, confusion matrix val (epoch terbaik)
 
-Salinan ringkas setiap run juga ditambahkan ke `results.csv` lokal (berguna jika internet bermasalah).
+Setiap run juga ditambahkan ke `results.csv` lokal (berguna jika internet bermasalah); checkpoint terbaik
+disimpan di `checkpoints/<nama run>.pth`.
 
-## Estimasi waktu (30 epoch, 160 px, batch 64)
+## Estimasi waktu (10 epoch, 160 px, batch 64)
 
-Terukur di RTX 5070 (AMP, `num_workers=8`), termasuk validasi tiap epoch, saat CPU juga dipakai proses lain
-(ResNet-18 & EfficientNet-B0: run penuh 30 epoch; lainnya: estimasi dari 3 epoch). Bottleneck-nya loading data di CPU,
-bukan ukuran model — MobileNetV3 (1,5 M) tidak lebih cepat dari ResNet-18 (11,2 M).
+Terukur di RTX 5070 (AMP, `num_workers=8`), termasuk validasi 3.925 citra tiap epoch; epoch pertama ±5 s lebih lambat.
+Bottleneck-nya loading data di CPU, bukan ukuran model.
 
-| `model` | s/epoch | 30 epoch |
+| `model` | s/epoch | 10 epoch |
 |---|---:|---:|
-| `resnet18` | 4,8 | ±2,5 menit |
-| `mobilenetv3` | 5,7 | ±3,0 menit |
-| `efficientnet_b0` | 8,6 | ±4,4 menit |
-| `convnext_atto` | 5,4 | ±3,0 menit |
-| `vit_tiny` | 6,3 | ±3,3 menit |
+| `resnet18` | 4 | ±0,8 menit |
+| `mobilenetv3` | 5 | ±0,9 menit |
+| `efficientnet_b0` | 7 | ±1,3 menit |
+| `convnext_atto` | 5 | ±1,0 menit |
+| `vit_tiny` | 5 | ±0,9 menit |
 
-Early stopping (`patience=5`) biasanya menghentikan run lebih awal. `train_fraction=0.1` ±1,5 s/epoch.
-MacBook M1 Pro (MPS): ResNet-18 ±40 s/epoch — untuk demo di laptop pakai `train_fraction=0.3`, `epochs=5`,
-atau `model="mobilenetv3"`.
+MacBook (MPS) jauh lebih lambat: untuk demo di laptop pakai `model=["mobilenetv3"]`, `train_fraction=[0.3]`, `epochs=[5]`.
 
 ## Kartu eksperimen di slide
 
 Slide berisi 10 kartu (noise antar-seed, learning rate, optimizer, batch size, scheduler, overfitting,
-regularisasi, early stopping, strategi fine-tuning, CNN vs ViT). Setiap kartu menyebut kunci `CONFIG` yang
-diubah, hipotesis, dan tabel kosong yang diisi dari hasil run di kelas. Kembalikan nilai ke baseline sebelum
-pindah kartu, dan pakai `wandb_group` yang sama untuk satu kartu agar mudah dibandingkan.
+regularisasi, early stopping, strategi fine-tuning, CNN vs ViT). Setiap kartu menyebut list yang diisi di `CONFIG`,
+hipotesis, dan tabel kosong yang diisi dari hasil run di kelas. Kembalikan list ke satu nilai (baseline) sebelum
+pindah kartu.
